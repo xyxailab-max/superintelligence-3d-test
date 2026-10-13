@@ -378,6 +378,11 @@ function buildHub(){if(hubBuilt)return;hubBuilt=true;
  (()=>{const cs=[];for(let i=0;i<(coarse?26:40);i++){const pts=[];let v=new THREE.Vector3(randn(),randn(),randn()).normalize().multiplyScalar(CORE.r*.4);pts.push(v.clone());for(let k=0;k<3;k++){v=v.clone().add(new THREE.Vector3(randn(),randn(),randn()).multiplyScalar(CORE.r*.28));if(v.length()>CORE.r*.88)v.setLength(CORE.r*.88);pts.push(v)}cs.push(pts)}
   const pc=new THREE.Points(curveCloud(cs,coarse?20:28,()=>1),pulseMat(1.75,4.6));pc.frustumCulled=true;pc.renderOrder=1;cg.add(pc);
   const lp=[];for(const c of cs){const q=new THREE.CatmullRomCurve3(c).getPoints(12);for(let j=0;j<q.length-1;j++)lp.push(q[j],q[j+1])}const lw=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lp),new THREE.LineBasicMaterial({color:'#F0C674',transparent:true,opacity:.45,depthWrite:false,blending:THREE.AdditiveBlending}));lw.renderOrder=1;cg.add(lw)})();
+ (()=>{const R=CORE.r,np=[],nc=[],ns=[],seg=[],lay=[];for(const [k,n] of [[.52,coarse?24:36],[.78,coarse?36:54]]){const L=[];for(let i=0;i<n;i++){const y=1-2*(i+.5)/n,r=Math.sqrt(1-y*y),a=i*2.39996+k*3,v=new THREE.Vector3(Math.cos(a)*r,y,Math.sin(a)*r).multiplyScalar(R*k);L.push(v);np.push(v.x,v.y,v.z);const col=rand()<.55?GOLD:BLUE;nc.push(col[0],col[1],col[2]);ns.push(R*(.035+rand()*.03))}lay.push(L)}
+  const nearest=(v,list,skip)=>{let b=null,bd=1e9;for(const u of list){if(u===skip)continue;const d=u.distanceTo(v);if(d<bd){bd=d;b=u}}return b};
+  for(const v of lay[0])seg.push(v.clone().setLength(R*.36),v);for(const v of lay[1])seg.push(nearest(v,lay[0]),v,v,nearest(v,lay[1],v));
+  const web=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg),new THREE.LineBasicMaterial({color:'#F0C674',transparent:true,opacity:.42,depthWrite:false,blending:THREE.AdditiveBlending}));web.renderOrder=1;cg.add(web);
+  const nodes=pointCloud(np,nc,ns,pointsMat({opacity:.95}));nodes.renderOrder=1;cg.add(nodes)})();
  const coreHalo=halo('#7FE0FF',CORE.r*4.2,.3);cg.add(coreHalo);const coreLight=new THREE.PointLight('#9FE3FF',1.1,34,2);cg.add(coreLight);hub.core=cg;hub.coreFx={shell:coreShell.material.uniforms,halo:coreHalo,light:coreLight};
  const beam=new THREE.Mesh(new THREE.CylinderGeometry(.28,.5,CORE.y-CORE.r-.56,24,1,true),new THREE.MeshBasicMaterial({color:'#7FE0FF',transparent:true,opacity:.14,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));beam.position.set(CORE.x,.56+(CORE.y-CORE.r-.56)/2,CORE.z);hubScene.add(beam);
  const cm=new THREE.Mesh(coreIn.geometry,energyMat('#7FE0FF','#F0C674',.55,THREE.DoubleSide));cm.scale.y=-1;cm.position.set(CORE.x,-CORE.y,CORE.z);hubScene.add(cm);hub.coreMirror=cm;
@@ -475,7 +480,7 @@ function buildArchitecture(){
 const AREAS=[{id:'grove',name:'Dendrite Grove',x:-66,z:36,r:13},{id:'synapse',name:'Synapse Field',x:66,z:36,r:13},{id:'spire',name:'Memory Spire',x:0,z:-84,r:12,col:3.6}];
 for(const a of AREAS){const l=Math.hypot(a.x,a.z),dx=a.x/l,dz=a.z/l;a.bridge={ax:dx*40.5,az:dz*40.5,bx:a.x-dx*(a.r-1.2),bz:a.z-dz*(a.r-1.2)};a.wake=.12;a.found=false;a.set=[]}
 function buildHidden(){
- const obsidian=new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.65,roughness:.3,envMap:hub.env}),pathMat=new THREE.MeshStandardMaterial({color:'#121936',metalness:.55,roughness:.3,envMap:hub.env});
+ const obsidian=new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.65,roughness:.3,envMap:hub.env}),pathMat=new THREE.MeshStandardMaterial({color:'#121936',metalness:.55,roughness:.3,envMap:hub.env});;const goldLine=new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.85});
  const V3=(x,y,z)=>new THREE.Vector3(x,y,z),jit=(v,k)=>v.clone().add(V3(randn()*k,randn()*k,randn()*k));
  for(const a of AREAS){const b=a.bridge,g=new THREE.Group();hubScene.add(g);
   // Bridge with dim gold edges and faint blue guide lights.
@@ -487,7 +492,23 @@ function buildHidden(){
   const ring=flatRing(a.r-.6,.08,a.id==='spire'?'#9B6BFF':'#F0C674',.45,.02);ring.position.x=a.x;ring.position.z=a.z;g.add(ring);
   const glowUnder=halo(a.id==='spire'?'#9B6BFF':'#7FE0FF',a.r*2.6,.12);glowUnder.position.set(a.x,-2.5,a.z);g.add(glowUnder);
   // Neural structures (only here, never in the open hub).
-  const curves=[],nodes={p:[],c:[],s:[]},extra=[];let hue=()=>0;const C=V3(a.x,0,a.z);
+  const curves=[],nodes={p:[],c:[],s:[]},extra=[],extraP=[];let hue=()=>0;const C=V3(a.x,0,a.z);
+  const AC=a.id==='grove'?'#7FE0FF':a.id==='synapse'?'#F0C674':'#9B6BFF',l0=Math.hypot(a.x,a.z),ux=a.x/l0,uz=a.z/l0;
+  // Gateway at the colonnade gap: two gold-edged posts, an arch and a softly pulsing marker orb in the area's color (no text).
+  {const gx=ux*42.6,gz=uz*42.6,px=-uz*2.3,pz=ux*2.3;for(const sd of [-1,1]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.22,.3,7,10),obsidian);post.position.set(gx+px*sd,3.5,gz+pz*sd);g.add(post);const gl=new THREE.Mesh(new THREE.BoxGeometry(.05,6.4,.05),goldLine);gl.position.set(gx+px*sd*.9,3.5,gz+pz*sd*.9);g.add(gl)}
+   const ap=[];for(let i=0;i<=16;i++){const t=i/16,an=Math.PI*t;ap.push(V3(gx+px*Math.cos(an),7+Math.sin(an)*2.3,gz+pz*Math.cos(an)))}g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ap),32,.07,5,false),goldLine));
+   const orb=new THREE.Mesh(new THREE.SphereGeometry(.38,20,14),new THREE.MeshBasicMaterial({color:AC}));orb.position.set(gx,10.6,gz);g.add(orb);const oh=halo(AC,4,.4);oh.position.copy(orb.position);g.add(oh);a.marker={orb,oh,y:10.6};
+   // Faint floor lights leading from the hub toward the gateway.
+   const fp=[],fc=[],fs=[],cc=new THREE.Color(AC);for(let r=31.5;r<41;r+=1.9){fp.push(ux*r,.08,uz*r);fc.push(cc.r,cc.g,cc.b);fs.push(.32)}const fl=pointCloud(fp,fc,fs,pointsMat({opacity:.75}));g.add(fl)}
+  if(a.id==='grove'){ // grove atmosphere: low blue mist and drifting fireflies
+   for(let i=0;i<4;i++){const an=i/4*6.283+.4,m=halo(i%2?'#3D7BFF':'#7FE0FF',16,.1);m.position.set(a.x+Math.cos(an)*5,1.6,a.z+Math.sin(an)*5);g.add(m);extra.push(m.material)}
+   const fp=[],fc=[],fs=[];for(let i=0;i<(coarse?90:150);i++){const an=rand()*6.283,rr=Math.sqrt(rand())*(a.r-1.5),col=rand()<.25?GOLD:BLUE;fp.push(a.x+Math.cos(an)*rr,.6+rand()*8,a.z+Math.sin(an)*rr);fc.push(col[0],col[1],col[2]);fs.push(.09+rand()*.1)}const ff=pointsMat({opacity:.9});const fly=pointCloud(fp,fc,fs,ff);g.add(fly);extraP.push(ff);a.fly=fly}
+  else if(a.id==='synapse'){ // illuminated winding path and vertical energy beams
+   const wp=[];for(let i=0;i<=10;i++){const t=i/10;wp.push(V3(a.x-uz*(t-.5)*2*(a.r-2)+ux*Math.sin(t*6.283)*3.2,.07,a.z+ux*(t-.5)*2*(a.r-2)+uz*Math.sin(t*6.283)*3.2))}const path=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(wp),80,.06,5,false),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.85,depthWrite:false}));g.add(path);extra.push(path.material);
+   for(let i=0;i<5;i++){const an=i/5*6.283+.3,rr=3+rand()*(a.r-6),h=5+rand()*5,bm=new THREE.Mesh(new THREE.CylinderGeometry(.06,.12,h,8,1,true),new THREE.MeshBasicMaterial({color:i%2?'#7FE0FF':'#F0C674',transparent:true,opacity:.5,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));bm.position.set(a.x+Math.cos(an)*rr,h/2,a.z+Math.sin(an)*rr);g.add(bm);extra.push(bm.material)}}
+  else{ // Memory Spire: a real vertical landmark - stepped plinth, tall tapered tower, crystal crown
+   const sm=archMat('#201532','#9B6BFF','#C8A8FF',{value:0},{band:2.2});inst(UNIT.disc,archMat('#201532','#9B6BFF','#C8A8FF',{value:0},{band:0,lvl:.8}),[[a.x,0,a.z,3.2,.3,3.2],[a.x,.3,a.z,2.4,.3,2.4]],g);
+   inst(UNIT.needle,sm,[[a.x,.6,a.z,2.6,23,2.6]],g);inst(UNIT.crystal,archMat('#201532','#9B6BFF','#E6A0FF',{value:0},{band:0,lvl:1.2}),[[a.x,22.5,a.z,1.3,3.4,1.3]],g)}
   if(a.id==='grove'){hue=()=>rand()<.2?1:0;const depthMax=coarse?2:3;
    const branch=(st,dir,len,dep)=>{const en=st.clone().addScaledVector(dir,len);curves.push([st,jit(st.clone().lerp(en,.5),len*.12),en]);if(dep<depthMax)for(let k=0;k<3;k++)branch(en,dir.clone().add(V3(randn()*.7,.25+rand()*.4,randn()*.7)).normalize(),len*.64,dep+1);else{nodes.p.push(en.x,en.y,en.z);nodes.c.push(BLUE[0],BLUE[1],BLUE[2]);nodes.s.push(.16)}};
    for(let n=0;n<6;n++){const an=n/6*6.283+rand(),rr=2.5+rand()*7,so=V3(a.x+Math.cos(an)*rr,3+rand()*2.2,a.z+Math.sin(an)*rr);
@@ -503,9 +524,9 @@ function buildHidden(){
   const pm=pulseMat(1,10),pc=new THREE.Points(curveCloud(curves,coarse?18:26,hue),pm);pc.frustumCulled=true;g.add(pc);
   const lm=new THREE.LineBasicMaterial({color:a.id==='spire'?'#9B6BFF':'#7FE0FF',transparent:true,opacity:.3,depthWrite:false}),lp=[];for(const c of curves){const q=new THREE.CatmullRomCurve3(c).getPoints(10);for(let i=0;i<q.length-1;i++)lp.push(q[i],q[i+1])}g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lp),lm));
   let nm=null;if(nodes.p.length){nm=pointsMat({opacity:1});g.add(pointCloud(nodes.p,nodes.c,nodes.s,nm))}
-  const base=extra.map(m=>m.opacity);a.apply=w=>{pm.uniforms.uA.value=w;lm.opacity=.3*w;if(nm)nm.uniforms.uOp.value=w;extra.forEach((m,i)=>m.opacity=base[i]*w);guide.material.uniforms.uOp.value=.35+.4*w};a.apply(a.wake)}}
+  const base=extra.map(m=>m.opacity);a.apply=w=>{pm.uniforms.uA.value=w;lm.opacity=.3*w;if(nm)nm.uniforms.uOp.value=w;extra.forEach((m,i)=>m.opacity=base[i]*w);extraP.forEach(m=>m.uniforms.uOp.value=w);guide.material.uniforms.uOp.value=.35+.4*w};a.apply(a.wake)}}
 let toastTimer=0;function toast(name,sub){$('toastName').textContent=name;$('toastSub').textContent=sub;$('toast').style.opacity=1;toastTimer=4}
-function animateHidden(dt){for(const a of AREAS){if(!a.apply)continue;const d=Math.hypot(P.x-a.x,P.z-a.z),tgt=.12+.88*smooth(a.r+24,a.r+3,d);a.wake+=(tgt-a.wake)*Math.min(1,dt*1.5);a.apply(a.wake);
+function animateHidden(dt){for(const a of AREAS){if(!a.apply)continue;if(a.marker){const p=.5+.5*Math.sin(time*1.2+a.x);a.marker.orb.position.y=a.marker.y+Math.sin(time*.8+a.z)*.25*motion;a.marker.oh.position.y=a.marker.orb.position.y;a.marker.oh.material.opacity=.25+.25*p}if(a.fly)a.fly.position.y=Math.sin(time*.4)*.3*motion;const d=Math.hypot(P.x-a.x,P.z-a.z),tgt=.12+.88*smooth(a.r+24,a.r+3,d);a.wake+=(tgt-a.wake)*Math.min(1,dt*1.5);a.apply(a.wake);
   if(!a.found&&d<a.r-1&&state==='hub'){a.found=true;const n=AREAS.filter(x=>x.found).length;toast(a.name,'Hidden neural area · '+n+' of '+AREAS.length)}}
  if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('toast').style.opacity=0}}
 function animateArchitecture(dt){const A=hub.arch;if(!A)return;A.rings.forEach((m,i)=>{m.rotation.z+=dt*(i%2?-.01:.014)*motion});
