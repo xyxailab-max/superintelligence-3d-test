@@ -188,7 +188,7 @@ const DEST=[
  {id:'agents',name:'Agent Hub',c:'#7FE0FF',c2:'#3D7BFF',x:27,y:10,z:-12,r:7,url:'https://usesuperintelligence.com/agents.html'}];
 const CORE={x:0,y:7.5,z:0,r:3};
 const sphereU=[];
-function energyMat(c,c2){const u={uTime:U.uTime,uC:{value:new THREE.Color(c)},uC2:{value:new THREE.Color(c2)},uHover:{value:0},uDim:{value:1}};sphereU.push(u);return new THREE.ShaderMaterial({uniforms:u,
+function energyMat(c,c2,dim,side){const u={uTime:U.uTime,uC:{value:new THREE.Color(c)},uC2:{value:new THREE.Color(c2)},uHover:{value:0},uDim:{value:dim==null?1:dim}};sphereU.push(u);return new THREE.ShaderMaterial({uniforms:u,side:side||THREE.FrontSide,
  vertexShader:'varying vec3 vN,vW,vO;void main(){vO=position;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
  fragmentShader:GLSL_NOISE+'uniform float uTime,uHover,uDim;uniform vec3 uC,uC2;varying vec3 vN,vW,vO;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.2);vec3 o=normalize(vO);'+
  'float n=fbm(o*2.2+vec3(0.,uTime*.06,uTime*.03));float sw=fbm(o*4.+n*2.-uTime*.05);float b=smoothstep(.45,.75,sw);vec3 col=mix(uC*.10,uC*.72,b*(.6+.4*n));col+=uC2*pow(b,3.)*.25;col*=.55+.45*ndv;col+=mix(uC,vec3(1.),.35)*fr*(.5+.5*uHover);col*=(.78+.42*uHover)*uDim;gl_FragColor=vec4(col,1.);}'})}
@@ -197,8 +197,8 @@ function buildHub(){if(hubBuilt)return;hubBuilt=true;
  hubScene.add(new THREE.HemisphereLight('#3B4C8F','#05060F',.65));const k=new THREE.DirectionalLight('#DCE6FF',.7);k.position.set(-30,50,40);hubScene.add(k);
  // Environment reflections from the cosmos.
  const pm=new THREE.PMREMGenerator(renderer),tmp=new THREE.Scene(),prev=cosmos.parent;tmp.add(cosmos);hub.env=pm.fromScene(tmp,0,.1,2000).texture;pm.dispose();if(prev)prev.add(cosmos);
- hub.floorMat=new THREE.MeshStandardMaterial({color:'#0A0E1F',metalness:.65,roughness:.24,envMap:hub.env,envMapIntensity:1,transparent:true,opacity:.86});
- const floor=new THREE.Mesh(new THREE.CircleGeometry(46,128),hub.floorMat);floor.rotation.x=-Math.PI/2;hubScene.add(floor);
+ hub.floorMat=new THREE.MeshStandardMaterial({color:'#0A0E1F',metalness:.65,roughness:.24,envMap:hub.env,envMapIntensity:1,transparent:true,opacity:.74});
+ const floor=new THREE.Mesh(new THREE.CircleGeometry(46,128),hub.floorMat);floor.rotation.x=-Math.PI/2;floor.renderOrder=-1;hubScene.add(floor);
  const lab=$('labels');
  for(const d of DEST){const g=new THREE.Group();g.position.set(d.x,d.y,d.z);hubScene.add(g);
   const s=new THREE.Mesh(new THREE.SphereGeometry(d.r,64,48),energyMat(d.c,d.c2));g.add(s);
@@ -207,14 +207,68 @@ function buildHub(){if(hubBuilt)return;hubBuilt=true;
   const L=new THREE.PointLight(d.c,.9,45,2);g.add(L);
   const land=new THREE.Mesh(new THREE.RingGeometry(5.6,5.9,96),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.5,depthWrite:false}));land.rotation.x=-Math.PI/2;land.position.set(d.x,.03,d.z);hubScene.add(land);
   const el=document.createElement('div');el.className='lbl';el.textContent=d.name;lab.appendChild(el);
-  hub.spheres.push({d,g,s,ring,h,L,el,u:s.material.uniforms,hover:0})}
+  const mirror=new THREE.Mesh(s.geometry,energyMat(d.c,d.c2,.55,THREE.DoubleSide));mirror.scale.y=-1;mirror.position.set(d.x,-d.y,d.z);hubScene.add(mirror);
+  hub.spheres.push({d,g,s,ring,h,L,el,mirror,u:s.material.uniforms,hover:0})}
  const cg=new THREE.Group();cg.position.set(CORE.x,CORE.y,CORE.z);hubScene.add(cg);cg.add(new THREE.Mesh(new THREE.SphereGeometry(CORE.r,64,48),energyMat('#7FE0FF','#F0C674')));cg.add(halo('#9FE3FF',CORE.r*4,.28));cg.add(new THREE.PointLight('#9FE3FF',.9,30,2));hub.core=cg;
+ const cm=new THREE.Mesh(cg.children[0].geometry,energyMat('#7FE0FF','#F0C674',.55,THREE.DoubleSide));cm.scale.y=-1;cm.position.set(CORE.x,-CORE.y,CORE.z);hubScene.add(cm);hub.coreMirror=cm;
  const ped=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.8,1.1,64),new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.7,roughness:.3,envMap:hub.env}));ped.position.y=.55;hubScene.add(ped);
  const rim=new THREE.Mesh(new THREE.TorusGeometry(4.22,.04,8,128),new THREE.MeshBasicMaterial({color:'#F0C674'}));rim.rotation.x=Math.PI/2;rim.position.y=1.12;hubScene.add(rim);
+ buildArchitecture();
 }
+
+// ================= Hub architecture: colonnade, rings, floor inlays, pathways, holograms, neural links =================
+const HUB_R=44,GAP_ANGLES=[Math.atan2(34,-62),Math.atan2(34,62),Math.atan2(-80,0)]; // openings toward the hidden neural areas
+function ribbon(curve,w,n,y){const pos=[],idx=[];for(let i=0;i<=n;i++){const u=i/n,p=curve.getPointAt(u),t=curve.getTangentAt(u),l=Math.hypot(t.x,t.z)||1,sx=-t.z/l*w/2,sz=t.x/l*w/2;pos.push(p.x+sx,y,p.z+sz,p.x-sx,y,p.z-sz);if(i<n){const a=i*2;idx.push(a,a+2,a+1,a+1,a+2,a+3)}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return g}
+function edgeTubes(curve,w,y,mat,parent){for(const sd of [-1,1]){const pts=[];for(let i=0;i<=48;i++){const u=i/48,p=curve.getPointAt(u),t=curve.getTangentAt(u),l=Math.hypot(t.x,t.z)||1;pts.push(new THREE.Vector3(p.x-t.z/l*w/2*sd,y,p.z+t.x/l*w/2*sd))}parent.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),140,.035,5,false),mat))}}
+function flatRing(r,w,color,op,y){const m=new THREE.Mesh(new THREE.RingGeometry(r,r+w,200,1),new THREE.MeshBasicMaterial({color,transparent:true,opacity:op,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=y||.02;return m}
+function holoTexture(variant){const c=document.createElement('canvas');c.width=512;c.height=320;const x=c.getContext('2d'),B='rgba(127,224,255,',G='rgba(240,198,116,';
+ x.strokeStyle=B+'.55)';x.lineWidth=2;x.beginPath();x.moveTo(24,8);x.lineTo(488,8);x.lineTo(504,24);x.lineTo(504,296);x.lineTo(488,312);x.lineTo(24,312);x.lineTo(8,296);x.lineTo(8,24);x.closePath();x.stroke();
+ x.strokeStyle=B+'.12)';x.lineWidth=1;for(let i=40;i<512;i+=32){x.beginPath();x.moveTo(i,20);x.lineTo(i,300);x.stroke()}for(let j=40;j<320;j+=32){x.beginPath();x.moveTo(20,j);x.lineTo(492,j);x.stroke()}
+ if(variant===0){x.lineWidth=3;for(let k=0;k<3;k++){x.strokeStyle=(k===1?G:B)+(.75-k*.15)+')';x.beginPath();x.arc(150,160,90-k*22,-.6+k*.8,2.4+k*.9);x.stroke()}x.fillStyle=G+'.8)';x.beginPath();x.arc(150,160,6,0,6.283);x.fill();
+  for(let i=0;i<9;i++){const h=30+((i*37)%110);x.fillStyle=(i%3===0?G:B)+'.55)';x.fillRect(300+i*20,250-h,10,h)}}
+ else if(variant===1){const pts=[];for(let i=0;i<14;i++)pts.push([60+((i*97)%400),50+((i*61)%220)]);x.lineWidth=1.2;for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const d=Math.hypot(pts[i][0]-pts[j][0],pts[i][1]-pts[j][1]);if(d<130){x.strokeStyle=B+(.5-d/300)+')';x.beginPath();x.moveTo(pts[i][0],pts[i][1]);x.lineTo(pts[j][0],pts[j][1]);x.stroke()}}
+  pts.forEach((q,i)=>{x.fillStyle=(i%4===0?G:B)+'.9)';x.beginPath();x.arc(q[0],q[1],i%4===0?6:4,0,6.283);x.fill()})}
+ else{x.lineWidth=2.5;x.strokeStyle=B+'.7)';x.beginPath();for(let i=0;i<=440;i++){const y=160+Math.sin(i*.045)*50*Math.sin(i*.011)+Math.sin(i*.19)*8;i?x.lineTo(36+i,y):x.moveTo(36,y)}x.stroke();
+  x.strokeStyle=G+'.7)';x.beginPath();for(let i=0;i<=440;i++){const y=220+Math.sin(i*.03+1)*28;i?x.lineTo(36+i,y):x.moveTo(36,y)}x.stroke();x.fillStyle=G+'.75)';for(let i=0;i<5;i++)x.fillRect(40+i*28,40,18,6)}
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t}
+function buildArchitecture(){
+ const A=hub.arch={holos:[],rings:[]};
+ const obsidian=new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.65,roughness:.3,envMap:hub.env});
+ const goldLine=new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.85});
+ // Outer rim of the floor.
+ const rimFloor=new THREE.Mesh(new THREE.RingGeometry(46,49,160,1),obsidian);rimFloor.rotation.x=-Math.PI/2;rimFloor.position.y=.01;hubScene.add(rimFloor);
+ hubScene.add(flatRing(45.9,.1,'#F0C674',.7,.03));
+ // Colonnade framing the open sky, with openings toward the hidden areas.
+ const angles=[];for(let i=0;i<32;i++){const a=i/32*Math.PI*2;if(GAP_ANGLES.some(g=>Math.abs(Math.atan2(Math.sin(a-g),Math.cos(a-g)))<.13))continue;angles.push(a)}
+ const H=26,pil=new THREE.InstancedMesh(new THREE.CylinderGeometry(.55,.8,H,8),obsidian,angles.length),strip=new THREE.InstancedMesh(new THREE.BoxGeometry(.07,H-5,.07),goldLine,angles.length),base=new THREE.InstancedMesh(new THREE.BoxGeometry(2.2,1,2.2),obsidian,angles.length),d=new THREE.Object3D();
+ angles.forEach((a,i)=>{const cx=Math.cos(a)*HUB_R,cz=Math.sin(a)*HUB_R;d.position.set(cx,H/2,cz);d.rotation.set(0,-a,0);d.updateMatrix();pil.setMatrixAt(i,d.matrix);d.position.set(Math.cos(a)*(HUB_R-.72),H/2,Math.sin(a)*(HUB_R-.72));d.updateMatrix();strip.setMatrixAt(i,d.matrix);d.position.set(cx,.5,cz);d.updateMatrix();base.setMatrixAt(i,d.matrix)});
+ hubScene.add(pil,strip,base);hub.pillars=angles.map(a=>({x:Math.cos(a)*HUB_R,z:Math.sin(a)*HUB_R,r:1.4}));
+ // Monumental lintel ring and floating halo rings overhead.
+ const lintel=new THREE.Mesh(new THREE.TorusGeometry(HUB_R,.75,12,220),obsidian);lintel.rotation.x=Math.PI/2;lintel.position.y=H+.4;hubScene.add(lintel);
+ const lg=new THREE.Mesh(new THREE.TorusGeometry(HUB_R-.8,.05,6,240),goldLine);lg.rotation.x=Math.PI/2;lg.position.y=H-.4;hubScene.add(lg);
+ for(const [r,y,c,op,tilt] of [[52,36,'#F0C674',.5,.05],[59,43,'#7FE0FF',.25,-.07],[38,48,'#F0C674',.3,.1]]){const m=new THREE.Mesh(new THREE.TorusGeometry(r,.1,6,260),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));m.rotation.set(Math.PI/2+tilt,0,0);m.position.y=y;hubScene.add(m);A.rings.push(m)}
+ // Floor inlays: thin gold and blue rings.
+ hubScene.add(flatRing(12,.08,'#F0C674',.5),flatRing(22.5,.06,'#F0C674',.35),flatRing(31,.06,'#7FE0FF',.28),flatRing(40,.1,'#F0C674',.45));
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2,m=new THREE.Mesh(new THREE.BoxGeometry(.05,.01,4.5),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.3,depthWrite:false}));m.position.set(Math.cos(a)*8.6,.02,Math.sin(a)*8.6);m.rotation.y=-a+Math.PI/2;hubScene.add(m)}
+ // Elegant curved pathways with illuminated gold edges.
+ const pathMat=new THREE.MeshStandardMaterial({color:'#121936',metalness:.55,roughness:.3,envMap:hub.env});
+ const V=(x,z)=>new THREE.Vector3(x,0,z),paths=[[V(0,40),V(2.4,30),V(-2.4,20),V(0,12.3)],[V(0,-12.3),V(1.8,-16.5),V(-1.6,-20.5),V(0,-24)],[V(-10.9,-5),V(-15,-9.6),V(-18.2,-8.3),V(-21.4,-9.5)],[V(10.9,-5),V(15,-9.6),V(18.2,-8.3),V(21.4,-9.5)]];
+ for(const pts of paths){const c=new THREE.CatmullRomCurve3(pts);hubScene.add(new THREE.Mesh(ribbon(c,3.2,80,.015),pathMat));edgeTubes(c,3.2,.04,goldLine,hubScene)}
+ // A few holographic interfaces.
+ const holoSpots=[[7.5,3.4,26,-.35,0],[-14,3.6,-21,.9,1],[14,3.6,-21,-.9,2],[-6.5,3.4,-23,.25,1]];
+ holoSpots.forEach(([x,y,z,ry,v],i)=>{const g=new THREE.Group();g.position.set(x,y,z);g.rotation.y=ry;const m=new THREE.MeshBasicMaterial({map:holoTexture(v),transparent:true,opacity:.5,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});g.add(new THREE.Mesh(new THREE.PlaneGeometry(4.2,2.6),m));
+  const gauge=new THREE.Mesh(new THREE.RingGeometry(.62,.66,64,1,0,4.2),new THREE.MeshBasicMaterial({color:i%2?'#F0C674':'#7FE0FF',transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide}));gauge.position.set(1.3,.55,.05);g.add(gauge);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,y-1.3,6),goldLine);stem.position.y=-(y-1.3)/2-1.3;g.add(stem);hubScene.add(g);A.holos.push({g,m,gauge,y,ph:i*1.7})});
+ // Delicate neural connections from the central intelligence to each destination.
+ const curves=[];for(const d of DEST)for(const k of [0,1]){const a=new THREE.Vector3(CORE.x,CORE.y,CORE.z),b=new THREE.Vector3(d.x,d.y,d.z),m=a.clone().lerp(b,.5);m.y+=5+k*3;m.x+=(k?-1:1)*2;const dir=b.clone().sub(a).normalize();curves.push([a.clone().addScaledVector(dir,CORE.r*.9),m,b.clone().addScaledVector(dir,-d.r*.92)])}
+ const links=new THREE.Points(curveCloud(curves,coarse?90:140,i=>i%2?1:0),pulseMat(.9,10));links.frustumCulled=false;hubScene.add(links);
+ const lineMat=new THREE.LineBasicMaterial({color:'#7FE0FF',transparent:true,opacity:.22,depthWrite:false});for(const c of curves)hubScene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(c).getPoints(80)),lineMat));
+}
+function animateArchitecture(dt){const A=hub.arch;if(!A)return;A.rings.forEach((m,i)=>{m.rotation.z+=dt*(i%2?-.01:.014)*motion});
+ for(const h of A.holos){h.g.position.y=h.y+Math.sin(time*.6+h.ph)*.08*motion;h.m.opacity=.44+.06*Math.sin(time*1.3+h.ph)+.03*Math.sin(time*7.1+h.ph);h.gauge.rotation.z-=dt*.5*motion}}
 // Walkable area and obstacles.
 const COLLIDE=[{x:0,z:0,r:5.4}].concat(DEST.map(d=>({x:d.x,z:d.z,r:6.2})));
-function walkable(x,z){if(Math.hypot(x,z)>40)return false;for(const c of COLLIDE)if(Math.hypot(x-c.x,z-c.z)<c.r)return false;return true}
+function walkable(x,z){if(Math.hypot(x,z)>42)return false;for(const c of COLLIDE)if(Math.hypot(x-c.x,z-c.z)<c.r)return false;return true}
 
 // ================= State, input, loop =================
 let state='brain',current=brainScene,E=0,skipT=-1,idle=0;
@@ -280,6 +334,8 @@ function updateHub(dt){
 function animateHub(dt){if(!hubBuilt)return;
  for(const s of hub.spheres){s.s.rotation.y+=dt*.05*motion;s.ring.rotation.z+=dt*.08*motion;s.g.position.y=s.d.y+Math.sin(time*.5+s.d.x)*.35*motion}
  hub.core.rotation.y+=dt*.1*motion;
+ for(const s of hub.spheres){s.mirror.position.y=-s.g.position.y;s.mirror.rotation.y=s.s.rotation.y}if(hub.coreMirror)hub.coreMirror.rotation.y=hub.core.rotation.y;
+ animateArchitecture(dt);
  // Labels follow their destination spheres.
  camera.updateMatrixWorld();
  for(const s of hub.spheres){_v.set(s.d.x,s.g.position.y+s.d.r+2.2,s.d.z).project(camera);const dist=Math.hypot(P.x-s.d.x,P.z-s.d.z);const vis=_v.z<1&&current===hubScene&&state!=='leave'?smooth(95,40,dist):0;
@@ -298,7 +354,7 @@ function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta()
  if(current===hubScene)animateHub(dt);
  updatePointScale();renderer.render(current,camera);quality(dt)}
 // Prebuild the hub and warm up shaders after the brain is showing, so the entrance has no hitch.
-setTimeout(()=>{try{buildHub();renderer.compile(tunnelScene,camera);const prev=cosmos.parent;hubScene.add(cosmos);renderer.compile(hubScene,camera);if(prev)prev.add(cosmos)}catch(e){}},1200);
+setTimeout(()=>{try{buildHub();renderer.compile(tunnelScene,camera);const prev=cosmos.parent;hubScene.add(cosmos);renderer.compile(hubScene,camera);if(prev)prev.add(cosmos)}catch(e){console.warn(e)}},1200);
 frame();
 })();
 </script>
