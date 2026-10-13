@@ -27,7 +27,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 #exit:hover,#exit:focus-visible{color:var(--ink);border-color:rgba(127,224,255,.5);outline:none}
 #labels{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
 .lbl::after{content:'';display:block;margin:5px auto 0;width:46%;height:1px;background:linear-gradient(90deg,transparent,rgba(240,198,116,.9),transparent);box-shadow:0 0 8px rgba(240,198,116,.5)}
-.lbl{position:absolute;left:0;top:0;text-align:center;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(18px,2.2vw,25px);line-height:1.15;letter-spacing:.08em;color:#F4F6FF;padding:6px 16px 7px;border-radius:999px;background:rgba(7,9,20,.58);border:1px solid rgba(240,198,116,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);text-shadow:0 1px 10px rgba(5,6,15,.9);white-space:nowrap;opacity:0;will-change:transform,opacity}
+.lbl{position:absolute;left:0;top:0;text-align:center;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(18px,2.2vw,25px);line-height:1.15;letter-spacing:.08em;color:#F4F6FF;padding:6px 16px 7px;border-radius:999px;background:rgba(7,9,20,.66);border:1px solid rgba(240,198,116,.28);text-shadow:0 1px 10px rgba(5,6,15,.9);white-space:nowrap;opacity:0;will-change:transform,opacity}
 #dest{pointer-events:auto;position:absolute;left:50%;bottom:max(28px,calc(env(safe-area-inset-bottom) + 16px));transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:10px 10px 10px 20px;border-radius:99px;border:1px solid var(--line);background:rgba(10,14,32,.72);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(0,0,0,.45);transition:opacity .45s ease}
 #destName{font:600 21px/1 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;white-space:nowrap}
 #destGo{border:1px solid rgba(127,224,255,.4);background:linear-gradient(100deg,var(--signal),#5A9BFF);color:#fff;font:700 13px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;padding:11px 18px;border-radius:99px;cursor:pointer}
@@ -531,7 +531,7 @@ const pinchDist=()=>{const a=[...ptrs.values()];return Math.hypot(a[0].x-a[1].x,
 cv.addEventListener('pointerdown',e=>{try{cv.setPointerCapture(e.pointerId)}catch(_){}ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()});if(ptrs.size===2)pinch0=pinchDist();idle=0;rotVel.x=rotVel.y=0;requestSkip()});
 cv.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
  if(state==='brain'){if(ptrs.size===1){const k=.0055;rotateBrain(dx*k,dy*k);rotVel.x=dx*k;rotVel.y=dy*k;idle=0}else if(ptrs.size===2){const d=pinchDist();zoom.t=clamp(zoom.t+(d-pinch0)*.0032,-.3,1);pinch0=d}}
- else if(state==='hub'&&e.pointerId===ptrs.keys().next().value){P.yawT-=dx*.0045;P.pitchT=clamp(P.pitchT-dy*.0035,-.6,.65)}});
+ else if(state==='hub'&&e.pointerId===ptrs.keys().next().value){const lk=camera.fov*Math.PI/180/innerHeight*1.05;P.yawT-=dx*lk;P.pitchT=clamp(P.pitchT-dy*lk,-.6,.65)}});
 const endPtr=e=>{const p=ptrs.get(e.pointerId);if(e.type==='pointerup'&&p&&state==='hub'&&Math.hypot(e.clientX-p.sx,e.clientY-p.sy)<10&&performance.now()-p.t<350)tapHub(e.clientX,e.clientY);ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0};
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('wheel',e=>{e.preventDefault();if(state==='brain')zoom.t=clamp(zoom.t-e.deltaY*.0011,-.3,1)},{passive:false});
@@ -575,7 +575,7 @@ function updateHub(dt){
  const nx=P.x+(fx*my+rx*mx)*sp,nz=P.z+(fz*my+rz*mx)*sp;
  if(walkable(nx,nz)){P.x=nx;P.z=nz}else if(walkable(nx,P.z))P.x=nx;else if(walkable(P.x,nz))P.z=nz;
  let bob=0;const mag=Math.min(1,Math.hypot(mx,my));if(mag>.08&&!reduceMotion){P.phase+=dt*8*mag;bob=Math.sin(P.phase)*.03*mag}
- const k=Math.min(1,dt*12);P.yaw+=(P.yawT-P.yaw)*k;P.pitch+=(P.pitchT-P.pitch)*k;
+ const k=1-Math.exp(-dt/.035);P.yaw+=(P.yawT-P.yaw)*k;P.pitch+=(P.pitchT-P.pitch)*k;
  camera.position.set(P.x,EYE+bob,P.z);camera.rotation.set(P.pitch,P.yaw,0)}
 function animateHub(dt){if(!hubBuilt)return;
  for(const s of hub.spheres){s.s.rotation.y+=dt*.03*motion;for(const f of s.s.userData.anim)f(time,dt);s.rings.forEach((m,i)=>{m.rotation.z+=dt*(.05+.03*i)*(i%2?-1:1)*motion});s.g.position.y=s.d.y+Math.sin(time*.898+s.ph)*.3*motion}
@@ -588,7 +588,7 @@ function animateHub(dt){if(!hubBuilt)return;
  // Labels follow their destination spheres.
  camera.updateMatrixWorld();
  for(const s of hub.spheres){_v.set(s.d.x,s.g.position.y-s.d.r-1.6,s.d.z).project(camera);const dist=Math.hypot(P.x-s.d.x,P.z-s.d.z);const vis=_v.z<1&&current===hubScene&&state!=='leave'?smooth(95,40,dist):0;
-  s.el.style.opacity=vis.toFixed(3);if(vis>0)s.el.style.transform='translate('+((_v.x*.5+.5)*innerWidth).toFixed(1)+'px,'+((-_v.y*.5+.5)*innerHeight).toFixed(1)+'px) translate(-50%,0) scale('+(1+.12*s.hover).toFixed(3)+')'}}
+  const op=vis.toFixed(2);if(s.lo!==op){s.el.style.opacity=op;s.lo=op}if(vis>0){const tr='translate3d('+((_v.x*.5+.5)*innerWidth).toFixed(0)+'px,'+((-_v.y*.5+.5)*innerHeight).toFixed(0)+'px,0) translate(-50%,0) scale('+(1+.12*s.hover).toFixed(2)+')';if(s.lt!==tr){s.el.style.transform=tr;s.lt=tr}}}}
 let curDest=null;function setDest(s){if(s===curDest)return;curDest=s;const el=$('dest');if(s){$('destName').textContent=s.d.name;$('destGo').textContent='Enter '+s.d.name+' →';el.classList.remove('hide')}else el.classList.add('hide')}
 const lerpAngle=(a,b,t)=>a+Math.atan2(Math.sin(b-a),Math.cos(b-a))*t;
 let fly=null;
