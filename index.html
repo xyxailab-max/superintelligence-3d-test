@@ -180,7 +180,7 @@ crystalMesh(shaped(coarse?4:5,cerebellum));
  const nd=pointCloud(nodes.p,nodes.c,nodes.s,pointsMat({opacity:1}));nd.renderOrder=2;brain.add(nd);
  const dp=[],dc=[],ds=[];for(let i=0;i<(coarse?300:500);i++){let p;do{p=new THREE.Vector3((rand()*2-1)*.6,(rand()*2-1)*.46+.04,(rand()*2-1)*.76)}while(!inside(p));dp.push(p.x,p.y,p.z);dc.push(BLUE[0]*.5,BLUE[1]*.5,BLUE[2]*.5);ds.push(.006+rand()*.008)}
  const du=pointCloud(dp,dc,ds,pointsMat({opacity:.6}));du.renderOrder=2;brain.add(du)})();
-const brainHalo=halo('#7FE0FF',3.4,.3);brainHalo.renderOrder=0;brainScene.add(brainHalo);
+const brainHalo=halo('#7FE0FF',3.4,.3);brainHalo.renderOrder=0;brainScene.add(brainHalo);trueColors(brainScene);
 const brainQ0=new THREE.Quaternion().setFromEuler(new THREE.Euler(.18,-1.05,0,'YXZ'));brain.quaternion.copy(brainQ0);
 
 // Fit the brain to ~70% of the shorter screen side.
@@ -216,10 +216,10 @@ function shellMat(c){return new THREE.ShaderMaterial({transparent:true,depthWrit
  fragmentShader:'uniform vec3 uC;uniform float uHover;varying vec3 vN,vW;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.4),rim=pow(1.-ndv,6.);vec3 L=normalize(vec3(-.4,.8,.45));float sp=pow(max(dot(reflect(-L,N),V),0.),60.);vec3 col=uC*(.10+fr*.9)+mix(uC,vec3(1.),.5)*rim*.8+vec3(1.)*sp*.6;float a=(.08+fr*.55+rim*.25+sp*.5)*(.85+.3*uHover);gl_FragColor=vec4(col,min(a,.95));}'})}
 let hubBuilt=false;const hub={spheres:[],labels:[]};
 function buildHub(){if(hubBuilt)return;hubBuilt=true;
- hubScene.add(new THREE.HemisphereLight('#3B4C8F','#05060F',.65));const k=new THREE.DirectionalLight('#DCE6FF',.7);k.position.set(-30,50,40);hubScene.add(k);
+ hubScene.add(new THREE.HemisphereLight('#5A6DB8','#0A1022',1.05));const k=new THREE.DirectionalLight('#E4ECFF',1.0);k.position.set(-30,50,40);hubScene.add(k);const fill=new THREE.DirectionalLight('#7FE0FF',.35);fill.position.set(25,14,60);hubScene.add(fill);
  // Environment reflections from the cosmos.
  const pm=new THREE.PMREMGenerator(renderer),tmp=new THREE.Scene(),prev=cosmos.parent;tmp.add(cosmos);hub.env=pm.fromScene(tmp,0,.1,2000).texture;pm.dispose();if(prev)prev.add(cosmos);
- hub.floorMat=new THREE.MeshStandardMaterial({color:'#0A0E1F',metalness:.65,roughness:.24,envMap:hub.env,envMapIntensity:1,transparent:true,opacity:.74});
+ hub.floorMat=new THREE.MeshStandardMaterial({color:'#0A1022',metalness:.55,roughness:.28,envMap:hub.env,envMapIntensity:1.25,transparent:true,opacity:.76});
  const floor=new THREE.Mesh(new THREE.CircleGeometry(46,128),hub.floorMat);floor.rotation.x=-Math.PI/2;floor.renderOrder=-1;hubScene.add(floor);
  const lab=$('labels');
  for(const d of DEST){const g=new THREE.Group();g.position.set(d.x,d.y,d.z);hubScene.add(g);
@@ -228,18 +228,20 @@ function buildHub(){if(hubBuilt)return;hubBuilt=true;
   const mp=[],mc=[],ms=[],c1=new THREE.Color(d.c),c2=new THREE.Color(d.c2);for(let i=0;i<(coarse?140:220);i++){const v=new THREE.Vector3(randn(),randn(),randn()).normalize().multiplyScalar(d.r*(.8+rand()*.15)),k=rand()<.3?c2:c1;mp.push(v.x,v.y,v.z);mc.push(k.r,k.g,k.b);ms.push(.1+rand()*.22)}const motes=pointCloud(mp,mc,ms,pointsMat({opacity:.85}));s.add(motes);
   const rings=[[1.22,.045,'#F0C674',.6,[1.2,.2,.3]],[1.36,.03,d.c,.4,[.5,1.1,-.4]],[1.12,.025,'#E9EDFF',.25,[1.7,-.6,.9]]].map(([k,t,c,op,r])=>{const m=new THREE.Mesh(new THREE.TorusGeometry(d.r*k,t,8,200),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));m.rotation.set(r[0],r[1],r[2]);g.add(m);return m});const ring=rings[0];
   const h=halo(d.c,d.r*3.4,.22);g.add(h);
-  const L=new THREE.PointLight(d.c,.9,45,2);g.add(L);
+  const L=new THREE.PointLight(d.c,1.6,80,2);g.add(L);
   const land=new THREE.Mesh(new THREE.RingGeometry(7.5,7.8,128),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.5,depthWrite:false}));land.rotation.x=-Math.PI/2;land.position.set(d.x,.03,d.z);hubScene.add(land);
   const el=document.createElement('div');el.className='lbl';el.textContent=d.name;lab.appendChild(el);
   const mirror=new THREE.Mesh(s.geometry,energyMat(d.c,d.c2,.55,THREE.DoubleSide));mirror.scale.y=-1;mirror.position.set(d.x,-d.y,d.z);hubScene.add(mirror);
   hub.spheres.push({d,g,s,shell,ring,rings,h,L,el,mirror,u:s.material.uniforms,su:shell.material.uniforms,hover:0,ph:rand()*6.28})}
  const cg=new THREE.Group();cg.position.set(CORE.x,CORE.y,CORE.z);hubScene.add(cg);cg.add(new THREE.Mesh(new THREE.SphereGeometry(CORE.r,64,48),energyMat('#7FE0FF','#F0C674')));cg.add(halo('#9FE3FF',CORE.r*4,.28));cg.add(new THREE.PointLight('#9FE3FF',.9,30,2));hub.core=cg;
  const cm=new THREE.Mesh(cg.children[0].geometry,energyMat('#7FE0FF','#F0C674',.55,THREE.DoubleSide));cm.scale.y=-1;cm.position.set(CORE.x,-CORE.y,CORE.z);hubScene.add(cm);hub.coreMirror=cm;
- const ped=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.8,1.1,64),new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.7,roughness:.3,envMap:hub.env}));ped.position.y=.55;hubScene.add(ped);
+ const ped=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.8,1.1,64),new THREE.MeshStandardMaterial({color:'#232A4A',metalness:.5,roughness:.36,envMap:hub.env}));ped.position.y=.55;hubScene.add(ped);
  const rim=new THREE.Mesh(new THREE.TorusGeometry(4.22,.04,8,128),new THREE.MeshBasicMaterial({color:'#F0C674'}));rim.rotation.x=Math.PI/2;rim.position.y=1.12;hubScene.add(rim);
  buildArchitecture();
  buildHidden();
+ trueColors(hubScene);
 }
+function trueColors(root){root.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];for(const m of ms){if(m.userData.lin||!(m.isMeshBasicMaterial||m.isLineBasicMaterial||m.isSpriteMaterial))continue;if(m.color&&!m.vertexColors)m.color.convertSRGBToLinear();m.userData.lin=1}})}
 
 // ================= Hub architecture: colonnade, rings, floor inlays, pathways, holograms, neural links =================
 const HUB_R=44,GAP_ANGLES=[Math.atan2(34,-62),Math.atan2(34,62),Math.atan2(-80,0)]; // openings toward the hidden neural areas
@@ -258,19 +260,21 @@ function holoTexture(variant){const c=document.createElement('canvas');c.width=5
  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t}
 function buildArchitecture(){
  const A=hub.arch={holos:[],rings:[]};
- const obsidian=new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.65,roughness:.3,envMap:hub.env});
+ const obsidian=new THREE.MeshStandardMaterial({color:'#232A4A',metalness:.5,roughness:.38,envMap:hub.env});
  const goldLine=new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.85});
  // Outer rim of the floor.
  const rimFloor=new THREE.Mesh(new THREE.RingGeometry(46,49,160,1),obsidian);rimFloor.rotation.x=-Math.PI/2;rimFloor.position.y=.01;hubScene.add(rimFloor);
  hubScene.add(flatRing(45.9,.1,'#F0C674',.7,.03));
  // Colonnade framing the open sky, with openings toward the hidden areas.
- const angles=[];for(let i=0;i<32;i++){const a=i/32*Math.PI*2;if(GAP_ANGLES.some(g=>Math.abs(Math.atan2(Math.sin(a-g),Math.cos(a-g)))<.13))continue;angles.push(a)}
- const H=26,pil=new THREE.InstancedMesh(new THREE.CylinderGeometry(.55,.8,H,8),obsidian,angles.length),strip=new THREE.InstancedMesh(new THREE.BoxGeometry(.07,H-5,.07),goldLine,angles.length),base=new THREE.InstancedMesh(new THREE.BoxGeometry(2.2,1,2.2),obsidian,angles.length),d=new THREE.Object3D();
- angles.forEach((a,i)=>{const cx=Math.cos(a)*HUB_R,cz=Math.sin(a)*HUB_R;d.position.set(cx,H/2,cz);d.rotation.set(0,-a,0);d.updateMatrix();pil.setMatrixAt(i,d.matrix);d.position.set(Math.cos(a)*(HUB_R-.72),H/2,Math.sin(a)*(HUB_R-.72));d.updateMatrix();strip.setMatrixAt(i,d.matrix);d.position.set(cx,.5,cz);d.updateMatrix();base.setMatrixAt(i,d.matrix)});
- hubScene.add(pil,strip,base);hub.pillars=angles.map(a=>({x:Math.cos(a)*HUB_R,z:Math.sin(a)*HUB_R,r:1.4}));
+ const angles=[];for(let i=0;i<24;i++){const a=(i+.5)/24*Math.PI*2;if(GAP_ANGLES.some(g=>Math.abs(Math.atan2(Math.sin(a-g),Math.cos(a-g)))<.13))continue;angles.push(a)}
+ const H=26,pil=new THREE.InstancedMesh(new THREE.CylinderGeometry(.38,.56,H,10),obsidian,angles.length),strip=new THREE.InstancedMesh(new THREE.BoxGeometry(.07,H-5,.07),goldLine,angles.length),base=new THREE.InstancedMesh(new THREE.BoxGeometry(1.6,.8,1.6),obsidian,angles.length),d=new THREE.Object3D();
+ angles.forEach((a,i)=>{const cx=Math.cos(a)*HUB_R,cz=Math.sin(a)*HUB_R;d.position.set(cx,H/2,cz);d.rotation.set(0,-a,0);d.updateMatrix();pil.setMatrixAt(i,d.matrix);d.position.set(Math.cos(a)*(HUB_R-.5),H/2,Math.sin(a)*(HUB_R-.5));d.updateMatrix();strip.setMatrixAt(i,d.matrix);d.position.set(cx,.5,cz);d.updateMatrix();base.setMatrixAt(i,d.matrix)});
+ hubScene.add(pil,strip,base);hub.pillars=angles.map(a=>({x:Math.cos(a)*HUB_R,z:Math.sin(a)*HUB_R,r:1.1}));
+ const cap=new THREE.InstancedMesh(new THREE.TorusGeometry(.5,.035,6,32),goldLine,angles.length);angles.forEach((a,i)=>{d.position.set(Math.cos(a)*HUB_R,H-.3,Math.sin(a)*HUB_R);d.rotation.set(Math.PI/2,0,0);d.updateMatrix();cap.setMatrixAt(i,d.matrix)});hubScene.add(cap);
  // Monumental lintel ring and floating halo rings overhead.
- const lintel=new THREE.Mesh(new THREE.TorusGeometry(HUB_R,.75,12,220),obsidian);lintel.rotation.x=Math.PI/2;lintel.position.y=H+.4;hubScene.add(lintel);
- const lg=new THREE.Mesh(new THREE.TorusGeometry(HUB_R-.8,.05,6,240),goldLine);lg.rotation.x=Math.PI/2;lg.position.y=H-.4;hubScene.add(lg);
+ const lintel=new THREE.Mesh(new THREE.TorusGeometry(HUB_R,.55,12,220),obsidian);lintel.rotation.x=Math.PI/2;lintel.position.y=H+.4;hubScene.add(lintel);
+ for(const [r,y,t] of [[HUB_R-.56,H+.4,.05],[HUB_R,H+.96,.04],[HUB_R,H-.16,.04]]){const m=new THREE.Mesh(new THREE.TorusGeometry(r,t,6,260),goldLine);m.rotation.x=Math.PI/2;m.position.y=y;hubScene.add(m)}
+ const lglow=new THREE.Mesh(new THREE.TorusGeometry(HUB_R-.6,.5,8,200),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.07,depthWrite:false,blending:THREE.AdditiveBlending}));lglow.rotation.x=Math.PI/2;lglow.position.y=H+.4;hubScene.add(lglow);
  for(const [r,y,c,op,tilt] of [[52,36,'#F0C674',.5,.05],[59,43,'#7FE0FF',.25,-.07],[38,48,'#F0C674',.3,.1]]){const m=new THREE.Mesh(new THREE.TorusGeometry(r,.1,6,260),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));m.rotation.set(Math.PI/2+tilt,0,0);m.position.y=y;hubScene.add(m);A.rings.push(m)}
  // Floor inlays: thin gold and blue rings.
  hubScene.add(flatRing(12,.08,'#F0C674',.5),flatRing(22.5,.06,'#F0C674',.35),flatRing(31,.06,'#7FE0FF',.28),flatRing(40,.1,'#F0C674',.45));
@@ -345,11 +349,11 @@ function rotateBrain(dx,dy){_qa.setFromAxisAngle(AY,dx);_qb.setFromAxisAngle(AX,
 function hubFov(){const a=camera.aspect;return a<.9?80:a<1.2?70:62}
 
 function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');buildHub()}
-function toHub(){current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.17;resetQuality()}
+function toHub(){renderer.toneMappingExposure=1.12;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.17;resetQuality()}
 function arriveHub(){state='hub';hud.hidden=false;hud.classList.remove('hide');veil.style.opacity=0;fadeEl.style.opacity=0}
 function requestSkip(){if(state==='enter'&&skipT<0)skipT=0}
 function exitHub(){if(state!=='hub')return;state='leave';E=0}
-function toBrain(){setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
+function toBrain(){renderer.toneMappingExposure=1;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
 
 // Pointers: brain = 1-finger rotate + pinch zoom; hub = swipe to look.
 const cv=renderer.domElement,ptrs=new Map();let pinch0=0;
@@ -400,7 +404,7 @@ function animateHub(dt){if(!hubBuilt)return;
  hub.core.rotation.y+=dt*.1*motion;
  for(const s of hub.spheres){s.mirror.position.y=-s.g.position.y;s.mirror.rotation.y=s.s.rotation.y}if(hub.coreMirror)hub.coreMirror.rotation.y=hub.core.rotation.y;
  animateArchitecture(dt);animateHidden(dt);
- let near=null,nd=1e9;for(const s of hub.spheres){const dd=Math.hypot(P.x-s.d.x,P.z-s.d.z),tg=(state==='hub'||state==='fly')&&dd<24?1:0;if(tg&&dd<nd){near=s;nd=dd}s.hover+=(tg-s.hover)*Math.min(1,dt*3);s.u.uHover.value=s.hover;s.su.uHover.value=s.hover;s.h.material.opacity=.22+.2*s.hover;s.L.intensity=.9+.8*s.hover;s.rings.forEach(m=>m.scale.setScalar(1+.07*s.hover));s.ring.rotation.z+=dt*.25*s.hover*motion;s.s.rotation.y+=dt*.12*s.hover*motion}
+ let near=null,nd=1e9;for(const s of hub.spheres){const dd=Math.hypot(P.x-s.d.x,P.z-s.d.z),tg=(state==='hub'||state==='fly')&&dd<24?1:0;if(tg&&dd<nd){near=s;nd=dd}s.hover+=(tg-s.hover)*Math.min(1,dt*3);s.u.uHover.value=s.hover;s.su.uHover.value=s.hover;s.h.material.opacity=.22+.2*s.hover;s.L.intensity=1.6+.8*s.hover;s.rings.forEach(m=>m.scale.setScalar(1+.07*s.hover));s.ring.rotation.z+=dt*.25*s.hover*motion;s.s.rotation.y+=dt*.12*s.hover*motion}
  setDest(state==='hub'?near:null);
  // Labels follow their destination spheres.
  camera.updateMatrixWorld();
