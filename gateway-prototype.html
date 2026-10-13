@@ -1,0 +1,260 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Use Superintelligence — Gateway Prototype (v2)</title><meta name="theme-color" content="#070914"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet"><style>
+:root{--void:#070914;--deep:#05060F;--panel:#0E1226;--navy:#0A1640;--line:#232A4A;--ink:#E9EDFF;--mist:#9AA3C7;--aether:#7FE0FF;--gold:#F0C674;--signal:#3D7BFF}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Manrope,system-ui,-apple-system,sans-serif;color:var(--ink);background:radial-gradient(ellipse at 50% 35%,#0E1640 0%,var(--void) 55%,var(--deep) 100%)}
+canvas{display:block;touch-action:none}#ui{position:fixed;inset:0;pointer-events:none}
+#header{position:absolute;top:max(18px,env(safe-area-inset-top));left:18px;right:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#brand{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(19px,2.8vw,27px);font-weight:600;letter-spacing:.01em;background:linear-gradient(90deg,var(--aether),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+#topactions{display:flex;gap:8px}
+.pill{pointer-events:auto;border:1px solid var(--line);background:rgba(14,18,38,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--ink);border-radius:99px;padding:11px 16px;font:600 14px Manrope,system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.35);cursor:pointer}
+.pill:hover,.pill:focus-visible{border-color:rgba(127,224,255,.55);outline:none}
+#caption{position:absolute;top:76px;left:50%;transform:translateX(-50%);text-align:center;width:min(94vw,650px);font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(18px,2.4vw,23px);font-weight:500;font-style:italic;color:var(--ink);text-shadow:0 2px 14px rgba(5,6,15,.9)}
+#welcome{pointer-events:auto;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(90vw,470px);padding:30px 28px;background:rgba(10,14,32,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:24px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.55),inset 0 1px 0 rgba(127,224,255,.08)}
+h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(28px,5vw,40px);margin:0 0 10px;color:var(--ink);letter-spacing:.01em}
+p{line-height:1.55;margin:10px 0 20px;color:var(--mist)}
+.choices{display:flex;gap:12px}
+.choice{flex:1;padding:18px 8px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#121834,#0A1640);font:700 16px Manrope,system-ui,sans-serif;color:var(--ink);cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.choice span{display:block;font-size:34px;margin-bottom:8px;background:linear-gradient(135deg,var(--aether),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.choice:focus,.choice:hover{border-color:var(--aether);box-shadow:0 0 0 1px rgba(127,224,255,.25),0 8px 30px rgba(127,224,255,.12);outline:none}
+#controls{position:absolute;inset:auto 0 max(20px,env(safe-area-inset-bottom)) 0;display:flex;justify-content:space-between;align-items:end;padding:0 25px}
+#stick{pointer-events:auto;touch-action:none;position:relative;width:118px;height:118px;border-radius:50%;background:rgba(14,18,38,.55);border:1px solid rgba(127,224,255,.28);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 6px 30px rgba(0,0,0,.4),inset 0 0 24px rgba(127,224,255,.06)}
+#knob{position:absolute;left:35px;top:35px;width:45px;height:45px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#D8F6FF,var(--aether) 45%,var(--signal));box-shadow:0 0 16px rgba(127,224,255,.45)}
+#right{display:flex;gap:10px;align-items:end}
+#hint{font-size:12px;max-width:130px;text-align:right;color:var(--mist);text-shadow:0 1px 6px rgba(5,6,15,.9)}
+#enter{font-size:14px;background:linear-gradient(100deg,var(--signal),#5A9BFF);color:#fff;border:1px solid rgba(127,224,255,.4);display:none}
+#status{position:absolute;bottom:165px;left:50%;transform:translateX(-50%);text-align:center;font:700 13px Manrope,system-ui,sans-serif;letter-spacing:.16em;color:var(--gold);text-shadow:0 2px 12px rgba(5,6,15,.95);min-width:200px}
+#loading{position:absolute;inset:0;display:grid;place-items:center;background:var(--void);color:var(--mist);font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-style:italic;z-index:5}
+#error{display:none;position:absolute;inset:15%;background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:20px;border-radius:16px;z-index:6}
+#controls[hidden],#welcome[hidden],#loading[hidden]{display:none}
+@media(max-width:500px){#brand{font-size:17px}#topactions .pill{padding:9px 10px;font-size:12px}#caption{top:68px}#controls{padding:0 14px}#stick{width:105px;height:105px}#knob{left:30px;top:30px;width:41px;height:41px}#hint{display:none}}
+</style></head><body><div id="loading">Preparing your 3D universe…</div><div id="error"></div><div id="ui"><div id="header"><div id="brand">✦ UseSuperintelligence</div><div id="topactions"><button id="cinema" class="pill">▶ Cinematic</button><button id="reset" class="pill">↺ Restart</button></div></div><div id="caption">Three worlds. One intelligence. Your next chapter.</div><div id="welcome"><h1>Use Superintelligence</h1><p>Step through the Neural Gateway into three worlds.</p><div class="choices"><button class="choice" data-start="cinematic"><span>✦</span>Begin the journey</button><button class="choice" data-start="explore"><span>◎</span>Explore freely</button></div><p style="font-size:12px;margin-bottom:0">Joystick to move · Drag anywhere else to look around</p></div><div id="controls" hidden><div id="stick"><div id="knob"></div></div><div id="right"><span id="hint">Drag to look around<br>Walk toward a portal</span><button id="enter" class="pill">ENTER WORLD →</button></div></div><div id="status"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script>
+(function(){'use strict';const $=id=>document.getElementById(id);if(!window.THREE){$('loading').hidden=true;$('error').style.display='block';$('error').textContent='3D library could not load. Open this preview with an internet connection in Safari.';return}let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});}catch(e){$('loading').hidden=true;$('error').style.display='block';$('error').textContent='3D graphics are not available in this browser.';return}const coarse=!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches);renderer.setPixelRatio(Math.min(devicePixelRatio||1,coarse?1.5:1.75));renderer.setSize(innerWidth,innerHeight);renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;document.body.insertBefore(renderer.domElement,$('ui'));
+const scene=new THREE.Scene();scene.background=new THREE.Color('#070914');scene.fog=new THREE.FogExp2('#0C1438',.0065);const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,700);
+// Balanced cosmic lighting: soft navy sky light, cool key, glow-blue rim from behind the portals, faint gold fill.
+scene.add(new THREE.HemisphereLight('#3B4C8F','#05060F',.75));scene.add(new THREE.AmbientLight('#1A2350',.35));
+const key=new THREE.DirectionalLight('#DCE6FF',1.05);key.position.set(-20,35,25);scene.add(key);
+const rim=new THREE.DirectionalLight('#7FE0FF',.85);rim.position.set(18,22,-60);scene.add(rim);
+const goldFill=new THREE.DirectionalLight('#F0C674',.4);goldFill.position.set(30,6,30);scene.add(goldFill);
+// Deep-space sky dome (navy horizon to near-black zenith, faint gold and blue haze behind the worlds). Not affected by fog.
+const sky=new THREE.Mesh(new THREE.SphereGeometry(520,32,16),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,
+vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+fragmentShader:'varying vec3 vP;void main(){float h=vP.y;vec3 top=vec3(.020,.024,.059),mid=vec3(.027,.035,.078),hor=vec3(.050,.078,.220);vec3 c=mix(hor,mid,smoothstep(-.05,.28,h));c=mix(c,top,smoothstep(.28,.9,h));float d=max(dot(vP,normalize(vec3(0.,.10,-1.))),0.);c+=vec3(.94,.78,.45)*.05*pow(d,10.)+vec3(.50,.88,1.)*.045*pow(d,3.);gl_FragColor=vec4(c,1.);}'}));
+sky.renderOrder=-1;scene.add(sky);
+const stars=(()=>{const N=coarse?1400:2200,pos=new Float32Array(N*3),col=new Float32Array(N*3),pal=[[.91,.93,1],[.91,.93,1],[.5,.88,1],[.94,.78,.45]];for(let i=0;i<N;i++){let y=Math.random()*1.15-.15,a=Math.random()*Math.PI*2,r=Math.sqrt(1-y*y),R=470;pos[i*3]=Math.cos(a)*r*R;pos[i*3+1]=y*R;pos[i*3+2]=Math.sin(a)*r*R;let p=pal[(Math.random()*pal.length)|0],b=.35+Math.random()*.65;col[i*3]=p[0]*b;col[i*3+1]=p[1]*b;col[i*3+2]=p[2]*b}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));const o=new THREE.Points(g,new THREE.PointsMaterial({size:1.5,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.95,depthWrite:false,fog:false}));scene.add(o);return o})();
+
+const mat=(c,metal=0,rough=.45)=>new THREE.MeshStandardMaterial({color:c,metalness:metal,roughness:rough});const white=mat('#4A5689',.3,.38),silver=mat('#9AA6CE',.45,.3),floor=mat('#121A3A',.2,.45);const orb=(c,i=.35)=>new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:i,metalness:.3,roughness:.3});const orbBlue=orb('#7FE0FF'),orbGold=orb('#F0C674'),orbViolet=orb('#9B6BFF',.3);function mesh(g,m,x=0,y=0,z=0,parent=scene){let o=new THREE.Mesh(g,m);o.position.set(x,y,z);parent.add(o);return o}function cyl(rt,rb,h,m,x,y,z){return mesh(new THREE.CylinderGeometry(rt,rb,h,32),m,x,y,z)}function sphere(r,m,x,y,z,parent){return mesh(new THREE.SphereGeometry(r,20,14),m,x,y,z,parent)}function glow(c){return new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.75,depthWrite:false})}function ring(radius,tube,m,x,y,z,rotation=0){let o=mesh(new THREE.TorusGeometry(radius,tube,10,72),m,x,y,z);o.rotation.x=rotation;return o}
+// Reflective causeway, bright plaza and floating platforms.
+mesh(new THREE.BoxGeometry(15,.55,95),floor,0,-.34,10);for(let i=-1;i<=1;i+=2){mesh(new THREE.BoxGeometry(.12,.12,95),glow('#7FE0FF'),i*7.3,.06,10);for(let z=-30;z<57;z+=6){sphere(.16,glow('#F0C674'),i*7.2,.28,z)}}cyl(37,37,1.3,white,0,-1,-43);ring(29,.2,glow('#7FE0FF'),0,-.25,-43,Math.PI/2);for(let i=0;i<24;i++){let a=i*Math.PI/12,r=34;sphere(1.6,i%2?orbGold:orbBlue,Math.cos(a)*r,2,Math.sin(a)*r-43)}
+// Stylized brain floating behind the gates.
+const brain=new THREE.Group();brain.position.set(0,17,-75);scene.add(brain);const brainMat=new THREE.MeshPhysicalMaterial({color:'#5E8FD8',emissive:'#3D7BFF',emissiveIntensity:.4,transparent:true,opacity:.62,roughness:.22,metalness:.35});for(let s of [-1,1])for(let i=0;i<24;i++){let a=i*2.399,rr=Math.sqrt((i+.5)/24);let x=s*(2.6+Math.cos(a)*rr*5),y=Math.sin(a)*rr*5,z=Math.cos(a*.7)*2.5;sphere(1.7+Math.random()*.7,brainMat,x,y,z,brain)}for(let i=0;i<5;i++){let r=ring(8+i*.55,.035,glow(i%2?'#F0C674':'#7FE0FF'),0,0,0);brain.add(r);r.position.set(0,0,0);r.rotation.y=i*.55}
+// Three arch portals, with visible world scenery inside each.
+const portals=[{name:'FOR CREATORS',c:'#9B6BFF',x:-18,link:'marketplace.html#sell'},{name:'MARKETPLACE',c:'#F0C674',x:0,link:'marketplace.html'},{name:'AGENT HUB',c:'#7FE0FF',x:18,link:'agents.html'}];let gateMeshes=[];const archPath=new THREE.CatmullRomCurve3([new THREE.Vector3(-6,0,0),new THREE.Vector3(-6,7,0),new THREE.Vector3(-4.8,12,0),new THREE.Vector3(0,14,0),new THREE.Vector3(4.8,12,0),new THREE.Vector3(6,7,0),new THREE.Vector3(6,0,0)]);for(const p of portals){let g=new THREE.Group();g.position.set(p.x,0,-43);scene.add(g);let arch=mesh(new THREE.TubeGeometry(archPath,80,.38,12,false),white,0,0,0,g);let bright=mesh(new THREE.TubeGeometry(archPath,80,.14,8,false),glow(p.c),0,0,.45,g);let inside=mesh(new THREE.PlaneGeometry(11.7,13.7),new THREE.MeshBasicMaterial({color:p.c,transparent:true,opacity:.22,side:THREE.DoubleSide,depthWrite:false}),0,6.7,-.4,g);inside.material.opacity=.18;for(let j=0;j<30;j++){let x=(Math.random()-.5)*10,y=1+Math.random()*12;let star=sphere(.08+Math.random()*.1,glow(p.c),x,y,-.1,g);star.userData.phase=Math.random()*7}let plinth=mesh(new THREE.BoxGeometry(13,.45,3),silver,0,.05,1.4,g);ring(6.7,.06,glow(p.c),0,7,-.1);gateMeshes.push({g,p,inside,bright});}
+// Readable labels using canvas textures.
+const labelJobs=[];function rrect(cx,x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
+function drawLabel(cx,text,c){cx.clearRect(0,0,1024,170);rrect(cx,8,8,1008,154,48);cx.fillStyle='rgba(10,14,32,.84)';cx.fill();cx.lineWidth=5;cx.strokeStyle=c;cx.stroke();cx.fillStyle='#E9EDFF';cx.font='600 82px "Cormorant Garamond", Georgia, serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(text.split('').join(' '),512,90)}
+function label(text,c){const c2=document.createElement('canvas');c2.width=1024;c2.height=170;const cx=c2.getContext('2d');drawLabel(cx,text,c);const tx=new THREE.CanvasTexture(c2);tx.encoding=THREE.sRGBEncoding;tx.anisotropy=4;labelJobs.push({cx,text,c,tx});return new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false})}
+if(document.fonts&&document.fonts.load)document.fonts.load('600 82px "Cormorant Garamond"').then(()=>labelJobs.forEach(j=>{drawLabel(j.cx,j.text,j.c);j.tx.needsUpdate=true})).catch(()=>{});for(const o of gateMeshes)mesh(new THREE.PlaneGeometry(10,1.65),label(o.p.name,o.p.c),0,15.8,1,o.g);
+// Decorative gardens and floating architecture.
+for(let side of [-1,1])for(let i=0;i<7;i++){let z=-52+i*13,x=side*(15+i%2*3);cyl(4.5,4.8,.7,white,x,1.5,z);cyl(.55,.8,3,white,x,3.2,z);sphere(2.5,i%2?orbGold:orbBlue,x,5.6,z);sphere(1.4,orbViolet,x+1.6,5,z+1);}
+
+// Visual upgrade: three distinct, explorable-looking worlds beyond the gateways.
+const luminous=(c,intensity=.7)=>new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:Math.min(intensity*.75,.55),metalness:.22,roughness:.3});
+const glass=(c,opacity=.52)=>new THREE.MeshPhysicalMaterial({color:c,transparent:true,opacity,metalness:.18,roughness:.1,side:THREE.DoubleSide,depthWrite:false});
+const rnd=(i,k=1)=>{let n=Math.sin(i*127.1+k*311.7)*43758.5453;return n-Math.floor(n)};
+function tower(x,z,h,color){
+  mesh(new THREE.CylinderGeometry(2.4,3.3,h,8),white,x,h/2-1,z);
+  mesh(new THREE.CylinderGeometry(2.5,2.5,.2,8),luminous(color,.8),x,h-1,z);
+  for(let q=0;q<3;q++)ring(2.7+q*.25,.06,glow(color),x,h*.45+q*1.1,z,Math.PI/2);
+}
+function island(x,z,r,color){
+  cyl(r,r+.7,.75,white,x,1.5,z);
+  cyl(r-.2,r-.2,.12,luminous(color,.35),x,1.94,z);
+  ring(r-.2,.13,glow(color),x,2.02,z,Math.PI/2);
+}
+for(let i=0;i<32;i++){
+  let x=(rnd(i,1)-.5)*115,z=-100+rnd(i,2)*150;
+  if(Math.abs(x)<34 && z>-60 && z<43)continue;
+  sphere(1.2+rnd(i,3)*2.4,glass(i%2?'#9AA3C7':'#7FE0FF',.14),x,18+rnd(i,4)*24,z);
+}
+// Creator sanctuary: flowering energy tree and white floating studios.
+island(-43,-75,14,'#9B6BFF');
+for(let i=0;i<5;i++){
+  let a=i*Math.PI*2/5, x=-43+Math.cos(a)*20,z=-75+Math.sin(a)*16;
+  island(x,z,4.8,'#B08CFF');
+  tower(x,z,4.5+i%2*2,'#9B6BFF');
+}
+cyl(1.5,2.5,14,white,-43,9,-75);
+for(let i=0;i<13;i++){
+  let a=i*2.4, h=14+rnd(i,7)*8,rad=3+rnd(i,8)*6;
+  let branch=mesh(new THREE.CylinderGeometry(.16,.55,rad,7),luminous('#B08CFF',.4),-43+Math.cos(a)*rad*.32,h-1,-75+Math.sin(a)*rad*.32);
+  branch.rotation.z=Math.cos(a)*.7;branch.rotation.x=Math.sin(a)*.7;
+  sphere(2.3+rnd(i,9)*1.6,glass(i%2?'#C77DFF':'#9B6BFF',.82),-43+Math.cos(a)*rad,h,-75+Math.sin(a)*rad);
+}
+for(let i=0;i<75;i++){
+  let a=rnd(i,10)*Math.PI*2,r=3+rnd(i,11)*12;
+  sphere(.07+rnd(i,12)*.15,glow(i%2?'#D9B8FF':'#9B6BFF'),-43+Math.cos(a)*r,8+rnd(i,13)*17,-75+Math.sin(a)*r);
+}
+// Golden marketplace: radiant civic plaza, colonnades, golden spires.
+island(0,-84,17,'#F0C674');
+for(let i=0;i<10;i++){
+  let a=i*Math.PI/5,x=Math.cos(a)*23,z=-84+Math.sin(a)*21;
+  island(x,z,4.4,'#F0C674');
+  tower(x,z,7+rnd(i,14)*7,'#F0C674');
+}
+cyl(4.3,6,13,white,0,8,-84);
+cyl(5.1,5.1,.35,luminous('#F0C674',.7),0,15,-84);
+sphere(3.6,glass('#F7DDA0',.85),0,19,-84);
+for(let i=0;i<4;i++)ring(5+i*1.4,.13,glow('#F0C674'),0,18,-84,Math.PI/2+i*.25);
+// Agent hub: blue holographic intelligence, orbiting data rings.
+island(43,-75,14,'#7FE0FF');
+for(let i=0;i<7;i++){
+  let a=i*Math.PI*2/7,x=43+Math.cos(a)*20,z=-75+Math.sin(a)*17;
+  island(x,z,4.2,'#9FE3FF');
+  tower(x,z,6+rnd(i,15)*8,'#3D7BFF');
+}
+cyl(1.2,2.6,12,white,43,8,-75);
+let aiCore=sphere(5.2,glass('#7FE0FF',.75),43,19,-75);
+for(let i=0;i<5;i++){
+  let orbitRing=ring(6.5+i*.75,.085,glow(i%2?'#7FE0FF':'#9FE3FF'),43,19,-75);
+  orbitRing.rotation.y=i*.43;orbitRing.rotation.x=i*.29;
+}
+for(let i=0;i<48;i++){
+  let a=i*2.399, y=19+(rnd(i,16)-.5)*13,rad=6+rnd(i,17)*5;
+  sphere(.07+rnd(i,18)*.12,glow('#7FE0FF'),43+Math.cos(a)*rad,y,-75+Math.sin(a)*rad);
+}
+// Glowing roadway inlays and sculptural pylons guide the eye toward the portals.
+for(let i=0;i<22;i++){
+  let z=35-i*3.6;
+  for(let side of [-1,1]){
+    sphere(.11,glow(i%2?'#7FE0FF':'#F0C674'),side*(4.5+i*.04),.12,z);
+  }
+}
+
+// ================= Signature Neural Gateway =================
+const reduceMotion=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const motionScale=reduceMotion?.3:1;
+const GATE={x:0,y:4.7,z:14};          // 14-unit outer diameter, ~9-unit clear opening, on the approach axis
+const gate=new THREE.Group();gate.position.set(GATE.x,GATE.y,GATE.z);scene.add(gate);
+const platinum=new THREE.MeshStandardMaterial({color:'#DDE8F2',metalness:.45,roughness:.28});
+const moonstone=new THREE.MeshStandardMaterial({color:'#4A5689',metalness:.35,roughness:.32});
+const gateU={uA:{value:.35},uT:{value:0},uS:{value:1}};
+function pointScale(){gateU.uS.value=innerHeight*renderer.getPixelRatio()*.866}pointScale();
+const gateGlows=[];
+function gGlow(c,base,delay){const m=new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0,depthWrite:false});gateGlows.push({m,base,delay});return m}
+function nodeMat(c,size){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+ uniforms:{uA:gateU.uA,uT:gateU.uT,uS:gateU.uS,uC:{value:new THREE.Color(c)},uSize:{value:size}},
+ vertexShader:'uniform float uS,uSize;attribute float seed;varying float vS;void main(){vS=seed;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=min(uS*uSize/max(-mv.z,.1),48.);gl_Position=projectionMatrix*mv;}',
+ fragmentShader:'uniform vec3 uC;uniform float uA,uT;varying float vS;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,0.,d);float tw=.65+.35*sin(uT*2.+vS*6.283);gl_FragColor=vec4(uC,a*uA*tw*.85);}'})}
+function gateRing(R,tube,body,glowC,nodeC,nodes,period,dir,zOff,delay){
+ const g=new THREE.Group();g.position.z=zOff;gate.add(g);
+ g.add(new THREE.Mesh(new THREE.TorusGeometry(R,tube,14,160),body));
+ for(const sd of [-1,1]){const inl=new THREE.Mesh(new THREE.TorusGeometry(R,tube*.32,8,160),gGlow(glowC,.85,delay));inl.position.z=sd*tube*.82;g.add(inl)}
+ const p=new Float32Array(nodes*6),se=new Float32Array(nodes*2);
+ for(let i=0;i<nodes*2;i++){const k=i%nodes,ang=k/nodes*Math.PI*2;p[i*3]=Math.cos(ang)*R;p[i*3+1]=Math.sin(ang)*R;p[i*3+2]=(i<nodes?1:-1)*(tube+.05);se[i]=Math.random()}
+ const ng=new THREE.BufferGeometry();ng.setAttribute('position',new THREE.BufferAttribute(p,3));ng.setAttribute('seed',new THREE.BufferAttribute(se,1));
+ g.add(new THREE.Points(ng,nodeMat(nodeC,tube*1.6)));
+ return {g,w:dir*Math.PI*2/period};
+}
+const rings=[
+ gateRing(6.75,.30,platinum,'#7FE0FF','#7FE0FF',48,60,1,0,0),       // outer: platinum, neural blue, 60 s / rev
+ gateRing(5.85,.20,moonstone,'#F0C674','#F0C674',36,85,-1,-.55,.25), // middle: moonstone, gold, 85 s / rev
+ gateRing(4.75,.22,platinum,'#7FE0FF','#F0C674',24,110,1,.45,.5)     // inner: platinum, blue + gold, 110 s / rev
+];
+// Dial ticks on the outer ring (one instanced draw call).
+(()=>{const n=36,im=new THREE.InstancedMesh(new THREE.BoxGeometry(.09,.55,.16),platinum,n),d=new THREE.Object3D();for(let i=0;i<n;i++){const ang=i/n*Math.PI*2,r=6.75+.3+.32;d.position.set(Math.cos(ang)*r,Math.sin(ang)*r,0);d.rotation.set(0,0,ang-Math.PI/2);d.updateMatrix();im.setMatrixAt(i,d.matrix)}rings[0].g.add(im)})();
+// Threshold plate where the rings meet the causeway.
+mesh(new THREE.BoxGeometry(15.2,.22,1.6),platinum,0,-.02,GATE.z);
+mesh(new THREE.BoxGeometry(14.6,.03,.08),gGlow('#7FE0FF',.9,0),0,.11,GATE.z+.55);
+mesh(new THREE.BoxGeometry(14.6,.03,.08),gGlow('#F0C674',.7,.25),0,.11,GATE.z-.55);
+// Neural core: a dark crystal that awakens, a shell of synapse points and a faint neural web.
+const core=new THREE.Group();gate.add(core);
+const coreMat=new THREE.MeshStandardMaterial({color:'#0E1640',emissive:'#7FE0FF',emissiveIntensity:.08,metalness:.3,roughness:.25});
+core.add(new THREE.Mesh(new THREE.IcosahedronGeometry(.62,1),coreMat));
+(()=>{const n=coarse?110:160,p=new Float32Array(n*3),se=new Float32Array(n),pts=[];for(let i=0;i<n;i++){const y=1-2*(i+.5)/n,r=Math.sqrt(1-y*y),ang=i*2.39996,R=1.15+Math.random()*.25;const v3=new THREE.Vector3(Math.cos(ang)*r*R,y*R,Math.sin(ang)*r*R);pts.push(v3);p[i*3]=v3.x;p[i*3+1]=v3.y;p[i*3+2]=v3.z;se[i]=Math.random()}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('seed',new THREE.BufferAttribute(se,1));core.add(new THREE.Points(g,nodeMat('#F0C674',.16)));
+ const l=[];for(let i=0;i<n;i++){for(let j=i+1;j<n&&l.length<420;j++){if(pts[i].distanceTo(pts[j])<.55){l.push(pts[i].x,pts[i].y,pts[i].z,pts[j].x,pts[j].y,pts[j].z);break}}}
+ const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(l),3));
+ const lm=new THREE.LineBasicMaterial({color:'#7FE0FF',transparent:true,opacity:0,depthWrite:false});gateGlows.push({m:lm,base:.45,delay:.5});core.add(new THREE.LineSegments(lg,lm))})();
+const gateLight=new THREE.PointLight('#7FE0FF',0,24,2);gate.add(gateLight);
+// Neural particles drifting around the rings (one draw call, animated on the GPU).
+(()=>{const n=coarse?360:640,pos=new Float32Array(n*3),d=new Float32Array(n*4);for(let i=0;i<n;i++){d[i*4]=Math.random()*Math.PI*2;d[i*4+1]=4.3+Math.random()*3.3;d[i*4+2]=(Math.random()-.5)*2.4;d[i*4+3]=(Math.random()<.5?-1:1)*(.03+Math.random()*.07)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('d',new THREE.BufferAttribute(d,4));
+ const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,uniforms:gateU,
+  vertexShader:'uniform float uT,uS;attribute vec4 d;varying float vM,vTw;void main(){float ang=d.x+uT*d.w;float r=d.y+sin(uT*.7+d.x*3.)*.12;vec3 p=vec3(cos(ang)*r,sin(ang)*r,d.z);vM=fract(d.x*7.13);vTw=.6+.4*sin(uT*1.8+d.x*11.);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=min(uS*.13/max(-mv.z,.1),28.);gl_Position=projectionMatrix*mv;}',
+  fragmentShader:'uniform float uA;varying float vM,vTw;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,0.,q);vec3 c=mix(vec3(.498,.878,1.),vec3(.941,.776,.455),step(.62,vM));gl_FragColor=vec4(c,a*uA*vTw*.7);}'});
+ const o=new THREE.Points(g,m);o.frustumCulled=false;gate.add(o)})();
+// Wordmark above the crown: Cormorant Garamond, blue-to-gold.
+const wordCanvas=document.createElement('canvas');wordCanvas.width=2048;wordCanvas.height=256;
+function drawWord(){const cx=wordCanvas.getContext('2d');cx.clearRect(0,0,2048,256);const gr=cx.createLinearGradient(300,0,1748,0);gr.addColorStop(0,'#7FE0FF');gr.addColorStop(1,'#F0C674');cx.fillStyle=gr;cx.font='600 132px "Cormorant Garamond", Georgia, serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('USE SUPERINTELLIGENCE'.split('').join('  '),1024,132)}
+drawWord();const wordTex=new THREE.CanvasTexture(wordCanvas);wordTex.encoding=THREE.sRGBEncoding;wordTex.anisotropy=4;
+const wordMat=gGlow('#ffffff',1,.5);wordMat.map=wordTex;
+const word=new THREE.Mesh(new THREE.PlaneGeometry(13,1.625),wordMat);word.position.set(0,8.35,0);gate.add(word);
+if(document.fonts&&document.fonts.load)document.fonts.load('600 132px "Cormorant Garamond"').then(()=>{drawWord();wordTex.needsUpdate=true}).catch(()=>{});
+// Rings block walking except through the clear opening.
+function blocked(x,z){return Math.abs(z-GATE.z)<1.25&&Math.abs(x-GATE.x)>3.0&&Math.abs(x-GATE.x)<7.9}
+
+// ================= First-person explorer =================
+const EYE=1.7,INTRO=8,START_Z=34,END_Z=-2;
+const P={x:0,z:START_Z,yaw:0,pitch:.04,yawT:0,pitchT:.04,phase:0};
+let chosen=false,cinematic=false,cinemaT=0,walk={x:0,y:0},selected=null,awake=.35,awakeTarget=.35;const clock=new THREE.Clock();
+camera.rotation.order='YXZ';
+const KZ=[46,31,22,6,END_Z],KY=[2.6,2.1,EYE,EYE,EYE],KP=[.10,.14,.16,.06,.03];
+function track(k,T){const n=k.length-1,s=Math.min(Math.max(T/2,0),n-1e-6),i=Math.floor(s),u=s-i,m0=i>0?(k[i+1]-k[i-1])/2:0,m1=i+1<n?(k[i+2]-k[i])/2:0,u2=u*u,u3=u2*u;return(2*u3-3*u2+1)*k[i]+(u3-2*u2+u)*m0+(-2*u3+3*u2)*k[i+1]+(u3-u2)*m1}
+const smooth=(a,b,x)=>{x=Math.min(Math.max((x-a)/(b-a),0),1);return x*x*(3-2*x)};
+const captions=['Your journey begins…','The gateway awakens','Enter the intelligence','Three worlds await'];
+function placeAtEnd(){P.x=0;P.z=END_Z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.03}
+function endCinematic(){cinematic=false;camera.fov=60;camera.updateProjectionMatrix();placeAtEnd();awakeTarget=1;$('cinema').textContent='▶ Cinematic';$('caption').textContent='Walk toward a portal · Drag to look around'}
+function setCinematic(){cinematic=true;cinemaT=0;$('cinema').textContent='Skip Intro';$('caption').textContent=captions[0]}
+function begin(mode){chosen=true;$('welcome').hidden=true;$('controls').hidden=false;if(mode==='explore'){P.x=0;P.z=START_Z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.04;awakeTarget=1;$('caption').textContent='Walk through the gateway · Drag to look around'}else setCinematic()}
+document.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>begin(b.dataset.start)));
+$('cinema').addEventListener('click',()=>{if(!chosen)return;if(cinematic)endCinematic();else{awake=.35;setCinematic()}});
+$('reset').addEventListener('click',()=>{chosen=false;cinematic=false;camera.fov=60;camera.updateProjectionMatrix();awakeTarget=.35;$('welcome').hidden=false;$('controls').hidden=true;$('status').textContent='';$('enter').style.display='none';$('cinema').textContent='▶ Cinematic';$('caption').textContent='Three worlds. One intelligence. Your next chapter.'});
+$('enter').addEventListener('click',()=>{if(selected){$('status').textContent=selected.name+' — prototype destination';$('caption').textContent='In the full website, this opens '+selected.name+'.'}});
+// Joystick (move) and swipe (look).
+const stick=$('stick'),knob=$('knob');let activePointer=null;
+function moveStick(e){let r=stick.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),dd=Math.hypot(x,y),max=35;if(dd>max){x*=max/dd;y*=max/dd}knob.style.transform=`translate(${x}px,${y}px)`;walk.x=x/max;walk.y=-y/max}
+stick.addEventListener('pointerdown',e=>{activePointer=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});
+stick.addEventListener('pointermove',e=>{if(e.pointerId===activePointer)moveStick(e)});
+function stop(e){if(e.pointerId===activePointer){activePointer=null;walk.x=walk.y=0;knob.style.transform=''}}
+stick.addEventListener('pointerup',stop);stick.addEventListener('pointercancel',stop);
+let drag=null;const cv=renderer.domElement;
+cv.addEventListener('pointerdown',e=>{drag={id:e.pointerId,x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId||cinematic||!chosen)return;P.yawT-=(e.clientX-drag.x)*.0045;P.pitchT=THREE.MathUtils.clamp(P.pitchT-(e.clientY-drag.y)*.0035,-.55,.6);drag.x=e.clientX;drag.y=e.clientY});
+const endDrag=e=>{if(drag&&drag.id===e.pointerId)drag=null};cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true});addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
+function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);pointScale()}addEventListener('resize',resize);
+
+function frame(){requestAnimationFrame(frame);let dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+ stars.rotation.y=t*.004;brain.rotation.y=Math.sin(t*.2)*.12;
+ for(let i=0;i<gateMeshes.length;i++){let o=gateMeshes[i];o.inside.material.opacity=.19+Math.sin(t*1.7+i)*.055;o.bright.material.opacity=.65+Math.sin(t*2+i)*.3}
+ // Gateway animation.
+ for(const r of rings)r.g.rotation.z+=r.w*dt*motionScale;
+ core.rotation.y+=dt*.12*motionScale;core.rotation.x=Math.sin(t*.3)*.15*motionScale;
+ gateU.uT.value=t*motionScale;
+ if(cinematic){cinemaT+=dt;const T=cinemaT;
+  awake=reduceMotion?.35+.65*smooth(0,2.5,T):.35+.65*smooth(2,4,T);
+  if(reduceMotion){placeAtEnd()}else{P.z=track(KZ,T);P.x=0;P.yaw=P.yawT=0;P.pitch=P.pitchT=track(KP,T);camera.fov=60+4*Math.sin(smooth(4,6.5,T)*Math.PI);camera.updateProjectionMatrix()}
+  $('caption').textContent=captions[Math.min(3,Math.floor((reduceMotion?T*1.4:T)/2))];
+  if(T>=(reduceMotion?3:INTRO))endCinematic();
+ }else awake+=(awakeTarget-awake)*Math.min(1,dt*2.5);
+ gateU.uA.value=awake;const sweep=(awake-.35)/.65;
+ for(const gl of gateGlows)gl.m.opacity=gl.base*(.35+.65*Math.min(Math.max(sweep*1.5-gl.delay,0),1));
+ const coreLvl=Math.min(Math.max(sweep*1.5-.5,0),1);coreMat.emissiveIntensity=.08+.5*coreLvl*(.9+.1*Math.sin(t*2.2));core.scale.setScalar(1+.04*Math.sin(t*1.6)*coreLvl*motionScale);gateLight.intensity=.25+.75*coreLvl;
+ if(chosen){
+  let bob=0;
+  if(!cinematic){
+   let mx=walk.x+(keys.d?1:0)-(keys.a?1:0),my=walk.y+(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0);
+   P.yawT+=((keys.arrowleft?1:0)-(keys.arrowright?1:0))*dt*1.6;
+   const sp=dt*7,fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),rx=Math.cos(P.yaw),rz=-Math.sin(P.yaw);
+   const nx=THREE.MathUtils.clamp(P.x+(fx*my+rx*mx)*sp,-30,30),nz=THREE.MathUtils.clamp(P.z+(fz*my+rz*mx)*sp,-58,38);
+   if(!blocked(nx,nz)){P.x=nx;P.z=nz}else if(!blocked(nx,P.z))P.x=nx;else if(!blocked(P.x,nz))P.z=nz;
+   const mag=Math.min(1,Math.hypot(mx,my));if(mag>.08&&!reduceMotion){P.phase+=dt*9*mag;bob=Math.sin(P.phase)*.035*mag}
+   const k=Math.min(1,dt*12);P.yaw+=(P.yawT-P.yaw)*k;P.pitch+=(P.pitchT-P.pitch)*k;
+  }
+  camera.position.set(P.x,(cinematic&&!reduceMotion?track(KY,cinemaT):EYE)+bob,P.z);camera.rotation.set(P.pitch,P.yaw,0);
+  let best=null,bestDist=9;for(let p of portals){let d=Math.hypot(P.x-p.x,P.z+43);if(d<bestDist){best=p;bestDist=d}}
+  selected=best;$('enter').style.display=best&&!cinematic?'block':'none';$('status').textContent=best&&!cinematic?'✦ '+best.name:'';
+ }else{camera.position.set(Math.sin(t*.1)*2*motionScale,7.5,62);camera.lookAt(0,5.5,0)}
+ renderer.render(scene,camera)}
+$('loading').hidden=true;frame();})();
+</script></body></html>
