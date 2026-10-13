@@ -216,89 +216,126 @@ function energyMat(c,c2,dim,side){const u={uTime:U.uTime,uC:{value:new THREE.Col
 function shellMat(c,op,inner){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uC:{value:new THREE.Color(c)},uHover:{value:0},uOp:{value:op||1},uIn:{value:inner||0},uBk:{value:0}},
  vertexShader:'varying vec3 vN,vW;void main(){vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
  fragmentShader:'uniform vec3 uC;uniform float uHover,uOp,uIn,uBk;varying vec3 vN,vW;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);if(uBk>.5)N=-N;float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.4),rim=pow(1.-ndv,6.);vec3 L=normalize(vec3(-.4,.8,.45));float sp=pow(max(dot(reflect(-L,N),V),0.),60.);float low=smoothstep(.1,-.9,N.y)*uIn;float sh=pow(max(dot(reflect(-L,N),V),0.),8.)*uIn;vec3 col=uC*(.06+fr*.8)+mix(uC,vec3(1.),.5)*rim*.9+vec3(1.)*sp*.6+uC*low*.35+vec3(1.)*sh*.12;float a=(.08+fr*.5+rim*.3+sp*.5+low*.06+sh*.06)*(.85+.3*uHover)*uOp;gl_FragColor=vec4(col,min(a,.95));}'})}
-// ================= Miniature destination interiors: shared kit =================
+// ================= Destination interiors (rebuilt to the approved reference) =================
+// Each destination is a complete miniature world suspended in glass: a floating island with a jagged, faceted
+// rock underside and glowing mineral veins, light falls spilling from its rim, curved lathe-turned spires,
+// hovering saucer platforms, thin bridges and orbital pathways. Built in units for a radius-10 sphere, then scaled.
 const INTERIORS={};
-const UNIT={island:new THREE.CylinderGeometry(1,.45,1,48).translate(0,-.5,0),box:new THREE.BoxGeometry(1,1,1).translate(0,.5,0),oct:new THREE.CylinderGeometry(.5,.5,1,8).translate(0,.5,0),taper:new THREE.CylinderGeometry(.3,.5,1,8).translate(0,.5,0),hex:new THREE.CylinderGeometry(.5,.5,1,6).translate(0,.5,0),cone:new THREE.ConeGeometry(.5,1,8).translate(0,.5,0),disc:new THREE.CylinderGeometry(1,1,1,64).translate(0,.5,0)};
-// Architecture shader: dark base rising into the destination color, glowing floor bands, lit roofs, fine rim light.
+const latheN=(pr,seg)=>new THREE.LatheGeometry(pr.map(q=>new THREE.Vector2(q[0],q[1])),seg);
+const flat=g=>{const q=g.toNonIndexed();q.computeVertexNormals();return q};
+const SEG=coarse?10:16;
+const UNIT={box:new THREE.BoxGeometry(1,1,1).translate(0,.5,0),disc:new THREE.CylinderGeometry(1,1,1,64).translate(0,.5,0),
+ needle:latheN([[.001,0],[.5,0],[.46,.08],[.3,.3],[.27,.55],[.17,.78],[.06,.94],[.003,1]],SEG),
+ flare:latheN([[.001,0],[.45,0],[.28,.2],[.24,.5],[.4,.7],[.42,.74],[.2,.8],[.12,.92],[.003,1]],SEG),
+ spindle:latheN([[.001,0],[.3,0],[.4,.15],[.5,.4],[.35,.62],[.18,.8],[.08,.93],[.003,1]],SEG),
+ tiered:latheN([[.001,0],[.5,0],[.5,.05],[.38,.06],[.36,.3],[.46,.32],[.46,.35],[.3,.36],[.28,.62],[.36,.64],[.36,.66],[.2,.67],[.16,.9],[.003,1]],SEG),
+ crystal:flat(latheN([[.001,0],[.32,.06],[.5,.2],[.5,.72],[.003,1]],6)),
+ terrace:latheN([[.001,-.12],[.85,-.1],[1,0],[.97,.05],[.001,.06]],48),
+ saucer:latheN([[.001,-.28],[.5,-.2],[1,0],[.96,.07],[.4,.12],[.001,.14]],24),
+ dome:new THREE.SphereGeometry(.42,14,8,0,Math.PI*2,0,Math.PI/2),
+ stem:new THREE.CylinderGeometry(.05,.05,1,6).translate(0,-.5,0),
+ rimT:new THREE.TorusGeometry(1,.035,5,40),
+ rock:(()=>{const g=latheN([[.001,0],[1,0],[1,-.05],[.9,-.14],[.74,-.28],[.56,-.46],[.38,-.64],[.2,-.82],[.06,-.96],[.003,-1]],32),p=g.attributes.position;
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i);if(y<-.03){const n=noise3(x*2.2+3,y*3,z*2.2),k=1+n*.18;p.setXYZ(i,x*k,y+noise3(x*4,y*4+7,z*4)*.05,z*k)}}return flat(g)})()};
+// Architecture: dark metallic base rising into the destination color, glowing floor bands, lit roofs, rim light.
 function archMat(base,c,hi,hov,o){o=o||{};return new THREE.ShaderMaterial({side:THREE.DoubleSide,uniforms:{uBase:{value:new THREE.Color(base)},uC:{value:new THREE.Color(c)},uHi:{value:new THREE.Color(hi)},uHover:hov,uLvl:{value:o.lvl||1},uBand:{value:o.band==null?2.4:o.band}},
  vertexShader:'varying vec3 vN,vW;varying float vH,vY;void main(){vec4 lp=vec4(position,1.);vec3 n=normal;\n#ifdef USE_INSTANCING\nlp=instanceMatrix*lp;n=mat3(instanceMatrix)*n;\n#endif\nvH=position.y;vY=lp.y;vec4 w=modelMatrix*lp;vW=w.xyz;vN=normalize(mat3(modelMatrix)*n);gl_Position=projectionMatrix*viewMatrix*w;}',
- fragmentShader:'uniform vec3 uBase,uC,uHi;uniform float uHover,uLvl,uBand;varying vec3 vN,vW;varying float vH,vY;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=abs(dot(N,V)),fr=pow(1.-ndv,2.),side=1.-abs(N.y);float fl=uBand>0.?smoothstep(.80,.88,fract(vY*uBand))*side:0.;float top=smoothstep(.55,.95,N.y);vec3 col=mix(uBase,uC*.42,clamp(vH*.75+.08,0.,1.));col+=uC*fl*(.55+.6*vH);col+=uHi*top*(.35+.65*vH)*.9;col+=uHi*fr*.4*(.3+.7*vH);col*=uLvl*1.5*(1.+.3*uHover);gl_FragColor=vec4(col,1.);}'})}
+ fragmentShader:'uniform vec3 uBase,uC,uHi;uniform float uHover,uLvl,uBand;varying vec3 vN,vW;varying float vH,vY;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=abs(dot(N,V)),fr=pow(1.-ndv,2.),side=1.-abs(N.y);float fl=uBand>0.?smoothstep(.80,.88,fract(vY*uBand))*side:0.;float top=smoothstep(.55,.95,N.y);vec3 L=normalize(vec3(-.4,.8,.5));float dif=.55+.45*max(dot(N,L),0.);vec3 col=mix(uBase,uC*.5,clamp(vH*.8+.1,0.,1.))*dif;col+=uC*fl*(.6+.6*vH);col+=uHi*top*(.4+.6*vH)*.9;col+=uHi*fr*.45*(.3+.7*vH);col*=uLvl*1.5*(1.+.3*uHover);gl_FragColor=vec4(col,1.);}'})}
+// Floating-island rock: faceted dark stone, colored rim light, glowing mineral veins, bright lip at the top edge.
+function rockMat(base,c,hi,hov){return new THREE.ShaderMaterial({side:THREE.DoubleSide,uniforms:{uBase:{value:new THREE.Color(base)},uC:{value:new THREE.Color(c)},uHi:{value:new THREE.Color(hi)},uHover:hov},
+ vertexShader:'varying vec3 vN,vW,vP;void main(){vec4 lp=vec4(position,1.);vec3 n=normal;\n#ifdef USE_INSTANCING\nlp=instanceMatrix*lp;n=mat3(instanceMatrix)*n;\n#endif\nvP=position;vec4 w=modelMatrix*lp;vW=w.xyz;vN=normalize(mat3(modelMatrix)*n);gl_Position=projectionMatrix*viewMatrix*w;}',
+ fragmentShader:'uniform vec3 uBase,uC,uHi;uniform float uHover;varying vec3 vN,vW,vP;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float fr=pow(1.-abs(dot(N,V)),2.2);float y=vP.y;vec3 L=normalize(vec3(-.4,.6,.6));float dif=.35+.65*max(dot(N,L),0.);'+
+ 'float vein=smoothstep(.9,1.,abs(sin(vP.x*9.+vP.y*14.)*sin(vP.z*8.-vP.y*11.)));vec3 col=uBase*(.9+.6*(1.+y))*dif+uC*fr*.55+uC*vein*.5*(1.+y)+uHi*smoothstep(-.07,0.,y)*.7+uC*.12*(1.+y);col*=1.25*(1.+.3*uHover);gl_FragColor=vec4(col,1.);}'})}
+// Light falls spilling from island rims (additive, scrolling).
+function fallMat(c,hi){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,uniforms:{uTime:U.uTime,uC:{value:new THREE.Color(c)},uHi:{value:new THREE.Color(hi)}},
+ vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+ fragmentShader:'uniform float uTime;uniform vec3 uC,uHi;varying vec2 vU;void main(){float edge=smoothstep(0.,.3,vU.x)*smoothstep(1.,.7,vU.x);float s=.55+.45*sin(vU.y*26.+uTime*4.+sin(vU.x*9.)*2.);float a=pow(vU.y,1.3)*edge*s;gl_FragColor=vec4(mix(uC,uHi,vU.y*.6),a*.85);}'})}
 const _o=new THREE.Object3D();
 // q = [x,y,z, sx,sy,sz, rx,ry,rz]
 function inst(geo,mat,list,parent){const m=new THREE.InstancedMesh(geo,mat,list.length);list.forEach((q,i)=>{_o.position.set(q[0],q[1],q[2]);_o.rotation.set(q[6]||0,q[7]||0,q[8]||0);_o.scale.set(q[3],q[4],q[5]);_o.updateMatrix();m.setMatrixAt(i,_o.matrix)});parent.add(m);return m}
 const glowMat=(c,op)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op==null?.9:op,depthWrite:false,blending:THREE.AdditiveBlending});
 function glowRing(parent,r,t,c,op,y,x,z){const m=new THREE.Mesh(new THREE.TorusGeometry(r,t,6,Math.max(48,Math.round(r*24))),glowMat(c,op));m.rotation.x=Math.PI/2;m.position.set(x||0,y,z||0);parent.add(m);return m}
 function glowTube(parent,pts,r,c,op){const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),48,r,5,false),glowMat(c,op));parent.add(m);return m}
-function buildInterior(d,hov){const city=new THREE.Group(),y0=-.42*d.r,R=Math.sqrt(d.r*d.r-y0*y0)*.82,pal=d.pal,ctx={y0,R,pal,hov,anim:[],mat:o=>archMat(pal.base,d.c,pal.hi,hov,o)};
- inst(UNIT.island,ctx.mat({band:0,lvl:.55}),[[0,y0,0,R*.9,1.6,R*.9]],city);glowRing(city,R*.9,.035,d.c,.55,y0+.01);
- if(INTERIORS[d.id])INTERIORS[d.id](city,ctx);city.userData.anim=ctx.anim;
- city.traverse(o=>{const m=o.material;if(m&&m.isMeshBasicMaterial&&m.blending===THREE.AdditiveBlending)m.opacity=Math.min(1,m.opacity*1.3)});
- city.scale.set(1.08,1.3,1.08);return city}
-// Marketplace: a luxurious golden skyline - tall tapered central towers, a ring of mid-rise buildings,
-// low outer pavilions, sky bridges, golden pathways and a few floating platforms. Dark base #30251B, gold #F0C674, highlights #FFE6A0.
-INTERIORS.market=(city,ctx)=>{const {y0,R}=ctx,G='#F0C674',HI='#FFE6A0',M=ctx.mat(),V=(x,y,z)=>new THREE.Vector3(x,y,z);
- inst(UNIT.disc,ctx.mat({band:0}),[[0,y0,0,4.4,.35,4.4],[0,y0+.35,0,2.6,.3,2.6]],city);glowRing(city,4.4,.04,HI,.9,y0+.36);glowRing(city,2.6,.035,HI,.9,y0+.66);
- const b0=y0+.65,b1=y0+.35;
- const core=[[0,0,1.5,8.2],[1.25,.3,1.0,6.4],[-1.1,.6,1.0,5.8],[.3,-1.2,.95,6.9],[-.6,-.9,.8,5.0]];
- inst(UNIT.taper,M,core.map(([x,z,w,h])=>[x,b0,z,w,h,w]),city);
- inst(UNIT.cone,M,[[0,b0+8.2,0,.5,1.8,.5],[.3,b0+6.9,-1.2,.36,1.2,.36],[1.25,b0+6.4,.3,.36,1.1,.36]],city);
- const mid=[],outer=[];for(let i=0;i<8;i++){const a=i/8*Math.PI*2+.2,r=3.3+(i%2)*.4;mid.push([Math.cos(a)*r,b1,Math.sin(a)*r,.75+rand()*.3,2.2+rand()*2,.75+rand()*.3,0,-a,0])}
- for(let i=0;i<12;i++){const a=i/12*Math.PI*2+.45,r=5.5+rand()*1.1;outer.push([Math.cos(a)*r,y0,Math.sin(a)*r,.7+rand()*.5,.9+rand()*1.5,.6+rand()*.4,0,-a,0])}
- inst(UNIT.box,M,mid.filter((q,i)=>i%2===0).concat(outer.filter((q,i)=>i%3!==0)),city);inst(UNIT.oct,M,mid.filter((q,i)=>i%2===1).concat(outer.filter((q,i)=>i%3===0)),city);
- // Sky bridges from the central tower to the mid ring.
- for(let i=0;i<8;i+=2){const q=mid[i],h=b1+q[4]*.8;glowTube(city,[V(0,h+.6,0),V(q[0]*.5,h+1,q[2]*.5),V(q[0],h,q[2])],.035,HI,.75)}
- // Golden pathways and radial avenues on the base platform.
- glowRing(city,3.55,.03,G,.75,y0+.02);glowRing(city,6.1,.03,G,.65,y0+.02);
- inst(UNIT.box,glowMat(G,.6),[0,1,2,3,4,5].map(i=>{const a=i/6*Math.PI*2;return[Math.cos(a)*5.3,y0+.01,Math.sin(a)*5.3,1.6,.02,.06,0,-a,0]}),city);
- // A few floating platforms and a halo ring above the skyline.
- const fl=new THREE.Group();city.add(fl);const plats=[];for(let i=0;i<3;i++){const a=i/3*Math.PI*2,p=new THREE.Group();p.position.set(Math.cos(a)*6.2,y0+4.2+i*.7,Math.sin(a)*6.2);inst(UNIT.disc,ctx.mat({band:0}),[[0,0,0,.9,.14,.9]],p);inst(UNIT.taper,M,[[0,.14,0,.45,1.1,.45]],p);glowRing(p,.9,.025,HI,.9,.15);fl.add(p);plats.push(p)}
- const crown=glowRing(city,1.3,.03,HI,.85,b0+10.4);
- ctx.anim.push((t,dt)=>{fl.rotation.y=t*.06*motion;plats.forEach((p,i)=>{p.position.y=y0+4.2+i*.7+Math.sin(t*.7+i*2)*.15*motion});crown.rotation.z=t*.2*motion})};
-// For Creators: flowing sculptural towers on layered, offset platforms; a tall central landmark wrapped in a
-// glowing ribbon; violet bridges; floating crystals; creative energy currents. Base #201532, violet #9B6BFF, lavender #C8A8FF, pink #E6A0FF.
-const LATHE=[[[0,0],[.35,0],[.42,.12],[.28,.38],[.22,.6],[.34,.82],[.18,.95],[0,1]],[[0,0],[.25,0],[.18,.3],[.2,.55],[.38,.8],[.3,.92],[0,1]],[[0,0],[.4,0],[.3,.2],[.16,.5],[.26,.75],[.1,.94],[0,1]]].map(pr=>new THREE.LatheGeometry(pr.map(q=>new THREE.Vector2(q[0],q[1])),coarse?12:18));
-INTERIORS.creators=(city,ctx)=>{const {y0,R}=ctx,VI='#9B6BFF',LA='#C8A8FF',PK='#E6A0FF',M=ctx.mat({band:3.2}),V=(x,y,z)=>new THREE.Vector3(x,y,z);
- const plats=[[1.2,y0,-.6,4.8,.5],[-1.0,y0+.5,.9,3.0,.45],[.4,y0+.95,-.2,1.7,.4]];
- inst(UNIT.disc,ctx.mat({band:0}),plats.map(([x,y,z,r,h])=>[x,y,z,r,h,r]),city);plats.forEach(([x,y,z,r,h],i)=>glowRing(city,r,.035,i===1?PK:LA,.85,y+h+.01,x,z));
- const top=y0+1.35;
- inst(LATHE[0],M,[[.4,top,-.2,2.3,9.2,2.3]],city);
- const ring=[];for(let i=0;i<7;i++){const a=i/7*Math.PI*2+.3,r=4.3+rand()*1.9;ring.push([Math.cos(a)*r,y0,Math.sin(a)*r,1.1+rand()*.5,3.2+rand()*3.2,1.1+rand()*.5,0,rand()*6.28,0])}
- inst(LATHE[1],M,ring.filter((q,i)=>i%2===0),city);inst(LATHE[2],M,ring.filter((q,i)=>i%2===1),city);
- // Glowing ribbon spiralling up the landmark.
- const hp=[];for(let i=0;i<=40;i++){const t=i/40,a=t*Math.PI*6;hp.push(V(.4+Math.cos(a)*(1.5-.7*t),top+.6+t*7.6,-.2+Math.sin(a)*(1.5-.7*t)))}glowTube(city,hp,.04,PK,.8);
- // Violet bridges between platforms and towers.
- for(let i=0;i<ring.length;i+=2){const q=ring[i],h=y0+q[4]*.7;glowTube(city,[V(.4,top+2+i*.4,-.2),V((q[0]+.4)/2,h+1.4,(q[2]-.2)/2),V(q[0],h,q[2])],.035,VI,.8)}
- glowTube(city,[V(1.2,y0+.5,-.6),V(.1,y0+1.4,.2),V(-1,y0+.95,.9)],.04,LA,.8);
- // Floating crystals.
- const cr=new THREE.Group();city.add(cr);const cl=[];for(let i=0;i<8;i++){const a=i/8*Math.PI*2,r=5.4+rand()*1.2;cl.push([Math.cos(a)*r,y0+4+rand()*2.8,Math.sin(a)*r,.28,.8+rand()*.5,.28,rand()*.4,rand()*3,rand()*.4])}
- inst(new THREE.OctahedronGeometry(1,0),glowMat(LA,.7),cl,cr);inst(new THREE.OctahedronGeometry(1,0),glowMat(PK,.55),cl.slice(0,3).map(q=>[q[0]*.7,q[1]+1.2,q[2]*.7,.16,.45,.16]),cr);
- // Creative energy currents swirling around the landmark.
- const cur=[];for(let k=0;k<(coarse?5:8);k++){const pts=[],ph=rand()*6.28,rr=2.4+rand()*2.6;for(let i=0;i<=8;i++){const t=i/8,a=ph+t*Math.PI*2.4;pts.push(V(Math.cos(a)*rr,y0+1.5+t*5.5+Math.sin(t*6+ph)*.6,Math.sin(a)*rr))}cur.push(pts)}
+// Island: faceted rock body + thin metallic plaza on top + glowing rim; list of [x,y,z,r,depth].
+function islands(parent,ctx,list){inst(UNIT.rock,ctx.rock,list.map(([x,y,z,r,dp])=>[x,y,z,r,dp,r,0,(x+z)*3.1,0]),parent);inst(UNIT.disc,ctx.mat({band:0,lvl:.7}),list.map(([x,y,z,r])=>[x,y,z,r*.97,.08,r*.97]),parent);for(const [x,y,z,r] of list)glowRing(parent,r*.97,.03,ctx.pal.hi,.8,y+.09,x,z)}
+// Light falls: [x,z,yTop,len,width]
+function falls(parent,ctx,list){const m=fallMat(ctx.d.c,ctx.pal.hi);for(const [x,z,y,len,w] of list){const p=new THREE.Mesh(new THREE.PlaneGeometry(w,len),m);p.position.set(x,y-len/2,z);p.rotation.y=Math.atan2(x,z);parent.add(p)}}
+// Saucer platforms: [x,y,z,r,stem]
+function saucers(parent,ctx,list,dome){const M=ctx.mat({band:0});inst(UNIT.saucer,M,list.map(q=>[q[0],q[1],q[2],q[3],q[3],q[3]]),parent);if(dome)inst(UNIT.dome,M,list.map(q=>[q[0],q[1]+q[3]*.12,q[2],q[3],q[3]*.8,q[3]]),parent);
+ inst(UNIT.rimT,glowMat(ctx.pal.hi,.9),list.map(q=>[q[0],q[1]+.01,q[2],q[3]*.97,q[3]*.97,q[3]*.97,Math.PI/2]),parent);const st=list.filter(q=>q[4]>0);if(st.length)inst(UNIT.stem,M,st.map(q=>[q[0],q[1]-q[3]*.28,q[2],1,q[4],1]),parent)}
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+function buildInterior(d,hov){const city=new THREE.Group(),pal=d.pal,ctx={d,pal,hov,anim:[],mat:o=>archMat(pal.base,d.c,pal.hi,hov,o),rock:rockMat(pal.base,d.c,pal.hi,hov)};
+ if(INTERIORS[d.id])INTERIORS[d.id](city,ctx);city.userData.anim=ctx.anim;city.scale.setScalar(d.r/10);return city}
+
+// Marketplace: a luxurious golden skyline - a tall central needle landmark, flared towers, tiered towers and fine
+// outer spires on a floating island; satellite islands, saucer platforms, bridges, orbital pathways, light falls.
+INTERIORS.market=(city,ctx)=>{const G='#F0C674',HI='#FFE6A0',y0=-2.4,M=ctx.mat(),MB=ctx.mat({band:3.4});
+ islands(city,ctx,[[0,y0,0,6.8,4.6],[5.9,y0+1.5,-2.4,1.5,1.9],[-5.6,y0+2.2,2.6,1.2,1.5]]);
+ inst(UNIT.disc,ctx.mat({band:0,lvl:.8}),[[0,y0+.08,0,3.7,.16,3.7],[0,y0+.24,0,2.3,.16,2.3]],city);glowRing(city,3.7,.03,HI,.85,y0+.25);glowRing(city,2.3,.03,HI,.85,y0+.41);
+ const b=y0+.4;inst(UNIT.needle,MB,[[0,b,0,1.7,8.4,1.7]],city);
+ const fl=[],ti=[],nd=[];for(let i=0;i<4;i++){const a=i/4*Math.PI*2+.4;fl.push([Math.cos(a)*1.35,b,Math.sin(a)*1.35,1.1,6+i*.4,1.1])}
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2;ti.push([Math.cos(a)*2.7,y0+.24,Math.sin(a)*2.7,.95,3.6+rand()*1.6,.95])}
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2+.26,r=4+rand()*1.9;nd.push([Math.cos(a)*r,y0+.08,Math.sin(a)*r,.55+rand()*.2,1.5+rand()*1.8,.55+rand()*.2])}
+ inst(UNIT.flare,MB,fl,city);inst(UNIT.tiered,M,ti,city);inst(UNIT.needle,M,nd,city);
+ inst(UNIT.needle,M,[[5.9,y0+1.6,-2.4,.6,2.6,.6],[6.3,y0+1.6,-1.9,.45,1.7,.45],[-5.6,y0+2.3,2.6,.5,2.1,.5]],city);
+ saucers(city,ctx,[[3.6,y0+3.8,3.2,1.15,2.6],[-3.9,y0+4.6,-2.8,1.0,3.4],[-4.6,y0+3.2,.4,.8,2.2],[2.2,y0+5.6,-4.4,.9,0],[4.8,y0+5.2,.6,.7,0]],true);
+ for(const q of [[3.6,y0+3.8,3.2],[-3.9,y0+4.6,-2.8],[2.2,y0+5.6,-4.4]])glowTube(city,[V3(0,q[1]+.6,0),V3(q[0]*.5,q[1]+1.1,q[2]*.5),V3(q[0],q[1]+.1,q[2])],.03,HI,.8);
+ glowTube(city,[V3(1.8,y0+3.2,-.8),V3(4.2,y0+2.9,-1.9),V3(5.9,y0+1.6,-2.4)],.03,G,.75);
+ const orb=glowRing(city,4.9,.025,HI,.75,y0+2.7);const orb2=glowRing(city,3.2,.02,G,.7,y0+5.2);orb2.rotation.y=.2;
+ falls(city,ctx,[[6.5*Math.cos(2.2),6.5*Math.sin(2.2),y0-.05,3.4,.9],[6.5*Math.cos(3.9),6.5*Math.sin(3.9),y0-.05,3,.7],[6.5*Math.cos(5.4),6.5*Math.sin(5.4),y0-.05,3.6,1]]);
+ const crown=glowRing(city,1.2,.03,HI,.85,b+9.3);
+ ctx.anim.push(t=>{orb.rotation.z=t*.12*motion;orb2.rotation.z=-t*.08*motion;crown.rotation.z=t*.2*motion})};
+
+// For Creators: a tall sculptural crystal centerpiece opening like a flower, layered floating terraces with their own
+// rock undersides, sweeping arches, smaller landmarks, suspended crystals, pink-violet energy ribbons and light falls.
+INTERIORS.creators=(city,ctx)=>{const VI='#9B6BFF',LA='#C8A8FF',PK='#E6A0FF',y0=-2.6,M=ctx.mat({band:3.2}),F=ctx.mat({band:0,lvl:1.15});
+ islands(city,ctx,[[0,y0,0,6.6,4.8],[3.3,y0+1.3,-1.6,2.4,1.6],[-3.4,y0+2.3,1.8,1.8,1.4],[1.2,y0+3.5,3.4,1.2,1.1]]);
+ const b=y0+.1,petals=[[0,b,0,1.5,9,1.5]];
+ for(let i=0;i<8;i++){const a=i/8*Math.PI*2,t=.28+.12*(i%2);petals.push([Math.cos(a)*.7,b,Math.sin(a)*.7,1.0,4.2+(i%3)*1.1,1.0,Math.sin(a)*t,0,-Math.cos(a)*t])}
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2+.5,t=.6;petals.push([Math.cos(a)*1.8,b,Math.sin(a)*1.8,.75,2.4+rand(),.75,Math.sin(a)*t,0,-Math.cos(a)*t])}
+ inst(UNIT.crystal,F,petals,city);
+ inst(UNIT.spindle,M,[[3.3,y0+1.4,-1.6,1,3.6,1],[-3.4,y0+2.4,1.8,.85,2.8,.85],[1.2,y0+3.6,3.4,.6,1.8,.6],[-2.2,y0+.1,-3.6,.8,2.6,.8],[4.6,y0+.1,2.2,.7,2.2,.7]],city);
+ inst(UNIT.crystal,F,[[3.9,y0+1.4,-.9,.5,1.8,.5],[-4,y0+2.4,2.4,.4,1.3,.4],[-4.6,y0+.1,-.8,.5,1.6,.5]],city);
+ // Sweeping arches around the centerpiece.
+ for(let k=0;k<3;k++){const a=k/3*Math.PI*2+.3,pts=[];for(let i=0;i<=12;i++){const t=i/12,an=a+t*1.6;pts.push(V3(Math.cos(an)*(2.6+Math.sin(t*Math.PI)*.8),b+.2+Math.sin(t*Math.PI)*5.2,Math.sin(an)*(2.6+Math.sin(t*Math.PI)*.8)))}glowTube(city,pts,.06,k===1?PK:LA,.75)}
+ // Bridges between terraces.
+ glowTube(city,[V3(1.2,y0+.2,-.6),V3(2.4,y0+1.2,-1.2),V3(3.3,y0+1.4,-1.6)],.035,LA,.8);glowTube(city,[V3(-1.2,y0+.2,.6),V3(-2.4,y0+1.7,1.3),V3(-3.4,y0+2.4,1.8)],.035,PK,.8);glowTube(city,[V3(-2.6,y0+2.5,2.4),V3(-.6,y0+3.6,3.1),V3(1.2,y0+3.6,3.4)],.03,VI,.8);
+ // Pink ribbon spiralling up the centerpiece.
+ const hp=[];for(let i=0;i<=44;i++){const t=i/44,a=t*Math.PI*6;hp.push(V3(Math.cos(a)*(1.7-.9*t),b+.6+t*8,Math.sin(a)*(1.7-.9*t)))}glowTube(city,hp,.035,PK,.8);
+ // Suspended crystals.
+ const cr=new THREE.Group();city.add(cr);const cl=[];for(let i=0;i<10;i++){const a=i/10*Math.PI*2,r=4.6+rand()*1.6;cl.push([Math.cos(a)*r,y0+4.2+rand()*3,Math.sin(a)*r,.3,.9+rand()*.6,.3,rand()*.4,rand()*3,rand()*.4])}
+ inst(new THREE.OctahedronGeometry(1,0),glowMat(LA,.75),cl,cr);inst(new THREE.OctahedronGeometry(1,0),glowMat(PK,.6),cl.slice(0,4).map(q=>[q[0]*.75,q[1]+1.1,q[2]*.75,.17,.5,.17]),cr);
+ saucers(city,ctx,[[-4.4,y0+4.6,-1.6,.8,2],[4.2,y0+5.3,1.4,.7,0]],true);
+ // Energy currents.
+ const cur=[];for(let k=0;k<(coarse?5:8);k++){const pts=[],ph=rand()*6.28,rr=2.6+rand()*2.4;for(let i=0;i<=8;i++){const t=i/8,a=ph+t*Math.PI*2.4;pts.push(V3(Math.cos(a)*rr,y0+1.5+t*5.5+Math.sin(t*6+ph)*.6,Math.sin(a)*rr))}cur.push(pts)}
  const en=new THREE.Points(curveCloud(cur,coarse?30:44,i=>i%3===0?0:2),pulseMat(1.6,3));en.frustumCulled=false;city.add(en);
+ falls(city,ctx,[[6.3*Math.cos(1.9),6.3*Math.sin(1.9),y0-.05,3.6,.9],[6.3*Math.cos(4.4),6.3*Math.sin(4.4),y0-.05,3.2,.8]]);
  ctx.anim.push(t=>{cr.rotation.y=-t*.07*motion;cr.position.y=Math.sin(t*.5)*.2*motion})};
-// Agent Hub: an elegant AI research and operations center - hexagonal platforms, a ring of sleek towers,
-// a central luminous intelligence structure, connecting bridges, small floating holograms and cyan data streams.
-// Base #10283F, blue #7FE0FF, cyan #B8F3FF.
-INTERIORS.agents=(city,ctx)=>{const {y0,R}=ctx,BL='#7FE0FF',CY='#B8F3FF',M=ctx.mat({band:3}),V=(x,y,z)=>new THREE.Vector3(x,y,z);
- inst(UNIT.hex,ctx.mat({band:0}),[[0,y0,0,12.2,.35,12.2],[0,y0+.35,0,6,.3,6]],city);
- for(const [r,y] of [[6.1,y0+.36],[3,y0+.66]]){const m=new THREE.Mesh(new THREE.TorusGeometry(r,.035,4,6),glowMat(CY,.85));m.rotation.x=Math.PI/2;m.rotation.z=Math.PI/6;m.position.y=y;city.add(m)}
- const b1=y0+.35,b2=y0+.65,ring=[];for(let i=0;i<8;i++){const a=i/8*Math.PI*2+Math.PI/8,r=4.5;ring.push([Math.cos(a)*r,b1,Math.sin(a)*r,.75,3.2+(i%3)*1.2+rand()*.6,.75,0,-a,0])}
- inst(UNIT.box,M,ring,city);inst(UNIT.box,glowMat(CY,.9),ring.map(q=>[q[0],q[1]+q[4],q[2],.78,.05,.78,0,q[7],0]),city);
- const low=[];for(let i=0;i<6;i++){const a=i/6*Math.PI*2,r=6.1;low.push([Math.cos(a)*r,y0,Math.sin(a)*r,.9,1.1+rand()*1.3,.9,0,a,0])}inst(UNIT.hex,M,low,city);
- // Central luminous intelligence structure: slim obelisk with a floating geodesic core.
- inst(UNIT.taper,ctx.mat({band:4}),[[0,b2,0,1.1,6.8,1.1]],city);
- const core=new THREE.Group();core.position.y=b2+8.4;city.add(core);
- core.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(1.3,1)),new THREE.LineBasicMaterial({color:CY,transparent:true,opacity:.9,depthWrite:false,blending:THREE.AdditiveBlending})));
- core.add(new THREE.Mesh(new THREE.IcosahedronGeometry(.55,2),new THREE.MeshBasicMaterial({color:CY})));const ch=halo(BL,4.2,.35);core.add(ch);
- // Bridges from the obelisk to each tower.
- ring.forEach((q,i)=>{const h=b1+q[4]*.62;glowTube(city,[V(q[0]*.12,h+.3,q[2]*.12),V(q[0]*.55,h+.15,q[2]*.55),V(q[0],h,q[2])],.03,i%2?BL:CY,.75)});
- // Small floating holographic panels.
+
+// Agent Hub: an elegant central AI tower with a luminous ringed intelligence core, slender technological spires,
+// suspended saucer platforms, bridges, floating holographic panels, cyan energy channels and data streams.
+INTERIORS.agents=(city,ctx)=>{const BL='#7FE0FF',CY='#B8F3FF',y0=-2.4,M=ctx.mat({band:3.6}),M2=ctx.mat({band:5});
+ islands(city,ctx,[[0,y0,0,6.8,4.4],[-5.8,y0+1.8,-2.2,1.4,1.7],[5.4,y0+2.5,2.8,1.1,1.4]]);
+ inst(UNIT.disc,ctx.mat({band:0,lvl:.8}),[[0,y0+.08,0,3.6,.16,3.6]],city);
+ {const h=new THREE.Mesh(new THREE.TorusGeometry(3.6,.035,4,6),glowMat(CY,.9));h.rotation.x=Math.PI/2;h.rotation.z=Math.PI/6;h.position.y=y0+.25;city.add(h)}
+ inst(UNIT.box,glowMat(BL,.6),[0,1,2,3,4,5].map(i=>{const a=i/6*Math.PI*2;return[Math.cos(a)*5,y0+.1,Math.sin(a)*5,2.2,.02,.05,0,-a,0]}),city);
+ const b=y0+.24;inst(UNIT.needle,M2,[[0,b,0,1.5,9.2,1.5]],city);
+ const ring=[],outer=[];for(let i=0;i<8;i++){const a=i/8*Math.PI*2+Math.PI/8,r=2.9+(i%2)*.5;ring.push([Math.cos(a)*r,b,Math.sin(a)*r,.75,3.8+(i%3)*1.1+rand()*.6,.75])}
+ for(let i=0;i<8;i++){const a=i/8*Math.PI*2,r=4.9+rand()*.9;outer.push([Math.cos(a)*r,y0+.08,Math.sin(a)*r,.55,1.4+rand()*1.6,.55])}
+ inst(UNIT.needle,M,ring.filter((q,i)=>i%2===0),city);inst(UNIT.tiered,M,ring.filter((q,i)=>i%2===1),city);inst(UNIT.spindle,M,outer,city);
+ inst(UNIT.needle,M,[[-5.8,y0+1.9,-2.2,.55,2.4,.55],[5.4,y0+2.6,2.8,.45,1.9,.45]],city);
+ // Ringed intelligence core on the central tower.
+ const core=new THREE.Group();core.position.y=b+5.4;city.add(core);
+ const r1=new THREE.Mesh(new THREE.TorusGeometry(1.5,.09,8,64),glowMat(CY,.95));r1.rotation.x=Math.PI/2;core.add(r1);const r2=new THREE.Mesh(new THREE.TorusGeometry(1.15,.05,8,64),glowMat(BL,.85));r2.rotation.x=1.2;core.add(r2);
+ core.add(new THREE.Mesh(new THREE.IcosahedronGeometry(.5,2),new THREE.MeshBasicMaterial({color:CY})));const ch=halo(BL,4.6,.4);core.add(ch);
+ core.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(.95,1)),new THREE.LineBasicMaterial({color:CY,transparent:true,opacity:.7,depthWrite:false,blending:THREE.AdditiveBlending})));
+ ring.forEach((q,i)=>{const h=b+q[4]*.62;glowTube(city,[V3(q[0]*.15,h+.3,q[2]*.15),V3(q[0]*.55,h+.15,q[2]*.55),V3(q[0],h,q[2])],.025,i%2?BL:CY,.75)});
+ saucers(city,ctx,[[3.9,y0+4.4,-3,1.05,2.8],[-4.1,y0+5,2.4,.95,3.2],[-1.6,y0+6.4,-4.4,.7,0],[4.6,y0+6,1.2,.6,0]],false);
  const tex=[holoTexture(1),holoTexture(2)],holo=new THREE.Group();city.add(holo);
- for(let i=0;i<4;i++){const a=i/4*Math.PI*2+.4,m=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.95),new THREE.MeshBasicMaterial({map:tex[i%2],transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));m.position.set(Math.cos(a)*5.9,y0+5+(i%2)*.8,Math.sin(a)*5.9);m.rotation.y=-a+Math.PI/2;holo.add(m)}
- // Cyan data streams from tower tops into the core.
- const ds=ring.map(q=>{const t=V(q[0],q[1]+q[4]+.1,q[2]),c=V(0,b2+8.4,0);return[t,V(q[0]*.4,(t.y+c.y)/2+1,q[2]*.4),c]});
- const st=new THREE.Points(curveCloud(ds,coarse?26:38,()=>0),pulseMat(1.7,3));st.frustumCulled=false;city.add(st);
- ctx.anim.push(t=>{core.rotation.y=t*.25*motion;core.rotation.x=Math.sin(t*.3)*.2*motion;core.position.y=b2+8.4+Math.sin(t*.8)*.15*motion;holo.rotation.y=t*.05*motion;ch.material.opacity=.3+.08*Math.sin(t*1.05)})};
+ for(let i=0;i<4;i++){const a=i/4*Math.PI*2+.4,m=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.95),new THREE.MeshBasicMaterial({map:tex[i%2],transparent:true,opacity:.8,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));m.position.set(Math.cos(a)*5.6,y0+2.8+(i%2)*.9,Math.sin(a)*5.6);m.rotation.y=-a+Math.PI/2;holo.add(m)}
+ const ds=ring.map(q=>{const t=V3(q[0],q[1]+q[4]+.1,q[2]),c=V3(0,b+5.4,0);return[t,V3(q[0]*.4,(t.y+c.y)/2+.8,q[2]*.4),c]});const st=new THREE.Points(curveCloud(ds,coarse?26:38,()=>0),pulseMat(1.7,3));st.frustumCulled=false;city.add(st);
+ falls(city,ctx,[[6.5*Math.cos(1.2),6.5*Math.sin(1.2),y0-.05,3.4,.8],[6.5*Math.cos(3.4),6.5*Math.sin(3.4),y0-.05,3,.7]]);
+ ctx.anim.push(t=>{r1.rotation.z=t*.3*motion;r2.rotation.y=t*.4*motion;core.position.y=b+5.4+Math.sin(t*.8)*.12*motion;holo.rotation.y=t*.05*motion;ch.material.opacity=.34+.1*Math.sin(t*1.05)})};
 let hubBuilt=false;const hub={spheres:[],labels:[]};
 function buildHub(){if(hubBuilt)return;hubBuilt=true;
  hubScene.add(new THREE.HemisphereLight('#5A6DB8','#0A1022',1.05));const k=new THREE.DirectionalLight('#E4ECFF',1.0);k.position.set(-30,50,40);hubScene.add(k);const fill=new THREE.DirectionalLight('#7FE0FF',.35);fill.position.set(25,14,60);hubScene.add(fill);
