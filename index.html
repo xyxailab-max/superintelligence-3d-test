@@ -436,15 +436,19 @@ function buildArchitecture(){
  
 
  const skyAt=(h,el,dist)=>{const H=h*Math.PI/180,L=el*Math.PI/180;return new THREE.Vector3(Math.sin(H)*Math.cos(L)*dist,EYE+Math.sin(L)*dist,ENTRY.z-Math.cos(H)*Math.cos(L)*dist)},eyeV=new THREE.Vector3(0,EYE,ENTRY.z);
- hub.sky=[];for(const [h,el,R,rz] of [[-18,31.5,56,.4],[19,31,52,-.5]]){const p=skyAt(h,el,640),g=galaxy(p.x,p.y,p.z,R,0,0,coarse?2000:3200,.9);g.lookAt(eyeV);g.rotateX(Math.PI/2-.5);g.rotateY(rz);hubScene.add(g);hub.sky.push(g);
-  const n=halo(h<0?'#9B6BFF':'#3D7BFF',R*4.2,.07);n.position.copy(skyAt(h+(h<0?-3:3),el+1,700));hubScene.add(n)}
- {const p=skyAt(-30,27,600),pl=planet(p.x,p.y,p.z,24,'#2A2F6E','#5C4FA8','#7FE0FF',true);hubScene.add(pl);hub.sky.push(pl)}
+ hub.sky=[];for(const [h,el,R,rz] of [[-18,31.5,64,.4],[17,31,60,-.5]]){const p=skyAt(h,el,640),g=galaxy(p.x,p.y,p.z,R,0,0,coarse?2000:3200,.9);g.lookAt(eyeV);g.rotateX(Math.PI/2-.5);g.rotateY(rz);hubScene.add(g);hub.sky.push(g);
+  const n=halo(h<0?'#9B6BFF':'#3D7BFF',R*4.4,.12);n.position.copy(skyAt(h+(h<0?-3:3),el+1,700));hubScene.add(n)}
+ for(const [h,el,r,c1,c2,atm,ring] of [[29,33,16,'#2A2F6E','#8C86C8','#7FE0FF',true],[8,28.5,7,'#3A3F7E','#7C7FB8','#9FE3FF',false],[-9,28,5,'#3B2F5E','#8E6FC0','#C8A8FF',false]]){const p=skyAt(h,el,600),pl=planet(p.x,p.y,p.z,r,c1,c2,atm,ring);hubScene.add(pl);hub.sky.push(pl)}
+ hubScene.add(flatRing(5.6,.07,'#F0C674',.8),flatRing(6.8,.05,'#FFE6A0',.6),flatRing(8.4,.06,'#F0C674',.65));
+ {const dp=[],dc=[],ds=[];for(let i=0;i<48;i++){const a=i/48*Math.PI*2;dp.push(Math.cos(a)*9.6,.08,Math.sin(a)*9.6);dc.push(GOLD[0],GOLD[1],GOLD[2]);ds.push(.28)}hubScene.add(pointCloud(dp,dc,ds,pointsMat({opacity:.9})))}
  // Floor inlays: thin gold and blue rings.
  hubScene.add(flatRing(12,.09,'#F0C674',.7),flatRing(22.5,.07,'#F0C674',.5),flatRing(31,.06,'#7FE0FF',.32),flatRing(40,.11,'#F0C674',.6));
  for(let i=0;i<12;i++){const a=i/12*Math.PI*2,m=new THREE.Mesh(new THREE.BoxGeometry(.05,.01,4.5),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.3,depthWrite:false}));m.position.set(Math.cos(a)*8.6,.02,Math.sin(a)*8.6);m.rotation.y=-a+Math.PI/2;hubScene.add(m)}
  // Elegant curved pathways with illuminated gold edges.
  const pathMat=new THREE.MeshStandardMaterial({color:'#161D40',metalness:.55,roughness:.3,envMap:hub.env});
  const V=(x,z)=>new THREE.Vector3(x,0,z),paths=[[V(0,40),V(2.4,30),V(-2.4,20),V(0,12.3)]].concat(DEST.map(d=>{const l=Math.hypot(d.x,d.z),ux=d.x/l,uz=d.z/l,a=12.3,b=l-8.1,px=-uz,pz=ux;return[V(ux*a,uz*a),V(ux*lerp(a,b,.33)+px*1.6,uz*lerp(a,b,.33)+pz*1.6),V(ux*lerp(a,b,.66)-px*1.4,uz*lerp(a,b,.66)-pz*1.4),V(ux*b,uz*b)]}));
+ {const posts=[],lp=[],lc=[],ls=[];for(const pts of paths){const c=new THREE.CatmullRomCurve3(pts),L=c.getLength();for(let t=2.5;t<L-1;t+=5){const u=t/L,q=c.getPointAt(u),tg=c.getTangentAt(u),l=Math.hypot(tg.x,tg.z)||1;for(const sd of [-1,1]){const x=q.x-tg.z/l*2.4*sd,z=q.z+tg.x/l*2.4*sd;posts.push([x,0,z,.09,.95,.09]);lp.push(x,1.05,z);lc.push(GOLD[0],GOLD[1],GOLD[2]);ls.push(.5)}}}
+  if(posts.length){inst(UNIT.box,obsidian,posts,hubScene);hubScene.add(pointCloud(lp,lc,ls,pointsMat({opacity:.95})))}}
  for(const pts of paths){const c=new THREE.CatmullRomCurve3(pts);hubScene.add(new THREE.Mesh(ribbon(c,3.2,80,.015),pathMat));edgeTubes(c,3.2,.045,goldLine,hubScene);edgeGlow(c,3.2,.03,hubScene,.42)}
  // A few holographic interfaces.
  const holoSpots=[[-31,3.6,4,1],[31,3.6,4,2],[-13,3.4,29,0],[13,3.4,29,1]];
