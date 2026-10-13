@@ -302,8 +302,6 @@ function buildArchitecture(){
   const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(4.24,2.64)),new THREE.LineBasicMaterial({color:'#7FE0FF',transparent:true,opacity:.75,depthWrite:false}));edge.position.z=.02;g.add(edge);
   const gauge=new THREE.Mesh(new THREE.RingGeometry(.62,.66,64,1,0,4.2),new THREE.MeshBasicMaterial({color:i%2?'#F0C674':'#7FE0FF',transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide}));gauge.position.set(1.3,.55,.05);g.add(gauge);
   const stem=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,y-1.3,6),goldLine);stem.position.y=-(y-1.3)/2-1.3;g.add(stem);hubScene.add(g);A.holos.push({g,m,gauge,y,ph:i*1.7})});
-  const gauge=new THREE.Mesh(new THREE.RingGeometry(.62,.66,64,1,0,4.2),new THREE.MeshBasicMaterial({color:i%2?'#F0C674':'#7FE0FF',transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide}));gauge.position.set(1.3,.55,.05);g.add(gauge);
-  const stem=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,y-1.3,6),goldLine);stem.position.y=-(y-1.3)/2-1.3;g.add(stem);hubScene.add(g);A.holos.push({g,m,gauge,y,ph:i*1.7})});
  // Delicate neural connections from the central intelligence to each destination.
  const curves=[];for(const d of DEST)for(const k of [0,1]){const a=new THREE.Vector3(CORE.x,CORE.y,CORE.z),b=new THREE.Vector3(d.x,d.y,d.z),m=a.clone().lerp(b,.5);m.y+=5+k*3;m.x+=(k?-1:1)*2;const dir=b.clone().sub(a).normalize();curves.push([a.clone().addScaledVector(dir,CORE.r*.9),m,b.clone().addScaledVector(dir,-d.r*.92)])}
  const links=new THREE.Points(curveCloud(curves,coarse?90:140,i=>i%2?1:0),pulseMat(.9,10));links.frustumCulled=false;hubScene.add(links);
