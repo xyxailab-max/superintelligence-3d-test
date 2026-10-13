@@ -27,6 +27,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 #exit:hover,#exit:focus-visible{color:var(--ink);border-color:rgba(127,224,255,.5);outline:none}
 #labels{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
 .lbl{position:absolute;left:0;top:0;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(19px,2.4vw,27px);letter-spacing:.06em;color:var(--ink);text-shadow:0 2px 18px rgba(5,6,15,.95);white-space:nowrap;opacity:0;will-change:transform,opacity}
+#dest{pointer-events:auto;position:absolute;left:50%;bottom:max(28px,calc(env(safe-area-inset-bottom) + 16px));transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:10px 10px 10px 20px;border-radius:99px;border:1px solid var(--line);background:rgba(10,14,32,.72);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(0,0,0,.45);transition:opacity .45s ease}
+#destName{font:600 21px/1 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;white-space:nowrap}
+#destGo{border:1px solid rgba(127,224,255,.4);background:linear-gradient(100deg,var(--signal),#5A9BFF);color:#fff;font:700 13px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;padding:11px 18px;border-radius:99px;cursor:pointer}
+#toast{position:absolute;left:50%;top:16%;transform:translateX(-50%);text-align:center;opacity:0;transition:opacity 1s ease;pointer-events:none}
+#toast b{display:block;font:600 clamp(24px,3.4vw,34px)/1.1 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;color:var(--ink);text-shadow:0 2px 20px rgba(5,6,15,.95)}
+#toast span{display:block;margin-top:8px;font:600 11px/1 Manrope,system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+@media(max-width:640px){#dest{bottom:max(160px,calc(env(safe-area-inset-bottom) + 150px))}}
 #error{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:24px;font:italic 500 22px 'Cormorant Garamond',Georgia,serif;color:var(--mist);z-index:7}
 @media(max-width:420px){#dock{gap:18px}#dock a{font-size:11px;letter-spacing:.15em}#stick{width:106px;height:106px}#knob{left:31px;top:31px;width:42px;height:42px}}
 </style>
@@ -42,6 +49,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 <div id="hud" hidden>
   <div id="stick" aria-label="Move"><div id="knob"></div></div>
   <button id="exit" aria-label="Return to the brain" title="Return to the brain">↺</button>
+  <div id="dest" class="hide"><span id="destName"></span><button id="destGo">Enter →</button></div>
+  <div id="toast" aria-live="polite"><b id="toastName"></b><span id="toastSub"></span></div>
 </div>
 <div id="veil"></div><div id="fade"></div>
 <div id="error"></div>
@@ -214,6 +223,7 @@ function buildHub(){if(hubBuilt)return;hubBuilt=true;
  const ped=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.8,1.1,64),new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.7,roughness:.3,envMap:hub.env}));ped.position.y=.55;hubScene.add(ped);
  const rim=new THREE.Mesh(new THREE.TorusGeometry(4.22,.04,8,128),new THREE.MeshBasicMaterial({color:'#F0C674'}));rim.rotation.x=Math.PI/2;rim.position.y=1.12;hubScene.add(rim);
  buildArchitecture();
+ buildHidden();
 }
 
 // ================= Hub architecture: colonnade, rings, floor inlays, pathways, holograms, neural links =================
@@ -264,11 +274,50 @@ function buildArchitecture(){
  const links=new THREE.Points(curveCloud(curves,coarse?90:140,i=>i%2?1:0),pulseMat(.9,10));links.frustumCulled=false;hubScene.add(links);
  const lineMat=new THREE.LineBasicMaterial({color:'#7FE0FF',transparent:true,opacity:.22,depthWrite:false});for(const c of curves)hubScene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(c).getPoints(80)),lineMat));
 }
+// ================= Hidden neural areas beyond the colonnade =================
+const AREAS=[{id:'grove',name:'Dendrite Grove',x:-66,z:36,r:13},{id:'synapse',name:'Synapse Field',x:66,z:36,r:13},{id:'spire',name:'Memory Spire',x:0,z:-84,r:12,col:3.6}];
+for(const a of AREAS){const l=Math.hypot(a.x,a.z),dx=a.x/l,dz=a.z/l;a.bridge={ax:dx*40.5,az:dz*40.5,bx:a.x-dx*(a.r-1.2),bz:a.z-dz*(a.r-1.2)};a.wake=.12;a.found=false;a.set=[]}
+function buildHidden(){
+ const obsidian=new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.65,roughness:.3,envMap:hub.env}),pathMat=new THREE.MeshStandardMaterial({color:'#121936',metalness:.55,roughness:.3,envMap:hub.env});
+ const V3=(x,y,z)=>new THREE.Vector3(x,y,z),jit=(v,k)=>v.clone().add(V3(randn()*k,randn()*k,randn()*k));
+ for(const a of AREAS){const b=a.bridge,g=new THREE.Group();hubScene.add(g);
+  // Bridge with dim gold edges and faint blue guide lights.
+  const bc=new THREE.CatmullRomCurve3([V3(b.ax,0,b.az),V3(b.bx,0,b.bz)]);g.add(new THREE.Mesh(ribbon(bc,3,30,.02),pathMat));
+  edgeTubes(bc,3,.05,new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.35}),g);
+  const gp=[],gc=[],gs=[],L=Math.hypot(b.bx-b.ax,b.bz-b.az);for(let t=0;t<=L;t+=2.2){const u=t/L;gp.push(lerp(b.ax,b.bx,u),.12,lerp(b.az,b.bz,u));gc.push(BLUE[0],BLUE[1],BLUE[2]);gs.push(.28)}const guide=pointCloud(gp,gc,gs,pointsMat({opacity:.55}));g.add(guide);
+  // Floating platform.
+  const plat=new THREE.Mesh(new THREE.CylinderGeometry(a.r,a.r*.86,1.4,96),obsidian);plat.position.set(a.x,-.7,a.z);g.add(plat);
+  const ring=flatRing(a.r-.6,.08,a.id==='spire'?'#9B6BFF':'#F0C674',.45,.02);ring.position.x=a.x;ring.position.z=a.z;g.add(ring);
+  const glowUnder=halo(a.id==='spire'?'#9B6BFF':'#7FE0FF',a.r*2.6,.12);glowUnder.position.set(a.x,-2.5,a.z);g.add(glowUnder);
+  // Neural structures (only here, never in the open hub).
+  const curves=[],nodes={p:[],c:[],s:[]},extra=[];let hue=()=>0;const C=V3(a.x,0,a.z);
+  if(a.id==='grove'){hue=()=>rand()<.2?1:0;const depthMax=coarse?2:3;
+   const branch=(st,dir,len,dep)=>{const en=st.clone().addScaledVector(dir,len);curves.push([st,jit(st.clone().lerp(en,.5),len*.12),en]);if(dep<depthMax)for(let k=0;k<3;k++)branch(en,dir.clone().add(V3(randn()*.7,.25+rand()*.4,randn()*.7)).normalize(),len*.64,dep+1);else{nodes.p.push(en.x,en.y,en.z);nodes.c.push(BLUE[0],BLUE[1],BLUE[2]);nodes.s.push(.16)}};
+   for(let n=0;n<6;n++){const an=n/6*6.283+rand(),rr=2.5+rand()*7,so=V3(a.x+Math.cos(an)*rr,3+rand()*2.2,a.z+Math.sin(an)*rr);
+    for(let k=0;k<4;k++)branch(so,V3(randn()*.6,.8+rand()*.4,randn()*.6).normalize(),2.2+rand(),1);
+    const foot=V3(so.x+randn()*.8,0.08,so.z+randn()*.8);curves.push([so,jit(so.clone().lerp(foot,.5),.3),foot]);for(let k=0;k<3;k++){const ra=rand()*6.283;curves.push([foot,V3(foot.x+Math.cos(ra)*1.5,.06,foot.z+Math.sin(ra)*1.5),V3(foot.x+Math.cos(ra)*3.4,.05,foot.z+Math.sin(ra)*3.4)])}
+    const soma=new THREE.Mesh(new THREE.SphereGeometry(.42,24,16),new THREE.MeshBasicMaterial({color:'#9FE3FF',transparent:true,opacity:.9}));soma.position.copy(so);g.add(soma);const sh=halo('#7FE0FF',3.2,.35);sh.position.copy(so);g.add(sh);extra.push(soma.material,sh.material)}}
+  else if(a.id==='synapse'){hue=()=>rand()<.45?1:0;const N=coarse?40:64,pts=[];for(let i=0;i<N;i++){const an=rand()*6.283,rr=Math.sqrt(rand())*(a.r-2.5);pts.push(V3(a.x+Math.cos(an)*rr,1.4+rand()*8,a.z+Math.sin(an)*rr))}
+   pts.forEach((q,i)=>{const near=pts.map((o,j)=>[o.distanceTo(q),j]).filter(e=>e[1]!==i).sort((x,y)=>x[0]-y[0]).slice(0,2);for(const [,j] of near)if(j>i){const m=q.clone().lerp(pts[j],.5);m.y-=.4;curves.push([q,m,pts[j]])}const col=i%3?BLUE:GOLD;nodes.p.push(q.x,q.y,q.z);nodes.c.push(col[0],col[1],col[2]);nodes.s.push(.22+rand()*.18)})}
+  else{hue=i=>i%3===2?1:2;const H=22,seg=6;for(let st=0;st<2;st++)for(let k=0;k<seg;k++){const pts=[];for(let i=0;i<=10;i++){const t=(k+i/10)/seg,an=t*6.283*3+st*Math.PI;pts.push(V3(a.x+Math.cos(an)*3,.5+t*H,a.z+Math.sin(an)*3))}curves.push(pts)}
+   for(let y=1.5;y<H;y+=1.6){const t=(y-.5)/H,an=t*6.283*3;curves.push([V3(a.x+Math.cos(an)*3,y,a.z+Math.sin(an)*3),V3(a.x,y,a.z),V3(a.x-Math.cos(an)*3,y,a.z-Math.sin(an)*3)])}
+   for(const y of [4,9,14,19]){const m=new THREE.Mesh(new THREE.TorusGeometry(4.6,.05,6,160),new THREE.MeshBasicMaterial({color:'#9B6BFF',transparent:true,opacity:.6,depthWrite:false}));m.rotation.x=Math.PI/2;m.position.set(a.x,y,a.z);g.add(m);extra.push(m.material)}
+   const crown=halo('#9B6BFF',9,.35);crown.position.set(a.x,H+1,a.z);g.add(crown);extra.push(crown.material)}
+  const pm=pulseMat(1,10),pc=new THREE.Points(curveCloud(curves,coarse?18:26,hue),pm);pc.frustumCulled=false;g.add(pc);
+  const lm=new THREE.LineBasicMaterial({color:a.id==='spire'?'#9B6BFF':'#7FE0FF',transparent:true,opacity:.3,depthWrite:false}),lp=[];for(const c of curves){const q=new THREE.CatmullRomCurve3(c).getPoints(10);for(let i=0;i<q.length-1;i++)lp.push(q[i],q[i+1])}g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lp),lm));
+  let nm=null;if(nodes.p.length){nm=pointsMat({opacity:1});g.add(pointCloud(nodes.p,nodes.c,nodes.s,nm))}
+  const base=extra.map(m=>m.opacity);a.apply=w=>{pm.uniforms.uA.value=w;lm.opacity=.3*w;if(nm)nm.uniforms.uOp.value=w;extra.forEach((m,i)=>m.opacity=base[i]*w);guide.material.uniforms.uOp.value=.35+.4*w};a.apply(a.wake)}}
+let toastTimer=0;function toast(name,sub){$('toastName').textContent=name;$('toastSub').textContent=sub;$('toast').style.opacity=1;toastTimer=4}
+function animateHidden(dt){for(const a of AREAS){if(!a.apply)continue;const d=Math.hypot(P.x-a.x,P.z-a.z),tgt=.12+.88*smooth(a.r+24,a.r+3,d);a.wake+=(tgt-a.wake)*Math.min(1,dt*1.5);a.apply(a.wake);
+  if(!a.found&&d<a.r-1&&state==='hub'){a.found=true;const n=AREAS.filter(x=>x.found).length;toast(a.name,'Hidden neural area · '+n+' of '+AREAS.length)}}
+ if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('toast').style.opacity=0}}
 function animateArchitecture(dt){const A=hub.arch;if(!A)return;A.rings.forEach((m,i)=>{m.rotation.z+=dt*(i%2?-.01:.014)*motion});
  for(const h of A.holos){h.g.position.y=h.y+Math.sin(time*.6+h.ph)*.08*motion;h.m.opacity=.44+.06*Math.sin(time*1.3+h.ph)+.03*Math.sin(time*7.1+h.ph);h.gauge.rotation.z-=dt*.5*motion}}
 // Walkable area and obstacles.
 const COLLIDE=[{x:0,z:0,r:5.4}].concat(DEST.map(d=>({x:d.x,z:d.z,r:6.2})));
-function walkable(x,z){if(Math.hypot(x,z)>42)return false;for(const c of COLLIDE)if(Math.hypot(x-c.x,z-c.z)<c.r)return false;return true}
+function segDist(x,z,b){const vx=b.bx-b.ax,vz=b.bz-b.az,t=clamp(((x-b.ax)*vx+(z-b.az)*vz)/(vx*vx+vz*vz),0,1);return Math.hypot(x-(b.ax+vx*t),z-(b.az+vz*t))}
+function walkable(x,z){let ok=Math.hypot(x,z)<42;if(!ok)for(const a of AREAS)if(Math.hypot(x-a.x,z-a.z)<a.r-1||segDist(x,z,a.bridge)<1.35){ok=true;break}if(!ok)return false;
+ for(const c of COLLIDE)if(Math.hypot(x-c.x,z-c.z)<c.r)return false;if(hub.pillars)for(const c of hub.pillars)if(Math.hypot(x-c.x,z-c.z)<c.r)return false;for(const a of AREAS)if(a.col&&Math.hypot(x-a.x,z-a.z)<a.col)return false;return true}
 
 // ================= State, input, loop =================
 let state='brain',current=brainScene,E=0,skipT=-1,idle=0;
@@ -280,12 +329,12 @@ const _qa=new THREE.Quaternion(),_qb=new THREE.Quaternion(),AX=new THREE.Vector3
 function rotateBrain(dx,dy){_qa.setFromAxisAngle(AY,dx);_qb.setFromAxisAngle(AX,dy);brain.quaternion.premultiply(_qa).premultiply(_qb)}
 function hubFov(){return camera.aspect<1?72:62}
 
-function startEntrance(){if(state!=='brain')return;state='enter';E=0;dock.classList.add('hide');buildHub()}
+function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');buildHub()}
 function toHub(){current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.06;resetQuality()}
 function arriveHub(){state='hub';hud.hidden=false;hud.classList.remove('hide');veil.style.opacity=0;fadeEl.style.opacity=0}
 function requestSkip(){if(state==='enter'&&skipT<0)skipT=0}
 function exitHub(){if(state!=='hub')return;state='leave';E=0}
-function toBrain(){current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
+function toBrain(){setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
 
 // Pointers: brain = 1-finger rotate + pinch zoom; hub = swipe to look.
 const cv=renderer.domElement,ptrs=new Map();let pinch0=0;
@@ -294,10 +343,10 @@ cv.addEventListener('pointerdown',e=>{try{cv.setPointerCapture(e.pointerId)}catc
 cv.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
  if(state==='brain'){if(ptrs.size===1){const k=.0055;rotateBrain(dx*k,dy*k);rotVel.x=dx*k;rotVel.y=dy*k;idle=0}else if(ptrs.size===2){const d=pinchDist();zoom.t=clamp(zoom.t+(d-pinch0)*.0032,-.3,1);pinch0=d}}
  else if(state==='hub'&&e.pointerId===ptrs.keys().next().value){P.yawT-=dx*.0045;P.pitchT=clamp(P.pitchT-dy*.0035,-.6,.65)}});
-const endPtr=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0};
+const endPtr=e=>{const p=ptrs.get(e.pointerId);if(e.type==='pointerup'&&p&&state==='hub'&&Math.hypot(e.clientX-p.sx,e.clientY-p.sy)<10&&performance.now()-p.t<350)tapHub(e.clientX,e.clientY);ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0};
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('wheel',e=>{e.preventDefault();if(state==='brain')zoom.t=clamp(zoom.t-e.deltaY*.0011,-.3,1)},{passive:false});
-addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if(state==='brain'){if(k==='+'||k==='='||k==='e')zoom.t=clamp(zoom.t+.12,-.3,1);if(k==='-'||k==='q')zoom.t=clamp(zoom.t-.12,-.3,1);if(k==='enter')zoom.t=1}else if(state==='enter')requestSkip();else if(state==='hub'&&k==='escape')exitHub()});
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if(state==='brain'){if(k==='+'||k==='='||k==='e')zoom.t=clamp(zoom.t+.12,-.3,1);if(k==='-'||k==='q')zoom.t=clamp(zoom.t-.12,-.3,1);if(k==='enter')zoom.t=1}else if(state==='enter')requestSkip();else if(state==='hub'&&k==='escape')exitHub();else if(state==='hub'&&k==='enter'&&curDest)flyTo(curDest)});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 // Joystick.
 const stick=$('stick'),knob=$('knob');let stickId=null;
@@ -305,7 +354,7 @@ function moveStick(e){const r=stick.getBoundingClientRect();let x=e.clientX-(r.l
 stick.addEventListener('pointerdown',e=>{e.stopPropagation();stickId=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});
 stick.addEventListener('pointermove',e=>{if(e.pointerId===stickId)moveStick(e)});
 const stopStick=e=>{if(e.pointerId===stickId){stickId=null;walk.x=walk.y=0;knob.style.transform=''}};stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);
-$('exit').addEventListener('click',exitHub);
+$('exit').addEventListener('click',exitHub);$('destGo').addEventListener('click',()=>flyTo(curDest));
 
 function resize(){camera.aspect=innerWidth/innerHeight;if(current===hubScene)camera.fov=hubFov();camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fitBrain()}
 addEventListener('resize',resize);fitBrain();
@@ -335,11 +384,30 @@ function animateHub(dt){if(!hubBuilt)return;
  for(const s of hub.spheres){s.s.rotation.y+=dt*.05*motion;s.ring.rotation.z+=dt*.08*motion;s.g.position.y=s.d.y+Math.sin(time*.5+s.d.x)*.35*motion}
  hub.core.rotation.y+=dt*.1*motion;
  for(const s of hub.spheres){s.mirror.position.y=-s.g.position.y;s.mirror.rotation.y=s.s.rotation.y}if(hub.coreMirror)hub.coreMirror.rotation.y=hub.core.rotation.y;
- animateArchitecture(dt);
+ animateArchitecture(dt);animateHidden(dt);
+ let near=null,nd=1e9;for(const s of hub.spheres){const dd=Math.hypot(P.x-s.d.x,P.z-s.d.z),tg=(state==='hub'||state==='fly')&&dd<18?1:0;if(tg&&dd<nd){near=s;nd=dd}s.hover+=(tg-s.hover)*Math.min(1,dt*3);s.u.uHover.value=s.hover;s.h.material.opacity=.22+.2*s.hover;s.L.intensity=.9+.8*s.hover;s.ring.scale.setScalar(1+.08*s.hover);s.ring.rotation.z+=dt*.25*s.hover*motion;s.s.rotation.y+=dt*.12*s.hover*motion}
+ setDest(state==='hub'?near:null);
  // Labels follow their destination spheres.
  camera.updateMatrixWorld();
  for(const s of hub.spheres){_v.set(s.d.x,s.g.position.y+s.d.r+2.2,s.d.z).project(camera);const dist=Math.hypot(P.x-s.d.x,P.z-s.d.z);const vis=_v.z<1&&current===hubScene&&state!=='leave'?smooth(95,40,dist):0;
-  s.el.style.opacity=vis.toFixed(3);if(vis>0)s.el.style.transform='translate('+((_v.x*.5+.5)*innerWidth).toFixed(1)+'px,'+((-_v.y*.5+.5)*innerHeight).toFixed(1)+'px) translate(-50%,-100%)'}}
+  s.el.style.opacity=vis.toFixed(3);if(vis>0)s.el.style.transform='translate('+((_v.x*.5+.5)*innerWidth).toFixed(1)+'px,'+((-_v.y*.5+.5)*innerHeight).toFixed(1)+'px) translate(-50%,-100%) scale('+(1+.12*s.hover).toFixed(3)+')'}}
+let curDest=null;function setDest(s){if(s===curDest)return;curDest=s;const el=$('dest');if(s){$('destName').textContent=s.d.name;$('destGo').textContent='Enter '+s.d.name+' →';el.classList.remove('hide')}else el.classList.add('hide')}
+const lerpAngle=(a,b,t)=>a+Math.atan2(Math.sin(b-a),Math.cos(b-a))*t;
+let fly=null;
+function flyTo(s){if(state!=='hub'||!s)return;state='fly';setDest(null);hud.classList.add('hide');const d=s.d,dx=P.x-d.x,dz=P.z-d.z,l=Math.hypot(dx,dz)||1;
+ fly={s,T:0,done:false,x0:P.x,z0:P.z,yaw0:P.yaw,pitch0:P.pitch,x1:d.x+dx/l*(d.r+2.4),z1:d.z+dz/l*(d.r+2.4)};
+ veil.style.background='radial-gradient(circle at 50% 50%,#FFFFFF 0%,'+d.c+' 36%,#070914 100%)'}
+function placeNear(id){const d=DEST.find(x=>x.id===id)||DEST[0],l=Math.hypot(d.x,d.z)||1;P.x=d.x-d.x/l*15;P.z=d.z-d.z/l*15;if(id==='market'){P.x=0;P.z=d.z+16}P.yaw=P.yawT=Math.atan2(-(d.x-P.x),-(d.z-P.z));P.pitch=P.pitchT=.18}
+function updateFly(dt){const f=fly,d=f.s.d;f.T+=dt;const T=f.T,D=reduceMotion?1:2.7;
+ if(!reduceMotion){const u=smooth(0,2.3,T),x=lerp(f.x0,f.x1,u),z=lerp(f.z0,f.z1,u),y=lerp(EYE,d.y,smooth(.3,2.3,T)),h=Math.hypot(d.x-x,d.z-z)||1,k=smooth(0,1.1,T);
+  P.x=x;P.z=z;P.yaw=P.yawT=lerpAngle(f.yaw0,Math.atan2(-(d.x-x),-(d.z-z)),k);P.pitch=P.pitchT=lerp(f.pitch0,Math.atan2(d.y-y,h),k);camera.position.set(x,y,z);camera.rotation.set(P.pitch,P.yaw,0)}
+ veil.style.opacity=smooth(D-.9,D,T);
+ if(T>=D&&!f.done){f.done=true;try{sessionStorage.setItem('usi-return',d.id)}catch(e){}location.href=d.url}
+ if(T>D+8)restoreFromFly()}
+function restoreFromFly(){if(!fly)return;try{sessionStorage.removeItem('usi-return')}catch(e){}placeNear(fly.s.d.id);fly=null;state='arrive';E=0;veil.style.opacity=0;fadeEl.style.opacity=1}
+function updateArrive(dt){E+=dt;updateHub(dt);fadeEl.style.opacity=1-smooth(0,1.1,E);if(E>=1.1)arriveHub()}
+const ray=new THREE.Raycaster(),_ndc=new THREE.Vector2();
+function tapHub(cx,cy){_ndc.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(_ndc,camera);const hits=ray.intersectObjects(hub.spheres.map(s=>s.s),false);if(hits.length){flyTo(hub.spheres.find(s=>s.s===hits[0].object))}}
 function updateEnter(dt){E+=dt;
  if(skipT>=0){skipT+=dt;fadeEl.style.opacity=Math.min(1,skipT/.3);if(skipT>=.3&&current!==hubScene){toHub();veil.style.opacity=0}if(current===hubScene){updateHub(0);const o=1-smooth(.3,1.1,skipT);fadeEl.style.opacity=o;if(o<=0){skipT=-1;arriveHub()}}return}
  if(reduceMotion){fadeEl.style.opacity=Math.min(1,E/.7);if(E>=.7&&current!==hubScene)toHub();if(current===hubScene){updateHub(0);fadeEl.style.opacity=1-smooth(.7,1.6,E);if(E>=1.6)arriveHub()}return}
@@ -350,9 +418,12 @@ function updateLeave(dt){E+=dt;fadeEl.style.opacity=Math.min(1,E/.5);if(E>=.5&&c
 
 function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);time+=dt;U.uTime.value=time*motion;
  for(const g of galaxies)g.rotation.y+=dt*.004*motion;cosmos.rotation.y+=dt*.0015*motion;
- if(state==='brain')updateBrain(dt);else if(state==='enter')updateEnter(dt);else if(state==='hub')updateHub(dt);else if(state==='leave')updateLeave(dt);
+ if(state==='brain')updateBrain(dt);else if(state==='enter')updateEnter(dt);else if(state==='hub')updateHub(dt);else if(state==='leave')updateLeave(dt);else if(state==='fly')updateFly(dt);else if(state==='arrive')updateArrive(dt);
  if(current===hubScene)animateHub(dt);
  updatePointScale();renderer.render(current,camera);quality(dt)}
+let ret=null;try{ret=sessionStorage.getItem('usi-return');if(ret)sessionStorage.removeItem('usi-return')}catch(e){}
+if(ret&&DEST.some(d=>d.id===ret)){buildHub();toHub();placeNear(ret);dock.classList.add('hide');state='arrive';E=0;fadeEl.style.opacity=1}
+addEventListener('pageshow',e=>{if(e.persisted&&state==='fly')restoreFromFly()});
 // Prebuild the hub and warm up shaders after the brain is showing, so the entrance has no hitch.
 setTimeout(()=>{try{buildHub();renderer.compile(tunnelScene,camera);const prev=cosmos.parent;hubScene.add(cosmos);renderer.compile(hubScene,camera);if(prev)prev.add(cosmos)}catch(e){console.warn(e)}},1200);
 frame();
