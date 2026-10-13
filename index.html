@@ -56,6 +56,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 <div id="veil"></div><div id="fade"></div>
 <div id="error"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script>
 (function(){'use strict';
 const $=id=>document.getElementById(id);
@@ -125,7 +131,7 @@ cosmos.add(new THREE.Mesh(new THREE.SphereGeometry(900,48,24),new THREE.ShaderMa
  'c+=vec3(.10,.17,.38)*neb*band*.75+vec3(.17,.10,.34)*smoothstep(.55,.9,n2)*band*.45+vec3(.30,.24,.11)*pow(neb,3.)*band*.28;gl_FragColor=vec4(c,1.);}'})));
 (()=>{const N=coarse?1600:2600,p=[],c=[],s=[];for(let i=0;i<N;i++){const y=rand()*2-1,a=rand()*6.2832,r=Math.sqrt(1-y*y),R=820;p.push(Math.cos(a)*r*R,y*R,Math.sin(a)*r*R);const k=rand(),col=k<.12?GOLD:k<.32?BLUE:INK,b=.35+rand()*.65;c.push(col[0]*b,col[1]*b,col[2]*b);s.push(1+rand()*rand()*2.2)}cosmos.add(pointCloud(p,c,s,pointsMat({att:false})))})();
 function galaxy(x,y,z,R,rx,rz,n,br){br=br||1;const p=[],c=[],s=[];for(let i=0;i<n;i++){const r=Math.pow(rand(),.65)*R,arm=(i%2)*Math.PI,a=arm+r/R*5.2+randn()*.32/(.25+r/R),th=randn()*R*.03*(1-r/R*.7);p.push(Math.cos(a)*r,th,Math.sin(a)*r);const t=r/R,col=t<.18?GOLD:t<.55?[lerp(GOLD[0],BLUE[0],(t-.18)/.37),lerp(GOLD[1],BLUE[1],(t-.18)/.37),lerp(GOLD[2],BLUE[2],(t-.18)/.37)]:[lerp(BLUE[0],VIOLET[0],(t-.55)/.45),lerp(BLUE[1],VIOLET[1],(t-.55)/.45),lerp(BLUE[2],VIOLET[2],(t-.55)/.45)],b=(.45+rand()*.6)*(1.25-t*.55)*br;c.push(col[0]*b,col[1]*b,col[2]*b);s.push(R*(.016+rand()*.024))}
- const g=new THREE.Group();g.add(pointCloud(p,c,s,pointsMat({opacity:.9})));g.add(halo('#F0C674',R*.5,.34*br));g.add(halo('#7FE0FF',R*1.5,.09*br));g.position.set(x,y,z);g.rotation.set(rx,0,rz);cosmos.add(g);return g}
+ const g=new THREE.Group();const disc=new THREE.Mesh(new THREE.PlaneGeometry(R*2.6,R*2.6),new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,uniforms:{uB:{value:.6*br}},vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:GLSL_NOISE+'uniform float uB;varying vec2 vU;void main(){vec2 p=(vU-.5)*2.6;float r=length(p),a=atan(p.y,p.x);float s=.5+.5*cos(2.*(a+5.2*r));float arms=pow(s,3.);float n=fbm(vec3(p*4.,1.7));float disk=exp(-r*2.4);float core=exp(-r*r*36.);vec3 gold=vec3(.941,.776,.455),blue=vec3(.498,.878,1.),vio=vec3(.608,.42,1.);vec3 col=mix(gold,mix(blue,vio,smoothstep(.5,1.,r)),smoothstep(.08,.5,r))*arms*disk*(.5+.8*n)+vec3(1.,.93,.8)*core*1.3+vio*disk*.12;col*=smoothstep(1.25,.75,r)*uB;gl_FragColor=vec4(col,1.);}'}));disc.rotation.x=-Math.PI/2;g.add(disc);g.add(pointCloud(p,c,s,pointsMat({opacity:.9})));g.add(halo('#F0C674',R*.5,.34*br));g.add(halo('#7FE0FF',R*1.5,.09*br));g.position.set(x,y,z);g.rotation.set(rx,0,rz);cosmos.add(g);return g}
 const galaxies=[galaxy(-150,150,-650,110,1.15,.4,coarse?2600:4200),galaxy(175,40,-640,85,1.3,-.5,coarse?2000:3200),galaxy(160,320,620,80,1.3,.2,coarse?1400:2200),galaxy(-520,260,-380,45,.9,.6,coarse?600:1000,.55),galaxy(430,200,-280,34,1.1,-.3,coarse?500:800,.5)];
 for(const [c,x,y,z,sc,op] of [['#9B6BFF',-60,260,-760,420,.07],['#3D7BFF',300,120,-700,340,.06],['#F0C674',-330,40,-640,220,.035]]){const h=halo(c,sc,op);h.position.set(x,y,z);cosmos.add(h)}
 const planetMat=(c1,c2,atm)=>new THREE.ShaderMaterial({uniforms:{uC1:{value:new THREE.Color(c1)},uC2:{value:new THREE.Color(c2)},uAtm:{value:new THREE.Color(atm)},uL:{value:new THREE.Vector3(-.6,.45,.65).normalize()}},
@@ -215,7 +221,7 @@ function energyMat(c,c2,dim,side){const u={uTime:U.uTime,uC:{value:new THREE.Col
  'float n=fbm(o*2.2+vec3(0.,uTime*.06,uTime*.03));float sw=fbm(o*4.+n*2.-uTime*.05);float b=smoothstep(.45,.75,sw);vec3 col=mix(uC*.10,uC*.72,b*(.6+.4*n));col+=uC2*pow(b,3.)*.25;col*=.55+.45*ndv;col+=mix(uC,vec3(1.),.35)*fr*(.5+.5*uHover);col*=(.78+.42*uHover)*uDim;gl_FragColor=vec4(col,1.);}'})}
 function shellMat(c,op,inner){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uC:{value:new THREE.Color(c)},uHover:{value:0},uOp:{value:op||1},uIn:{value:inner||0},uBk:{value:0}},
  vertexShader:'varying vec3 vN,vW;void main(){vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
- fragmentShader:'uniform vec3 uC;uniform float uHover,uOp,uIn,uBk;varying vec3 vN,vW;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);if(uBk>.5)N=-N;float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.4),rim=pow(1.-ndv,6.);vec3 L=normalize(vec3(-.4,.8,.45));float sp=pow(max(dot(reflect(-L,N),V),0.),60.);float low=smoothstep(.1,-.9,N.y)*uIn;float sh=pow(max(dot(reflect(-L,N),V),0.),8.)*uIn;vec3 col=uC*(.06+fr*.8)+mix(uC,vec3(1.),.5)*rim*.9+vec3(1.)*sp*.6+uC*low*.35+vec3(1.)*sh*.12;float a=(.08+fr*.5+rim*.3+sp*.5+low*.06+sh*.06)*(.85+.3*uHover)*uOp;gl_FragColor=vec4(col,min(a,.95));}'})}
+ fragmentShader:'uniform vec3 uC;uniform float uHover,uOp,uIn,uBk;varying vec3 vN,vW;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);if(uBk>.5)N=-N;float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.4),rim=pow(1.-ndv,6.);vec3 L=normalize(vec3(-.4,.8,.45));float sp=pow(max(dot(reflect(-L,N),V),0.),60.);float low=smoothstep(.1,-.9,N.y)*uIn;float sh=pow(max(dot(reflect(-L,N),V),0.),8.)*uIn;vec3 R=reflect(-V,N);float bandR=smoothstep(.14,0.,abs(R.y-.22))*uIn*(.4+.6*fr);float win=pow(max(dot(R,normalize(vec3(-.5,.55,.65))),0.),24.)*uIn;vec3 col=uC*(.06+fr*.8)+mix(uC,vec3(1.),.5)*rim*.9+vec3(1.)*sp*.6+uC*low*.35+vec3(1.)*sh*.12+vec3(.94,.78,.45)*bandR*.35+vec3(1.)*win*.5;float a=(.08+fr*.5+rim*.3+sp*.5+low*.06+sh*.06+bandR*.12+win*.3)*(.85+.3*uHover)*uOp;gl_FragColor=vec4(col,min(a,.95));}'})}
 // ================= Destination interiors (rebuilt to the approved reference) =================
 // Each destination is a complete miniature world suspended in glass: a floating island with a jagged, faceted
 // rock underside and glowing mineral veins, light falls spilling from its rim, curved lathe-turned spires,
@@ -338,10 +344,10 @@ INTERIORS.agents=(city,ctx)=>{const BL='#7FE0FF',CY='#B8F3FF',y0=-2.4,M=ctx.mat(
  ctx.anim.push(t=>{r1.rotation.z=t*.3*motion;r2.rotation.y=t*.4*motion;core.position.y=b+5.4+Math.sin(t*.8)*.12*motion;holo.rotation.y=t*.05*motion;ch.material.opacity=.34+.1*Math.sin(t*1.05)})};
 let hubBuilt=false;const hub={spheres:[],labels:[]};
 function buildHub(){if(hubBuilt)return;hubBuilt=true;
- hubScene.add(new THREE.HemisphereLight('#5A6DB8','#0A1022',1.05));const k=new THREE.DirectionalLight('#E4ECFF',1.0);k.position.set(-30,50,40);hubScene.add(k);const fill=new THREE.DirectionalLight('#7FE0FF',.35);fill.position.set(25,14,60);hubScene.add(fill);
+ hubScene.add(new THREE.HemisphereLight('#6276C4','#141C34',1.35));const k=new THREE.DirectionalLight('#E4ECFF',1.15);k.position.set(-30,50,40);hubScene.add(k);const fill=new THREE.DirectionalLight('#7FE0FF',.35);fill.position.set(25,14,60);hubScene.add(fill);
  // Environment reflections from the cosmos.
  const pm=new THREE.PMREMGenerator(renderer),tmp=new THREE.Scene(),prev=cosmos.parent;tmp.add(cosmos);hub.env=pm.fromScene(tmp,0,.1,2000).texture;pm.dispose();if(prev)prev.add(cosmos);
- hub.floorMat=new THREE.MeshStandardMaterial({color:'#11182B',metalness:.55,roughness:.28,envMap:hub.env,envMapIntensity:1.25,transparent:true,opacity:.76});
+ hub.floorMat=new THREE.MeshStandardMaterial({color:'#11182B',metalness:.5,roughness:.22,envMap:hub.env,envMapIntensity:1.6,transparent:true,opacity:.62});
  const floor=new THREE.Mesh(new THREE.CircleGeometry(46,128),hub.floorMat);floor.rotation.x=-Math.PI/2;floor.renderOrder=-1;hubScene.add(floor);
  const lab=$('labels');
  for(const d of DEST){const g=new THREE.Group();g.position.set(d.x,d.y,d.z);hubScene.add(g);
@@ -349,9 +355,11 @@ function buildHub(){if(hubBuilt)return;hubBuilt=true;
   const shell=new THREE.Mesh(new THREE.SphereGeometry(d.r,64,48),shellMat(d.c,.55,1));shell.renderOrder=2;g.add(shell);
   const inner=new THREE.Mesh(shell.geometry,shellMat(d.c,.45,1));inner.material.side=THREE.BackSide;inner.material.uniforms.uBk.value=1;inner.renderOrder=1;g.add(inner);
   const mp=[],mc=[],ms=[],c1=new THREE.Color(d.c),c2=new THREE.Color(d.c2);for(let i=0;i<(coarse?80:130);i++){const v=new THREE.Vector3(randn(),randn(),randn()).normalize().multiplyScalar(d.r*(.84+rand()*.12)),k=rand()<.3?c2:c1;mp.push(v.x,v.y,v.z);mc.push(k.r,k.g,k.b);ms.push(.1+rand()*.22)}const motes=pointCloud(mp,mc,ms,pointsMat({opacity:.7}));g.add(motes);
-  const rings=[[1.22,.045,'#F0C674',.6,[1.2,.2,.3]],[1.36,.03,d.c,.4,[.5,1.1,-.4]],[1.12,.025,'#E9EDFF',.25,[1.7,-.6,.9]]].map(([k,t,c,op,r])=>{const m=new THREE.Mesh(new THREE.TorusGeometry(d.r*k,t,8,200),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));m.rotation.set(r[0],r[1],r[2]);g.add(m);return m});const ring=rings[0];
+  const rk=d.id==='creators'?.88:1;const rings=[[1.32*rk,.05,'#F0C674',.75,[Math.PI/2-.22,0,.06]],[1.46*rk,.03,d.pal.hi,.45,[Math.PI/2-.16,0,-.08]],[1.14,.025,d.c,.4,[Math.PI/2-.5,.3,.2]]].map(([k,t,c,op,r])=>{const m=new THREE.Mesh(new THREE.TorusGeometry(d.r*k,t,8,200),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));m.rotation.set(r[0],r[1],r[2]);g.add(m);return m});const ring=rings[0];
   const h=halo(d.c,d.r*2.6,.12);g.add(h);
-  const L=new THREE.PointLight(d.c,1.6,80,2);g.add(L);
+  const L=new THREE.PointLight(d.c,2.4,90,2);g.add(L);
+  // Soft pool of the destination's color on the floor beneath it (fake indirect light).
+  const pool=new THREE.Mesh(new THREE.PlaneGeometry(d.r*3.4,d.r*3.4),new THREE.MeshBasicMaterial({map:glowTex,color:d.c,transparent:true,opacity:.45,depthWrite:false,blending:THREE.AdditiveBlending}));pool.rotation.x=-Math.PI/2;pool.position.set(d.x,.05,d.z+d.r*.35);hubScene.add(pool);
   const land=new THREE.Mesh(new THREE.RingGeometry(7.5,7.8,128),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.5,depthWrite:false}));land.rotation.x=-Math.PI/2;land.position.set(d.x,.03,d.z);hubScene.add(land);
   const el=document.createElement('div');el.className='lbl';el.textContent=d.name;lab.appendChild(el);
   const mirror=s.clone(true);mirror.scale.y=-1;mirror.position.set(d.x,-d.y,d.z);hubScene.add(mirror);
@@ -507,7 +515,7 @@ function rotateBrain(dx,dy){_qa.setFromAxisAngle(AY,dx);_qb.setFromAxisAngle(AX,
 function hubFov(){const a=camera.aspect;return clamp(2*Math.atan(Math.tan(32.5*Math.PI/180)/a)*180/Math.PI,46,80)}
 
 function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');buildHub()}
-function toHub(){renderer.toneMappingExposure=1.12;cosmos.rotation.x=.33;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.2;resetQuality()}
+function toHub(){renderer.toneMappingExposure=1.2;cosmos.rotation.x=.33;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.2;resetQuality()}
 function arriveHub(){state='hub';hud.hidden=false;hud.classList.remove('hide');veil.style.opacity=0;fadeEl.style.opacity=0}
 function requestSkip(){if(state==='enter'&&skipT<0)skipT=0}
 function exitHub(){if(state!=='hub')return;state='leave';E=0}
@@ -533,12 +541,20 @@ stick.addEventListener('pointermove',e=>{if(e.pointerId===stickId)moveStick(e)})
 const stopStick=e=>{if(e.pointerId===stickId){stickId=null;walk.x=walk.y=0;knob.style.transform=''}};stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);
 $('exit').addEventListener('click',exitHub);$('destGo').addEventListener('click',()=>flyTo(curDest));
 
-function resize(){camera.aspect=innerWidth/innerHeight;if(current===hubScene)camera.fov=hubFov();camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fitBrain()}
+function resize(){camera.aspect=innerWidth/innerHeight;if(current===hubScene)camera.fov=hubFov();camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);sizeBloom();fitBrain()}
 addEventListener('resize',resize);fitBrain();
 
 // Adaptive quality: lower resolution if the frame rate drops.
 let qT=-1.5,qF=0;function resetQuality(){qT=-1.5;qF=0}
-function quality(dt){if(dprStep>=DPR_STEPS.length-1)return;qT+=dt;if(qT<0)return;qF++;if(qT>=2.5){const fps=qF/qT;qT=0;qF=0;if(fps<42){dprStep++;renderer.setPixelRatio(DPR_STEPS[dprStep]);renderer.setSize(innerWidth,innerHeight)}}}
+// Bloom: only bright emissive parts glow (high threshold). Rendered into an sRGB target so the custom shaders keep
+// their exact colors. Turned off automatically on slow devices, or with ?bloom=0 in the address.
+let composer=null,renderPass=null,bloom=null;
+function setupBloom(){try{if(!THREE.EffectComposer||!THREE.UnrealBloomPass||!THREE.RenderPass||/bloom=0/.test(location.search))return;
+ const sz=renderer.getDrawingBufferSize(new THREE.Vector2()),MS=renderer.capabilities.isWebGL2&&THREE.WebGLMultisampleRenderTarget,rt=MS?new THREE.WebGLMultisampleRenderTarget(sz.x,sz.y):new THREE.WebGLRenderTarget(sz.x,sz.y);if(MS)rt.samples=4;rt.texture.encoding=THREE.sRGBEncoding;
+ composer=new THREE.EffectComposer(renderer,rt);renderPass=new THREE.RenderPass(current,camera);bloom=new THREE.UnrealBloomPass(new THREE.Vector2(sz.x,sz.y),.55,.45,.72);composer.addPass(renderPass);composer.addPass(bloom);composer.setSize(sz.x,sz.y)}catch(e){console.warn(e);composer=null}}
+function sizeBloom(){if(!composer)return;const sz=renderer.getDrawingBufferSize(new THREE.Vector2());composer.setSize(sz.x,sz.y)}
+function bloomFor(){if(!bloom)return;if(current===hubScene){bloom.threshold=.7;bloom.strength=.6;bloom.radius=.45}else if(current===tunnelScene){bloom.threshold=.5;bloom.strength=.75;bloom.radius=.5}else{bloom.threshold=.78;bloom.strength=.42;bloom.radius=.4}}
+function quality(dt){if(composer===null&&dprStep>=DPR_STEPS.length-1)return;qT+=dt;if(qT<0)return;qF++;if(qT>=2.5){const fps=qF/qT;qT=0;qF=0;if(fps<42&&composer){composer=null;return}if(fps<42&&dprStep<DPR_STEPS.length-1){dprStep++;renderer.setPixelRatio(DPR_STEPS[dprStep]);renderer.setSize(innerWidth,innerHeight)}}}
 
 const _v=new THREE.Vector3(),_w=new THREE.Vector3(),clock=new THREE.Clock();let time=0;
 function updateBrain(dt){
@@ -563,7 +579,7 @@ function animateHub(dt){if(!hubBuilt)return;
  {const pz=Math.pow(.5+.5*Math.sin(time*1.047),6),fx=hub.coreFx;fx.shell.uHover.value=.2+.8*pz;fx.halo.material.opacity=.26+.16*pz;fx.light.intensity=1.1+.7*pz}
  for(const s of hub.spheres){s.mirror.position.y=-s.g.position.y;s.mirror.rotation.y=s.s.rotation.y}if(hub.coreMirror)hub.coreMirror.rotation.y=hub.core.rotation.y;
  animateArchitecture(dt);animateHidden(dt);
- let near=null,nd=1e9;for(const s of hub.spheres){const dd=Math.hypot(P.x-s.d.x,P.z-s.d.z),tg=(state==='hub'||state==='fly')&&dd<24?1:0;if(tg&&dd<nd){near=s;nd=dd}s.hover+=(tg-s.hover)*Math.min(1,dt*3);s.u.uHover.value=s.hover;s.su.uHover.value=s.hover;s.h.material.opacity=.12+.12*s.hover;s.L.intensity=1.6+.8*s.hover;s.rings.forEach(m=>m.scale.setScalar(1+.07*s.hover));s.ring.rotation.z+=dt*.25*s.hover*motion;s.s.rotation.y+=dt*.12*s.hover*motion}
+ let near=null,nd=1e9;for(const s of hub.spheres){const dd=Math.hypot(P.x-s.d.x,P.z-s.d.z),tg=(state==='hub'||state==='fly')&&dd<24?1:0;if(tg&&dd<nd){near=s;nd=dd}s.hover+=(tg-s.hover)*Math.min(1,dt*3);s.u.uHover.value=s.hover;s.su.uHover.value=s.hover;s.h.material.opacity=.12+.12*s.hover;s.L.intensity=2.4+.9*s.hover;s.rings.forEach(m=>m.scale.setScalar(1+.07*s.hover));s.ring.rotation.z+=dt*.25*s.hover*motion;s.s.rotation.y+=dt*.12*s.hover*motion}
  setDest(state==='hub'?near:null);
  // Labels follow their destination spheres.
  camera.updateMatrixWorld();
@@ -598,12 +614,13 @@ function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta()
  for(const g of galaxies)g.rotation.y+=dt*.004*motion;if(hub.sky)for(const g of hub.sky)g.rotateY(dt*.004*motion);cosmos.rotation.y+=dt*.0015*motion;
  if(state==='brain')updateBrain(dt);else if(state==='enter')updateEnter(dt);else if(state==='hub')updateHub(dt);else if(state==='leave')updateLeave(dt);else if(state==='fly')updateFly(dt);else if(state==='arrive')updateArrive(dt);
  if(current===hubScene)animateHub(dt);
- updatePointScale();renderer.render(current,camera);quality(dt)}
+ updatePointScale();if(composer){renderPass.scene=current;bloomFor();composer.render(dt)}else renderer.render(current,camera);quality(dt)}
 let ret=null;try{ret=sessionStorage.getItem('usi-return');if(ret)sessionStorage.removeItem('usi-return')}catch(e){}
 if(ret&&DEST.some(d=>d.id===ret)){buildHub();toHub();placeNear(ret);dock.classList.add('hide');state='arrive';E=0;fadeEl.style.opacity=1}
 addEventListener('pageshow',e=>{if(e.persisted&&state==='fly')restoreFromFly()});
 // Prebuild the hub and warm up shaders after the brain is showing, so the entrance has no hitch.
 setTimeout(()=>{try{buildHub();renderer.compile(tunnelScene,camera);const prev=cosmos.parent;hubScene.add(cosmos);renderer.compile(hubScene,camera);if(prev)prev.add(cosmos)}catch(e){console.warn(e)}},1200);
+setupBloom();
 frame();
 })();
 </script>
