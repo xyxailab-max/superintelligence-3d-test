@@ -15,6 +15,80 @@ const portals=[{name:'FOR CREATORS',c:'#a45eff',x:-18,link:'marketplace.html#sel
 function label(text,c){const c2=document.createElement('canvas');c2.width=1024;c2.height=170;const cx=c2.getContext('2d');cx.fillStyle='rgba(255,255,255,.9)';cx.beginPath();cx.roundRect(6,6,1012,158,45);cx.fill();cx.strokeStyle=c;cx.lineWidth=12;cx.stroke();cx.fillStyle='#29477d';cx.font='bold 76px system-ui';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(text,512,88);const tx=new THREE.CanvasTexture(c2);tx.encoding=THREE.sRGBEncoding;return new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false})}for(const o of gateMeshes)mesh(new THREE.PlaneGeometry(10,1.65),label(o.p.name,o.p.c),0,15.8,1,o.g);
 // Decorative gardens and floating architecture.
 for(let side of [-1,1])for(let i=0;i<7;i++){let z=-52+i*13,x=side*(15+i%2*3);cyl(4.5,4.8,.7,white,x,1.5,z);cyl(.55,.8,3,white,x,3.2,z);sphere(2.5,mat(i%2?'#f5a9df':'#b9a5ff'),x,5.6,z);sphere(1.4,mat('#9fe0ba'),x+1.6,5,z+1);}
+
+// Visual upgrade: three distinct, explorable-looking worlds beyond the gateways.
+const luminous=(c,intensity=.7)=>new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:intensity,metalness:.22,roughness:.3});
+const glass=(c,opacity=.52)=>new THREE.MeshPhysicalMaterial({color:c,transparent:true,opacity,metalness:.18,roughness:.1,side:THREE.DoubleSide,depthWrite:false});
+const rnd=(i,k=1)=>{let n=Math.sin(i*127.1+k*311.7)*43758.5453;return n-Math.floor(n)};
+function tower(x,z,h,color){
+  mesh(new THREE.CylinderGeometry(2.4,3.3,h,8),white,x,h/2-1,z);
+  mesh(new THREE.CylinderGeometry(2.5,2.5,.2,8),luminous(color,.8),x,h-1,z);
+  for(let q=0;q<3;q++)ring(2.7+q*.25,.06,glow(color),x,h*.45+q*1.1,z,Math.PI/2);
+}
+function island(x,z,r,color){
+  cyl(r,r+.7,.75,white,x,1.5,z);
+  cyl(r-.2,r-.2,.12,luminous(color,.35),x,1.94,z);
+  ring(r-.2,.13,glow(color),x,2.02,z,Math.PI/2);
+}
+for(let i=0;i<32;i++){
+  let x=(rnd(i,1)-.5)*115,z=-100+rnd(i,2)*150;
+  if(Math.abs(x)<34 && z>-60 && z<43)continue;
+  sphere(1.2+rnd(i,3)*2.4,glass(i%2?'#ffffff':'#b7d8ff',.28),x,18+rnd(i,4)*24,z);
+}
+// Creator sanctuary: flowering energy tree and white floating studios.
+island(-43,-75,14,'#c179ff');
+for(let i=0;i<5;i++){
+  let a=i*Math.PI*2/5, x=-43+Math.cos(a)*20,z=-75+Math.sin(a)*16;
+  island(x,z,4.8,'#d49bff');
+  tower(x,z,4.5+i%2*2,'#bb76ff');
+}
+cyl(1.5,2.5,14,white,-43,9,-75);
+for(let i=0;i<13;i++){
+  let a=i*2.4, h=14+rnd(i,7)*8,rad=3+rnd(i,8)*6;
+  let branch=mesh(new THREE.CylinderGeometry(.16,.55,rad,7),luminous('#d5a8ff',.4),-43+Math.cos(a)*rad*.32,h-1,-75+Math.sin(a)*rad*.32);
+  branch.rotation.z=Math.cos(a)*.7;branch.rotation.x=Math.sin(a)*.7;
+  sphere(2.3+rnd(i,9)*1.6,glass(i%2?'#ff9ee2':'#c29cff',.82),-43+Math.cos(a)*rad,h,-75+Math.sin(a)*rad);
+}
+for(let i=0;i<75;i++){
+  let a=rnd(i,10)*Math.PI*2,r=3+rnd(i,11)*12;
+  sphere(.07+rnd(i,12)*.15,glow(i%2?'#fca9eb':'#ae8cff'),-43+Math.cos(a)*r,8+rnd(i,13)*17,-75+Math.sin(a)*r);
+}
+// Golden marketplace: radiant civic plaza, colonnades, golden spires.
+island(0,-84,17,'#ffd57d');
+for(let i=0;i<10;i++){
+  let a=i*Math.PI/5,x=Math.cos(a)*23,z=-84+Math.sin(a)*21;
+  island(x,z,4.4,'#ffcf73');
+  tower(x,z,7+rnd(i,14)*7,'#ffcb54');
+}
+cyl(4.3,6,13,white,0,8,-84);
+cyl(5.1,5.1,.35,luminous('#ffd777',.7),0,15,-84);
+sphere(3.6,glass('#ffe29b',.85),0,19,-84);
+for(let i=0;i<4;i++)ring(5+i*1.4,.13,glow('#ffd365'),0,18,-84,Math.PI/2+i*.25);
+// Agent hub: blue holographic intelligence, orbiting data rings.
+island(43,-75,14,'#6acbff');
+for(let i=0;i<7;i++){
+  let a=i*Math.PI*2/7,x=43+Math.cos(a)*20,z=-75+Math.sin(a)*17;
+  island(x,z,4.2,'#8bdcff');
+  tower(x,z,6+rnd(i,15)*8,'#53bdff');
+}
+cyl(1.2,2.6,12,white,43,8,-75);
+let aiCore=sphere(5.2,glass('#6cc9ff',.75),43,19,-75);
+for(let i=0;i<5;i++){
+  let orbitRing=ring(6.5+i*.75,.085,glow(i%2?'#6ccaff':'#9ee8ff'),43,19,-75);
+  orbitRing.rotation.y=i*.43;orbitRing.rotation.x=i*.29;
+}
+for(let i=0;i<48;i++){
+  let a=i*2.399, y=19+(rnd(i,16)-.5)*13,rad=6+rnd(i,17)*5;
+  sphere(.07+rnd(i,18)*.12,glow('#75d9ff'),43+Math.cos(a)*rad,y,-75+Math.sin(a)*rad);
+}
+// Glowing roadway inlays and sculptural pylons guide the eye toward the portals.
+for(let i=0;i<22;i++){
+  let z=35-i*3.6;
+  for(let side of [-1,1]){
+    sphere(.11,glow(i%2?'#91bfff':'#c5a2ff'),side*(4.5+i*.04),.12,z);
+  }
+}
+
 const avatar=new THREE.Group();scene.add(avatar);const suit=mat('#f5faff',.2,.4),hairA=mat('#443565'),hairB=mat('#624636'),skin=mat('#f2bda1'),trim=glow('#6faaff');function createAvatar(which){avatar.clear();avatar.position.set(0,0,28);const body=mesh(new THREE.CylinderGeometry(.48,.72,2.2,10),suit,0,2.3,0,avatar);const head=sphere(.58,skin,0,3.85,0,avatar);sphere(.61,which==='a'?hairA:hairB,0,4.15,-.08,avatar);if(which==='a')mesh(new THREE.CylinderGeometry(.47,.28,1.45,12),hairA,0,3.5,-.35,avatar);for(let s of [-1,1]){mesh(new THREE.CylinderGeometry(.19,.22,1.8,8),suit,s*.32,.95,0,avatar);let arm=mesh(new THREE.CylinderGeometry(.17,.2,1.65,8),suit,s*.72,2.5,0,avatar);arm.rotation.z=s*.14;}mesh(new THREE.BoxGeometry(1.1,.13,.7),trim,0,2.55,-.42,avatar);avatar.rotation.y=Math.PI;}
 let chosen=false,cinematic=false,cinemaT=0,orbit=0,camPitch=.22,walk={x:0,y:0},selected=null;const clock=new THREE.Clock();function setCinematic(){cinematic=true;cinemaT=0;$('cinema').textContent='Skip Intro';$('caption').textContent='Your journey begins…';}document.querySelectorAll('[data-avatar]').forEach(b=>b.addEventListener('click',()=>{createAvatar(b.dataset.avatar);chosen=true;$('welcome').hidden=true;$('controls').hidden=false;setCinematic();}));$('cinema').addEventListener('click',()=>{if(!chosen)return;if(cinematic){cinematic=false;$('cinema').textContent='▶ Cinematic';$('caption').textContent='Explore the three worlds';}else setCinematic()});$('reset').addEventListener('click',()=>{chosen=false;cinematic=false;$('welcome').hidden=false;$('controls').hidden=true;avatar.visible=false;$('status').textContent='';$('enter').style.display='none';});$('enter').addEventListener('click',()=>{if(selected){$('status').textContent=selected.name+' — prototype destination';$('caption').textContent='In the full website, this opens '+selected.name+'.';}});
 const stick=$('stick'),knob=$('knob');let activePointer=null;function moveStick(e){let r=stick.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),d=Math.hypot(x,y),max=35;if(d>max){x*=max/d;y*=max/d}knob.style.transform=`translate(${x}px,${y}px)`;walk.x=x/max;walk.y=-y/max}stick.addEventListener('pointerdown',e=>{activePointer=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(e.pointerId===activePointer)moveStick(e)});function stop(e){if(e.pointerId===activePointer){activePointer=null;walk.x=walk.y=0;knob.style.transform=''}}stick.addEventListener('pointerup',stop);stick.addEventListener('pointercancel',stop);let drag=null;renderer.domElement.addEventListener('pointerdown',e=>{drag={id:e.pointerId,x:e.clientX,y:e.clientY};renderer.domElement.setPointerCapture(e.pointerId)});renderer.domElement.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId||cinematic)return;orbit-=(e.clientX-drag.x)*.005;camPitch=THREE.MathUtils.clamp(camPitch+(e.clientY-drag.y)*.003,-.08,.7);drag.x=e.clientX;drag.y=e.clientY});renderer.domElement.addEventListener('pointerup',()=>drag=null);const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true});addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}addEventListener('resize',resize);
