@@ -243,8 +243,8 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   const nr=A('nor'),nf=new Float32Array(nr.length);for(let i=0;i<nr.length;i++)nf[i]=nr[i]/127;g.setAttribute('normal',new THREE.BufferAttribute(nf,3));
   g.setAttribute('aFold',new THREE.BufferAttribute(new Uint8Array(A('fold')),1,true));g.setAttribute('aGrp',new THREE.BufferAttribute(new Uint8Array(A('grp')),1,false));
   g.setIndex(new THREE.BufferAttribute(new Uint32Array(A('idx')),1));
-  // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment for side-by-side review.
-  const LOOK_EXP=/[?&]look=exp\b/.test(location.search);
+  // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment and ?look=exp2 its colour-corrected variant, for side-by-side review.
+  const LOOK_EXP2=/[?&]look=exp2\b/.test(location.search),LOOK_EXP=LOOK_EXP2||/[?&]look=exp\b/.test(location.search);
   const [surf,glowL,lines,sp]=LOOK_EXP?(()=>{
   // ---- EXPERIMENT (?look=exp): cinematic sapphire pass ----
   // Surface: deeper sapphire with dark valleys; restrained light on selected ridges and a soft sapphire sheen on the crests;
@@ -252,6 +252,13 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   // Network: energy flows. Each tree knows its path distance from the trunk root, so a pulse that starts on a trunk
   // carries on into its branches and twigs. Trunks have a luminous core inside a softer glow. Gold synapses sit at the
   // junctions and swell gently when a pulse reaches them; gold trees carry occasional gold pulses.
+  // ?look=exp2 = colour-corrected variant (CC). Same anatomy, network and animation; only colour handling changes:
+  // electric blue #7FE0FF cores and pulses over a deeper blue body, warm gold #F0C674, a hue-preserving soft cap on every
+  // strand so no colour channel saturates (saturated blue drifts to turquoise, saturated gold to white), the brighter-wins
+  // (max) blend for crossing strands so intersections cannot stack into overexposure, and gold synapses laid over the blue
+  // instead of added to it.
+  const CC=LOOK_EXP2,KNEE=(v,k,h)=>'{float m=max('+v+'.r,max('+v+'.g,'+v+'.b));'+v+'*=m>'+k+'?('+k+'+'+h+'*(1.-exp(-(m-'+k+')/'+h+')))/m:1.;}';
+  const MAXB=CC&&typeof renderer!=='undefined'&&(renderer.capabilities.isWebGL2||!!renderer.extensions.get('EXT_blend_minmax'));
   g.setAttribute('aGrp',new THREE.BufferAttribute(new Float32Array(A('grp')),1));
   const CEN='vec3(0.,.02,-.05)';
   const RAD='float rad(vec3 wp,vec3 cw){vec3 rd=normalize(wp-cameraPosition),oc=cw-cameraPosition;float tc=dot(oc,rd);float dr=length(oc-rd*tc);return step(0.,tc)*exp(-dr*dr*7.);}';
@@ -267,8 +274,8 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
    'col+=vec3(.10,.32,.95)*ridge*(.10+.10*act)*(.45+.55*dif);'+
    'col+=vec3(.35,.62,1.)*spec*crest*.12;'+
    'col+=vec3(.22,.55,1.)*step(.5,vG)*step(vG,1.5)*(.05+.08*crest+.05*act);'+
-   'float r=rad(vW,vC)*(.88+.12*sin(uTime*.7));float leak=r*(.35+.9*groove);vec3 rc=mix(vec3(.12,.40,1.),vec3(1.,.72,.36),smoothstep(.78,1.,r)*smoothstep(.2,.7,groove));col+=rc*leak*.75;'+
-   'col+=vec3(.30,.66,1.)*fr*.40;if(uOnly>.5)col=rc*leak*.6;gl_FragColor=vec4(col*uFade,1.);}'}));
+   'float r=rad(vW,vC)*(.88+.12*sin(uTime*.7));float leak=r*(.35+.9*groove);vec3 rc=mix(vec3(.12,.40,1.),'+(CC?'vec3(.94,.78,.46)':'vec3(1.,.72,.36)')+',smoothstep(.78,1.,r)*smoothstep(.2,.7,groove));col+=rc*leak*.75;'+
+   (CC?'col+=vec3(.28,.58,1.)*fr*.36;'+KNEE('col','.62','.24'):'col+=vec3(.30,.66,1.)*fr*.40;')+'if(uOnly>.5)col=rc*leak*.6;gl_FragColor=vec4(col*uFade,1.);}'}));
   const cp=deq(A('cpos')),cl=A('clen'),cs=A('cseed'),ch=A('chue'),cv=A('clev');
   const R=buildRibbons(cp,cl,A('calong'),cs,ch,cv),F=treeFlow(cp,cl,cv,cs),nv=R.pos.length/3,aD=new Float32Array(nv),aRt=new Float32Array(nv);
   for(let v=0;v<nv;v++){aD[v]=F.dist[v>>1];aRt[v]=F.root[v>>1]}
@@ -288,18 +295,21 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
    'float seam=1.-.45*exp(-position.x*position.x/.0016);float gd=1.-.12*aHue;'+
    'vI=taper*lw*vary*gd*(.58+.34*act+.15*wave)*(1.+1.3*r)*seam;vP=flow(aDist,aRoot,7.,.015)*pow(taper,.3)*(aLev<.5?1.:aLev<1.5?.8:.6)*seam;'+(glow?'vI*=.18;vP*=.22;':'')+'}';
   const strandFS=glow=>'uniform float uFade;varying float vI,vP,vS,vH,vL;void main(){'+
-   (glow?'float a=exp(-vS*vS*3.2);vec3 c=mix(vec3(.08,.36,1.),vec3(1.,.66,.26),vH)*vI*a+mix(vec3(.20,.62,1.),vec3(1.,.72,.34),vH)*vP*a;'
+   (CC?(glow?'float a=exp(-vS*vS*3.2);vec3 c=mix(vec3(.14,.36,1.),vec3(.94,.62,.28),vH)*vI*a*1.3+mix(vec3(.50,.88,1.),vec3(.94,.78,.46),vH)*vP*a;'+KNEE('c','.2','.18')
         :'float e=1.-abs(vS);float body=e*e*(3.-2.*e),core=pow(e,6.)*(vL<.5?1.3:vL<1.5?.5:0.);'+
-         'vec3 c=(mix(vec3(.10,.42,1.),vec3(1.,.66,.26)*1.1,vH)*body+mix(vec3(.42,.80,1.),vec3(1.,.84,.52),vH)*core*.9)*vI+mix(vec3(.25,.70,1.),vec3(1.,.74,.36),vH)*(body*.8+core*1.2)*vP*2.2;')+
+         'vec3 c=(mix(vec3(.26,.60,1.),vec3(.94,.64,.30),vH)*body+mix(vec3(.50,.88,1.),vec3(.94,.78,.46),vH)*core)*vI*1.6+mix(vec3(.50,.88,1.),vec3(.94,.78,.46),vH)*(body*.8+core*1.2)*vP*2.6;'+KNEE('c','.5','.42'))
+   :(glow?'float a=exp(-vS*vS*3.2);vec3 c=mix(vec3(.08,.36,1.),vec3(1.,.66,.26),vH)*vI*a+mix(vec3(.20,.62,1.),vec3(1.,.72,.34),vH)*vP*a;'
+        :'float e=1.-abs(vS);float body=e*e*(3.-2.*e),core=pow(e,6.)*(vL<.5?1.3:vL<1.5?.5:0.);'+
+         'vec3 c=(mix(vec3(.10,.42,1.),vec3(1.,.66,.26)*1.1,vH)*body+mix(vec3(.42,.80,1.),vec3(1.,.84,.52),vH)*core*.9)*vI+mix(vec3(.25,.70,1.),vec3(1.,.74,.36),vH)*(body*.8+core*1.2)*vP*2.2;'))+
    'gl_FragColor=vec4(c*uFade,1.);}';
-  const strandMat=glow=>new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,vertexShader:strandVS(glow),fragmentShader:strandFS(glow)});
+  const strandMat=glow=>{const m=new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,vertexShader:strandVS(glow),fragmentShader:strandFS(glow)});if(MAXB&&!glow){m.blending=THREE.CustomBlending;m.blendEquation=THREE.MaxEquation;m.blendSrc=m.blendDst=THREE.OneFactor}return m};
   const glowL=new THREE.Mesh(gg,strandMat(true)),lines=new THREE.Mesh(rg,strandMat(false));
   // Gold synapses only at junctions (where a branch or twig leaves its parent), about 55% of them: barely lit at rest,
   // swelling softly for under a second when that tree's pulse arrives - so the gold is tied to the blue network.
   const J=F.junc,sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(J.pos,3));sg.setAttribute('aDist',new THREE.BufferAttribute(J.dist,1));sg.setAttribute('aRoot',new THREE.BufferAttribute(J.root,1));sg.setAttribute('aSeed',new THREE.BufferAttribute(J.seed,1));
-  const sp=new THREE.Points(sg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+  const sp=new THREE.Points(sg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:CC?THREE.NormalBlending:THREE.AdditiveBlending,
    vertexShader:'uniform float uTime,uS;'+FLOW+'attribute float aDist,aRoot,aSeed;varying float vI;void main(){float p=flow(aDist,aRoot,4.,.08);vI=.22+.06*sin(uTime*.6+aSeed*40.)+1.1*p;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.016+.016*p)*uS/max(-mv.z,.001),2.,16.);gl_Position=projectionMatrix*mv;}',
-   fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;gl_FragColor=vec4(vec3(1.,.70,.30)*a*vI*uFade,1.);}'}));
+   fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;'+(CC?'gl_FragColor=vec4(vec3(.94,.78,.46),clamp(a*vI*1.4,0.,1.)*uFade);}':'gl_FragColor=vec4(vec3(1.,.70,.30)*a*vI*uFade,1.);}')}));
   sp.frustumCulled=lines.frustumCulled=glowL.frustumCulled=false;surf.renderOrder=1;glowL.renderOrder=2;lines.renderOrder=3;sp.renderOrder=4;
   return[surf,glowL,lines,sp]})():(()=>{
   // ---- Living Superintelligence look (illuminated neural organism) ----
