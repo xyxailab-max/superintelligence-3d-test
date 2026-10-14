@@ -1,0 +1,15 @@
+Brain model files in this folder (brain-hi.bin, brain-lo.bin and their .gz versions)
+
+Derived from: BodyParts3D v4.0, (c) The Database Center for Life Science (DBCLS), Japan
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+         https://creativecommons.org/licenses/by/4.0/
+Source and license page: https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html
+Obtained via the "brain-atlas" study guide repository (BodyParts3D meshes).
+
+Required attribution: "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution 4.0 International"
+
+Changes made: selected outer structures (cerebral cortex gyri, cerebellum, brainstem, cerebral white matter as backing),
+welded and smoothed, simplified for the web, rescaled and re-oriented, per-vertex fold values computed, neural pathway
+curves generated along the surface, and packed into a compact binary format. These derived model files are shared under
+the same CC BY 4.0 license. (The original OBJ headers carry an earlier CC BY-SA 2.1 Japan notice; the licensor's current
+license page states CC BY 4.0.)
