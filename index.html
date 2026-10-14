@@ -264,7 +264,7 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
    'float act=smoothstep(.35,.85,vn(position*3.2+vec3(0.,uTime*.07,uTime*.045)));float wave=pow(.5+.5*sin(dot(position,vec3(.3,.22,1.))*3.2-uTime*.42),6.);'+
    'vec3 wp=(modelMatrix*vec4(position,1.)).xyz,cw=(modelMatrix*vec4('+CEN+',1.)).xyz;float r=rad(wp,cw);'+
    'float taper=aLev<.5?pow(sin(3.14159*clamp(aAlong*.9+.05,0.,1.)),.35):pow(clamp((1.-aAlong)*1.6,0.,1.),.7);float lw=aLev<.5?1.:aLev<1.5?.72:.5;float vary=.75+.25*fract(aSeed*7.31);float p=sig(aAlong,aSeed);vP=p;'+
-   'vI=taper*lw*vary*(.5+.42*act+.22*wave+.6*front(position))*(1.+1.3*r)*(1.+.55*aHue)+1.4*p*lw;'+(glow?'vI*=.16;':'')+'}';
+   'float seam=1.-.45*exp(-position.x*position.x/.0016);vI=(taper*lw*vary*(.5+.42*act+.22*wave+.6*front(position))*(1.+1.3*r)*(1.+.55*aHue)+1.4*p*lw)*seam;'+(glow?'vI*=.16;':'')+'}';
   const strandFS=glow=>'uniform float uFade;varying float vI,vP,vS,vH;void main(){'+(glow?'float a=exp(-vS*vS*3.2);':'float e=1.-abs(vS);float a=e*e*(3.-2.*e);')+
    'vec3 c=mix(vec3(.26,.62,1.),vec3(1.,.68,.26)*1.2,step(.5,vH));c=mix(c,vec3(.85,.96,1.),clamp(vP*.6,0.,.8));gl_FragColor=vec4(c*vI*a*uFade,1.);}';
   const strandMat=glow=>new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexShader:strandVS(glow),fragmentShader:strandFS(glow)});
@@ -685,8 +685,8 @@ function setupBrainBloom(){try{const bb=brainBloom,mk=()=>new THREE.WebGLRenderT
  bb.blur=new THREE.ShaderMaterial({uniforms:{tS:{value:null},uD:{value:new THREE.Vector2()},uT:{value:0}},depthTest:false,depthWrite:false,vertexShader:VS,
   fragmentShader:'uniform sampler2D tS;uniform vec2 uD;uniform float uT;varying vec2 vU;vec3 s(vec2 o){vec3 c=texture2D(tS,vU+o).rgb;if(uT>0.){float l=max(c.r,max(c.g,c.b));c*=smoothstep(uT,uT+.35,l);}return c;}'+
   'void main(){vec3 c=s(vec2(0.))*.2270;c+=(s(uD*1.3846)+s(-uD*1.3846))*.3162;c+=(s(uD*3.2308)+s(-uD*3.2308))*.0703;gl_FragColor=vec4(c,1.);}'});
- bb.comp=new THREE.ShaderMaterial({uniforms:{tA:{value:null},tB:{value:null},uK:{value:1}},transparent:true,depthTest:false,depthWrite:false,blending:THREE.AdditiveBlending,vertexShader:VS,
-  fragmentShader:'uniform sampler2D tA,tB;uniform float uK;varying vec2 vU;void main(){vec3 c=texture2D(tA,vU).rgb*1.25+texture2D(tB,vU).rgb*1.75;c=c/(1.+.35*max(c.r,max(c.g,c.b)));gl_FragColor=vec4(c*uK,1.);}'});
+ bb.comp=new THREE.ShaderMaterial({uniforms:{tA:{value:null},tB:{value:null},uK:{value:1}},transparent:true,depthTest:false,depthWrite:false,blending:THREE.CustomBlending,blendEquation:THREE.AddEquation,blendSrc:THREE.OneMinusDstColorFactor,blendDst:THREE.OneFactor,vertexShader:VS,
+  fragmentShader:'uniform sampler2D tA,tB;uniform float uK;varying vec2 vU;void main(){vec3 c=texture2D(tA,vU).rgb*1.98+texture2D(tB,vU).rgb*2.77;c=c/(1.+.33*max(c.r,max(c.g,c.b)));gl_FragColor=vec4(c*uK,1.);}'});
  bb.quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),bb.blur);bb.quad.frustumCulled=false;bb.qs.add(bb.quad);
  sizeBrainBloom();bb.ok=true;setGlow(bb.want)}catch(e){console.warn('Brain glow unavailable',e);brainBloom.ok=false}}
 function sizeBrainBloom(){const bb=brainBloom;if(!bb.src)return;const sz=renderer.getDrawingBufferSize(new THREE.Vector2()),w=Math.max(2,sz.x>>1),h=Math.max(2,sz.y>>1),qw=Math.max(2,w>>1),qh=Math.max(2,h>>1);
