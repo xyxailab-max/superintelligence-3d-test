@@ -206,14 +206,14 @@ const brainHalo=halo('#7FE0FF',3.4,.3);brainHalo.renderOrder=0;brainScene.add(br
 const neuro={ready:false,fade:0,U:{uTime:U.uTime,uFade:{value:0},uS:U.uS,uPR:U.uPR,uRes:{value:new THREE.Vector2(1,1)}}};
 // Turns pathway polylines into ribbon geometry (two vertices per point, offset in screen space by the shader), plus the
 // junction points used for the gold synapses.
-function buildRibbons(cp,cl,al,sd){let n=0;for(let i=0;i<cl.length;i++)n+=cl[i];let ni=0;for(let i=0;i<cl.length;i++)ni+=(cl[i]-1)*6;
- const pos=new Float32Array(n*6),next=new Float32Array(n*6),side=new Float32Array(n*2),along=new Float32Array(n*2),seed=new Float32Array(n*2),idx=new Uint32Array(ni),
+function buildRibbons(cp,cl,al,sd,hu){let n=0;for(let i=0;i<cl.length;i++)n+=cl[i];let ni=0;for(let i=0;i<cl.length;i++)ni+=(cl[i]-1)*6;
+ const pos=new Float32Array(n*6),next=new Float32Array(n*6),side=new Float32Array(n*2),along=new Float32Array(n*2),seed=new Float32Array(n*2),hue=new Float32Array(n*2),idx=new Uint32Array(ni),
   ends=new Float32Array(cl.length*6),endAlong=new Float32Array(cl.length*2),endSeed=new Float32Array(cl.length*2);
  let o=0,k=0;for(let c=0;c<cl.length;c++){const m=cl[c];for(let j=0;j<m;j++){const i=o+j,i3=i*3,nx=j<m-1?(i+1)*3:i3,px=j<m-1?i3:(i-1)*3;
-   for(let s=0;s<2;s++){const v=i*2+s;for(let t=0;t<3;t++){pos[v*3+t]=cp[i3+t];next[v*3+t]=j<m-1?cp[nx+t]:2*cp[i3+t]-cp[px+t]}side[v]=s?1:-1;along[v]=al[i]/255;seed[v]=sd[i]/255}
+   for(let s=0;s<2;s++){const v=i*2+s;for(let t=0;t<3;t++){pos[v*3+t]=cp[i3+t];next[v*3+t]=j<m-1?cp[nx+t]:2*cp[i3+t]-cp[px+t]}side[v]=s?1:-1;along[v]=al[i]/255;seed[v]=sd[i]/255;hue[v]=hu?hu[i]/255:0}
    if(j<m-1){const a=i*2;idx[k++]=a;idx[k++]=a+1;idx[k++]=a+2;idx[k++]=a+1;idx[k++]=a+3;idx[k++]=a+2}}
   for(let e=0;e<2;e++){const i=e?o+m-1:o;for(let t=0;t<3;t++)ends[(c*2+e)*3+t]=cp[i*3+t];endAlong[c*2+e]=e;endSeed[c*2+e]=sd[o]/255}o+=m}
- return{pos,next,side,along,seed,idx,ends,endAlong,endSeed}}
+ return{pos,next,side,along,seed,hue,idx,ends,endAlong,endSeed}}
 (()=>{if(/brain=classic/.test(location.search))return;
  const url='brain/brain-'+(coarse?'lo':'hi')+'.bin';
  const get=async()=>{if(window.DecompressionStream){try{const r=await fetch(url+'.gz');if(r.ok){const b=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();if(new Uint8Array(b,0,4)[0]===85)return b}}catch(e){}}
@@ -238,33 +238,35 @@ function buildRibbons(cp,cl,al,sd){let n=0;for(let i=0;i<cl.length;i++)n+=cl[i];
    fragmentShader:GLSL_NOISE+'uniform float uTime,uFade;varying vec3 vN,vW,vL;varying float vF,vG;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.8);vec3 L=normalize(vec3(-.45,.75,.5));float dif=max(dot(N,L),0.);'+
    'float crest=smoothstep(.25,.95,vF),groove=smoothstep(.6,.1,vF);float act=vn(vL*3.2+vec3(0.,uTime*.07,uTime*.045));act=smoothstep(.35,.85,act);'+
    'float wave=pow(.5+.5*sin(dot(vL,vec3(.3,.22,1.))*3.2-uTime*.42),6.);'+
-   'vec3 col=vec3(.045,.10,.29)*(.46+.5*crest)*(.62+.38*dif);'+
+   'float cd=length(vL-vec3(0.,.02,-.05)),core=exp(-cd*cd*3.2),fw=pow(.5+.5*sin(cd*9.-uTime*1.1),14.);'+
+   'vec3 col=vec3(.045,.105,.30)*(.42+.58*crest)*(.6+.4*dif);col+=vec3(.08,.24,.72)*(.085+.19*groove+.09*act)+vec3(.20,.48,1.)*fw*.07;col+=mix(vec3(.15,.38,1.),vec3(1.,.75,.4),.35)*core*.16;'+
    'col+=vec3(.10,.30,.85)*groove*(.15+.18*act+.08*wave);'+
    'col+=vec3(.20,.50,1.)*crest*act*.07+vec3(.25,.55,1.)*wave*.06;'+
    'col+=vec3(.22,.55,1.)*step(.5,vG)*step(vG,1.5)*(.06+.10*crest+.06*act);'+
-   'col+=vec3(.498,.878,1.)*fr*.42;gl_FragColor=vec4(col*uFade,1.);}'}));
+   'col+=vec3(.498,.878,1.)*fr*.58;gl_FragColor=vec4(col*uFade,1.);}'}));
   // Pathways as soft glowing filaments (screen-space ribbons with feathered edges and tapered ends) instead of 1px lines.
-  const R=buildRibbons(deq(A('cpos')),A('clen'),A('calong'),A('cseed'));
+  const R=buildRibbons(deq(A('cpos')),A('clen'),A('calong'),A('cseed'),A('chue'));
   const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.BufferAttribute(R.pos,3));rg.setAttribute('aNext',new THREE.BufferAttribute(R.next,3));
-  rg.setAttribute('aSide',new THREE.BufferAttribute(R.side,1));rg.setAttribute('aAlong',new THREE.BufferAttribute(R.along,1));rg.setAttribute('aSeed',new THREE.BufferAttribute(R.seed,1));rg.setIndex(new THREE.BufferAttribute(R.idx,1));
-  const SIG='float sig(float al,float sd){float cyc=uTime*.2+sd*17.;float on=step(.84,fract(sin(floor(cyc)*12.9898+sd*78.233)*43758.5453));float d=fract(cyc)*3.5-al;return on*step(0.,d)*exp(-d*12.);}';
+  rg.setAttribute('aSide',new THREE.BufferAttribute(R.side,1));rg.setAttribute('aAlong',new THREE.BufferAttribute(R.along,1));rg.setAttribute('aSeed',new THREE.BufferAttribute(R.seed,1));rg.setAttribute('aHue',new THREE.BufferAttribute(R.hue,1));rg.setIndex(new THREE.BufferAttribute(R.idx,1));
+  const SIG='float front(vec3 p){return pow(.5+.5*sin(length(p-vec3(0.,.02,-.05))*9.-uTime*1.1),14.);}float sig(float al,float sd){float cyc=uTime*.2+sd*17.;float on=step(.74,fract(sin(floor(cyc)*12.9898+sd*78.233)*43758.5453));float d=fract(cyc)*3.5-al;return on*step(0.,d)*exp(-d*12.);}';
   const lines=new THREE.Mesh(rg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
-   vertexShader:'uniform float uTime,uPR;uniform vec2 uRes;'+GLSL_NOISE+SIG+'attribute vec3 aNext;attribute float aSide,aAlong,aSeed;varying float vI,vP,vS;void main(){'+
-   'vec4 a=projectionMatrix*modelViewMatrix*vec4(position,1.),b=projectionMatrix*modelViewMatrix*vec4(aNext,1.);vec2 sa=a.xy/a.w,sb=b.xy/b.w;vec2 dir=(sb-sa)*uRes;float dl=length(dir);dir=dl>1e-5?dir/dl:vec2(1.,0.);vec2 nrm=vec2(-dir.y,dir.x);'+
+   vertexShader:'uniform float uTime,uPR;uniform vec2 uRes;'+GLSL_NOISE+SIG+'attribute vec3 aNext;attribute float aSide,aAlong,aSeed,aHue;varying float vI,vP,vS,vH;void main(){'+
+   'vec4 a=projectionMatrix*modelViewMatrix*vec4(position,1.),b=projectionMatrix*modelViewMatrix*vec4(aNext,1.);vH=aHue;vec2 sa=a.xy/a.w,sb=b.xy/b.w;vec2 dir=(sb-sa)*uRes;float dl=length(dir);dir=dl>1e-5?dir/dl:vec2(1.,0.);vec2 nrm=vec2(-dir.y,dir.x);'+
    'a.xy+=nrm*aSide*1.15*uPR/uRes*2.*a.w;gl_Position=a;vS=aSide;'+
    'float act=smoothstep(.35,.85,vn(position*3.2+vec3(0.,uTime*.07,uTime*.045)));float wave=pow(.5+.5*sin(dot(position,vec3(.3,.22,1.))*3.2-uTime*.42),6.);'+
-   'float taper=pow(sin(3.14159*clamp(aAlong,0.,1.)),.6);float vary=.55+.45*fract(aSeed*7.31);float p=sig(aAlong,aSeed);vP=p;vI=taper*vary*(.34+.42*act+.30*wave)+1.5*p;}',
-   fragmentShader:'uniform float uFade;varying float vI,vP,vS;void main(){float e=1.-abs(vS);float a=e*e*(3.-2.*e);vec3 c=mix(vec3(.26,.62,1.),vec3(.80,.95,1.),clamp(vP*.6,0.,.8));gl_FragColor=vec4(c*vI*a*uFade,1.);}'}));
+   'float taper=pow(sin(3.14159*clamp(aAlong,0.,1.)),.6);float vary=.55+.45*fract(aSeed*7.31);float p=sig(aAlong,aSeed);vP=p;vI=taper*vary*(.46+.46*act+.26*wave+.75*front(position))*(1.+.7*aHue)+1.5*p;}',
+   fragmentShader:'uniform float uFade;varying float vI,vP,vS,vH;void main(){float e=1.-abs(vS);float a=e*e*(3.-2.*e);vec3 c=mix(vec3(.26,.62,1.),vec3(1.,.68,.26)*1.25,step(.5,vH));c=mix(c,vec3(.85,.96,1.),clamp(vP*.6,0.,.8));gl_FragColor=vec4(c*vI*a*uFade,1.);}'}));
   // Gold synapses at the junctions: small, warm, and they brighten briefly when a signal arrives or departs.
   const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(R.ends,3));sg.setAttribute('aAlong',new THREE.BufferAttribute(R.endAlong,1));sg.setAttribute('aSeed',new THREE.BufferAttribute(R.endSeed,1));
   const sp=new THREE.Points(sg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
-   vertexShader:'uniform float uTime,uS;'+SIG+'attribute float aAlong,aSeed;varying float vI;void main(){float p=sig(aAlong,aSeed);vI=.55+.25*sin(uTime*.9+aSeed*40.)+2.4*p;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.017+.016*p)*uS/max(-mv.z,.001),2.,20.);gl_Position=projectionMatrix*mv;}',
-   fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;gl_FragColor=vec4(vec3(1.,.80,.46)*a*vI*uFade,1.);}'}));
+   vertexShader:'uniform float uTime,uS;'+SIG+'attribute float aAlong,aSeed;varying float vI;void main(){float p=sig(aAlong,aSeed);vI=.36+.16*sin(uTime*.9+aSeed*40.)+1.25*p;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.017+.016*p)*uS/max(-mv.z,.001),2.,20.);gl_Position=projectionMatrix*mv;}',
+   fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;gl_FragColor=vec4(vec3(1.,.70,.30)*a*vI*uFade,1.);}'}));
   sp.frustumCulled=lines.frustumCulled=false;surf.renderOrder=1;lines.renderOrder=2;sp.renderOrder=3;
-  const ng=new THREE.Group();ng.add(surf,lines,sp);brain.add(ng);neuro.group=ng;neuro.ready=true;
+  const coreB=halo('#3D8BFF',1.5,.16),coreG=halo('#F0C674',.55,.14);for(const c of [coreB,coreG]){c.material.depthTest=false;c.renderOrder=4;c.position.set(0,.02,-.05);c.material.color.convertSRGBToLinear()}neuro.core=[coreB,coreG];
+  const ng=new THREE.Group();ng.add(surf,lines,sp,coreB,coreG);brain.add(ng);neuro.group=ng;neuro.ready=true;
   try{renderer.compile(brainScene,camera)}catch(e){}
  }).catch(e=>{console.warn('Neural brain unavailable, keeping the crystal brain.',e)})})();
-function updateNeuro(dt){if(!neuro.ready)return;renderer.getDrawingBufferSize(neuro.U.uRes.value);if(neuro.fade<1){neuro.fade=Math.min(1,neuro.fade+dt/1.4);neuro.U.uFade.value=neuro.fade*neuro.fade*(3-2*neuro.fade);if(neuro.fade>.35)crystalGroup.visible=false}}
+function updateNeuro(dt){if(!neuro.ready)return;if(neuro.core){const b=.5+.5*Math.sin(time*.7);neuro.core[0].material.opacity=(.13+.06*b)*neuro.U.uFade.value;neuro.core[1].material.opacity=(.10+.08*b)*neuro.U.uFade.value}renderer.getDrawingBufferSize(neuro.U.uRes.value);if(neuro.fade<1){neuro.fade=Math.min(1,neuro.fade+dt/1.4);neuro.U.uFade.value=neuro.fade*neuro.fade*(3-2*neuro.fade);if(neuro.fade>.35)crystalGroup.visible=false}}
 const brainQ0=new THREE.Quaternion().setFromEuler(new THREE.Euler(.18,-1.05,0,'YXZ'));brain.quaternion.copy(brainQ0);
 
 // Fit the brain to ~70% of the shorter screen side.
@@ -671,7 +673,7 @@ function updateBrain(dt){
  const auto=smooth(2.5,5,idle);_qa.setFromAxisAngle(AY,auto*.06*dt*motion);brain.quaternion.premultiply(_qa);
  zoom.v+=(zoom.t-zoom.v)*Math.min(1,dt*6);
  camera.position.set(0,0,fitD*(1-zoom.v*.62));camera.lookAt(0,0,0);
- brainHalo.material.opacity=.28+.04*Math.sin(time*.8);updateNeuro(dt);
+ brainHalo.material.opacity=(neuro.ready?.36:.28)+.04*Math.sin(time*.8);if(neuro.ready)brainHalo.scale.setScalar(3.4+.4*neuro.U.uFade.value);updateNeuro(dt);
  if(zoom.v>.86)startEntrance()}
 function updateHub(dt){
  const mx=walk.x+(keys.d?1:0)-(keys.a?1:0),my=walk.y+(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0);
