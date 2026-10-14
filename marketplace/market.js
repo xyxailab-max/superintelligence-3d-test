@@ -1,4 +1,5 @@
-/* Use Superintelligence: Creator Marketplace, Phase 1 (atrium, sapphire crystal, six portals).
+/* Use Superintelligence: Creator Marketplace. Phase 1: atrium, sapphire crystal, six portals.
+   Phase 2: the AI Agents product gallery, loaded from marketplace/gallery.js only when first needed.
    Plain Three.js r128, same stack as index.html. Self-contained: shares no code or state with the brain page. */
 (function(){'use strict';
 const $=id=>document.getElementById(id);
@@ -25,7 +26,7 @@ const scene=new THREE.Scene();
 const world=new THREE.Group();scene.add(world); // everything that appears in the floor reflection
 const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,3000);
 const H=[0,0,0,0,0,0,.35]; // hover/awake level per portal (0-5) and the crystal (6)
-const U={uT:{value:0},uHov:{value:H},uScale:{value:800}};
+const U={uT:{value:0},uHov:{value:H},uScale:{value:800},uGold:{value:1}}; // uGold: portal gold glow level, eased down when the camera is close to a portal
 const clamp=(x,a,b)=>Math.min(Math.max(x,a),b);
 const _v=new THREE.Vector3(),_w=new THREE.Vector3(),_v2=new THREE.Vector2();
 
@@ -33,6 +34,7 @@ const _v=new THREE.Vector3(),_w=new THREE.Vector3(),_v2=new THREE.Vector2();
 const R=17,PLAT=1.0,WI=4.2,HS=5.0,WO=5.3,TOP=HS+WI/2;
 const ANG=[-82,-52,-22,22,52,82].map(a=>a*Math.PI/180);
 const GLY_Y=PLAT+3.6,GLY_Z=.9;
+const GALLERY_READY='agents'; // Phase 2 builds this one gallery only
 const CATS=[
  {id:'agents',short:'AI Agents',name:'AI Agents',line:'Autonomous assistants that research, write, plan and work for you.'},
  {id:'tools',short:'AI Tools',name:'AI Tools & Automation',line:'Workflows, bots and integrations that run on their own.'},
@@ -58,6 +60,7 @@ const basic=(c,k)=>new THREE.MeshBasicMaterial({color:new THREE.Color(c).multipl
 const addBasic=(c,k,op)=>new THREE.MeshBasicMaterial({color:new THREE.Color(c).multiplyScalar(k||1),toneMapped:false,transparent:true,opacity:op==null?1:op,blending:THREE.AdditiveBlending,depthWrite:false});
 const lineMat=(c,op)=>new THREE.LineBasicMaterial({color:c,transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
 const goldMetal=new THREE.MeshStandardMaterial({color:'#C9A060',metalness:.9,roughness:.3,envMapIntensity:1.4,emissive:'#2A1C08',emissiveIntensity:.6});
+const portalGold=goldMetal.clone(),goldBase=portalGold.color.clone(); // same gold; only its reflection and glow strength follow U.uGold
 const darkMetal=new THREE.MeshStandardMaterial({color:'#1B2244',metalness:.7,roughness:.36,envMapIntensity:1.2});
 
 // ================= Sky: painted once into a cube map (one cheap draw per frame) =================
@@ -106,13 +109,14 @@ const crystalLight=new THREE.PointLight('#6FD2FF',2.4,34,1.6);crystalLight.posit
 
 // ================= Mirror floor =================
 const mirCam=new THREE.PerspectiveCamera();mirCam.layers.set(1);
+const atriumOnly=[]; // scene-level atrium parts hidden inside a gallery
 let mirRT=null;const texM=new THREE.Matrix4(),BIAS=new THREE.Matrix4().set(.5,0,0,.5,0,.5,0,.5,0,0,.5,.5,0,0,0,1);
-const floorU={uT:U.uT,uHov:U.uHov,uMir:{value:null},uMirOn:{value:0},uTexM:{value:texM},uTexel:{value:new THREE.Vector2(1/512,1/512)},uPortal:{value:ANG.map(th=>new THREE.Vector2(Math.sin(th)*(R-2.2),-Math.cos(th)*(R-2.2)))}};
+const floorU={uT:U.uT,uHov:U.uHov,uIn:{value:0},uMir:{value:null},uMirOn:{value:0},uTexM:{value:texM},uTexel:{value:new THREE.Vector2(1/512,1/512)},uPortal:{value:ANG.map(th=>new THREE.Vector2(Math.sin(th)*(R-2.2),-Math.cos(th)*(R-2.2)))}};
 function setMirror(s){tier.mirror=s;if(mirRT){mirRT.dispose();mirRT=null}floorU.uMirOn.value=s>0?1:0;floorU.uMir.value=null;if(s>0){const sz=renderer.getDrawingBufferSize(_v2);mirRT=new THREE.WebGLRenderTarget(Math.max(2,Math.round(sz.x*s)),Math.max(2,Math.round(sz.y*s)));mirRT.texture.encoding=THREE.sRGBEncoding;floorU.uMir.value=mirRT.texture;floorU.uTexel.value.set(1/mirRT.width,1/mirRT.height)}}
 {
  const fl=new THREE.Mesh(new THREE.CircleGeometry(70,96).rotateX(-Math.PI/2),sMat({uniforms:floorU,
   vertexShader:'uniform mat4 uTexM;varying vec3 vW;varying vec4 vM;void main(){vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;vM=uTexM*w;gl_Position=projectionMatrix*viewMatrix*w;}',
-  fragmentShader:HASH+`uniform sampler2D uMir;uniform float uMirOn,uT,uHov[7];uniform vec2 uTexel,uPortal[6];varying vec3 vW;varying vec4 vM;
+  fragmentShader:HASH+`uniform sampler2D uMir;uniform float uMirOn,uT,uHov[7],uIn;uniform vec2 uTexel,uPortal[6];varying vec3 vW;varying vec4 vM;
   float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
   void main(){vec2 p=vW.xz;float r=length(p);
    vec3 c=vec3(.014,.018,.04);
@@ -122,15 +126,16 @@ function setMirror(s){tier.mirror=s;if(mirRT){mirRT.dispose();mirRT=null}floorU.
    float fade=smoothstep(62.,22.,r);
    if(uMirOn>.5){vec2 uv=vM.xy/vM.w;vec2 o=uTexel*2.;vec3 m=texture2D(uMir,uv).rgb*.4+(texture2D(uMir,uv+vec2(o.x,o.y)).rgb+texture2D(uMir,uv-vec2(o.x,o.y)).rgb+texture2D(uMir,uv+vec2(o.x,-o.y)).rgb+texture2D(uMir,uv-vec2(o.x,-o.y)).rgb)*.15;
     c+=m*.7*(1.-seam*.7)*fade;}
-   c+=vec3(.14,.38,.95)*exp(-max(r-5.2,0.)*.42)*(.16+.12*uHov[6]);
-   for(int i=0;i<6;i++){float d=distance(p,uPortal[i]);c+=vec3(.1,.32,.95)*exp(-d*d*.09)*(.16+.3*uHov[i]);}
+   float atr=1.-uIn; // dais and portal light pools belong to the atrium only
+   c+=vec3(.14,.38,.95)*exp(-max(r-5.2,0.)*.42)*(.16+.12*uHov[6])*atr;
+   for(int i=0;i<6;i++){float d=distance(p,uPortal[i]);c+=vec3(.1,.32,.95)*exp(-d*d*.09)*(.16+.3*uHov[i])*atr;}
    c+=vec3(.9,.65,.3)*seam*.035*smoothstep(16.,7.,r);
    c*=mix(.25,1.,fade);
    gl_FragColor=vec4(c,1.);}`}));
  scene.add(fl);
  // Inlaid light rings around the dais (floor level, so they stay out of the reflection pass).
  for(const [a,b,col,k,op] of [[6.55,6.63,'#F0C674',1.3,.9],[8.35,8.47,'#F0C674',1.6,1],[10.55,10.6,'#7FE0FF',1.1,.7],[12.9,12.94,'#F0C674',.8,.5]]){
-  const m=new THREE.Mesh(new THREE.RingGeometry(a,b,160).rotateX(-Math.PI/2),addBasic(col,k,op));m.position.y=.012;scene.add(m)}
+  const m=new THREE.Mesh(new THREE.RingGeometry(a,b,160).rotateX(-Math.PI/2),addBasic(col,k,op));m.position.y=.012;scene.add(m);atriumOnly.push(m)}
 }
 
 // ================= Portals (static parts merged: one draw call per material) =================
@@ -138,10 +143,11 @@ function archShape(w,hs){const s=new THREE.Shape();s.moveTo(-w/2,0);s.lineTo(-w/
 function bandShape(wo,wi,hs){const s=new THREE.Shape();s.moveTo(-wo/2,0);s.lineTo(-wo/2,hs);s.absarc(0,hs,wo/2,Math.PI,0,true);s.lineTo(wo/2,0);s.lineTo(wi/2,0);s.lineTo(wi/2,hs);s.absarc(0,hs,wi/2,0,Math.PI,false);s.lineTo(-wi/2,0);s.lineTo(-wo/2,0);return s}
 function archCurve(w,hs,y0,z){const pts=[],r=w/2;for(let i=0;i<=6;i++)pts.push(new THREE.Vector3(-r,y0+(hs-y0)*i/6,z));for(let i=1;i<32;i++){const a=Math.PI-Math.PI*i/32;pts.push(new THREE.Vector3(Math.cos(a)*r,hs+Math.sin(a)*r,z))}for(let i=0;i<=6;i++)pts.push(new THREE.Vector3(r,hs-(hs-y0)*i/6,z));return new THREE.CatmullRomCurve3(pts,false,'centripetal')}
 const V_HOV='uniform float uHov[7];attribute float aPortal;varying float vH;varying vec2 vU;void main(){vU=uv;vH=uHov[int(aPortal+.5)];gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
+const noseMat=basic('#F0C674',1.25),lampMat=basic('#FFE6B5',1.7),noseBase=noseMat.color.clone(),lampBase=lampMat.color.clone();
 // Frames: gold metal arch with a bevel, standing on dark platforms with glowing gold stair noses.
-world.add(new THREE.Mesh(perPortal(()=>new THREE.ExtrudeGeometry(bandShape(WO,WI,HS),{depth:.55,bevelEnabled:true,bevelSize:.06,bevelThickness:.06,bevelSegments:2,curveSegments:32}).translate(0,PLAT,-.3)),goldMetal));
+world.add(new THREE.Mesh(perPortal(()=>new THREE.ExtrudeGeometry(bandShape(WO,WI,HS),{depth:.55,bevelEnabled:true,bevelSize:.06,bevelThickness:.06,bevelSegments:2,curveSegments:32}).translate(0,PLAT,-.3)),portalGold));
 world.add(new THREE.Mesh(perPortal(()=>{const L=[new THREE.BoxGeometry(6.6,PLAT,3.2).translate(0,PLAT/2,.7)];for(let k=0;k<3;k++){const h=PLAT*(3-k)/3-.0;L.push(new THREE.BoxGeometry(5.2-k*.3,h,.5).translate(0,h/2,2.55+k*.5))}return merge(L.map(g=>prep(g)))}),darkMetal));
-world.add(new THREE.Mesh(perPortal(()=>{const L=[new THREE.BoxGeometry(6.62,.05,.05).translate(0,PLAT,2.3)];for(let k=0;k<3;k++){const h=PLAT*(3-k)/3;L.push(new THREE.BoxGeometry(5.2-k*.3,.04,.05).translate(0,h,2.8+k*.5))}return merge(L.map(g=>prep(g)))}),basic('#F0C674',1.25)));
+world.add(new THREE.Mesh(perPortal(()=>{const L=[new THREE.BoxGeometry(6.62,.05,.05).translate(0,PLAT,2.3)];for(let k=0;k<3;k++){const h=PLAT*(3-k)/3;L.push(new THREE.BoxGeometry(5.2-k*.3,.04,.05).translate(0,h,2.8+k*.5))}return merge(L.map(g=>prep(g)))}),noseMat));
 // Inner panels: deep blue energy with a central beam, edge glow and drifting stars.
 world.add(new THREE.Mesh(perPortal(()=>new THREE.ShapeGeometry(archShape(WI,HS),32).translate(0,PLAT,-.05)),sMat({uniforms:addU(),vertexShader:'uniform float uHov[7];attribute float aPortal;varying float vH;varying vec2 vP;void main(){vP=uv;vH=uHov[int(aPortal+.5)];gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
  fragmentShader:HASH+`uniform float uT;varying float vH;varying vec2 vP;
@@ -155,30 +161,30 @@ world.add(new THREE.Mesh(perPortal(()=>new THREE.ShapeGeometry(archShape(WI,HS),
   vec2 g=vP*6.5;vec2 id=floor(g);float s=h2(id);vec2 f=fract(g)-.5;c+=vec3(.7,.86,1.)*step(.9,s)*smoothstep(.12,0.,length(f))*(.5+.5*sin(uT*2.+s*40.))*.8;
   gl_FragColor=vec4(c*(.85+.35*vH),1.);}`})));
 // Neon: a bright aether line inside the frame, a softer signal-blue line and a gold line of light on the outer edge.
-function neonMesh(w,z,rad,c,base,y0){return new THREE.Mesh(perPortal(()=>new THREE.TubeGeometry(archCurve(w,HS,y0,z),160,rad,6,false).translate(0,PLAT,0)),sMat({additive:true,uniforms:addU({uC:{value:new THREE.Color(c)},uB:{value:base}}),vertexShader:V_HOV,
- fragmentShader:'uniform vec3 uC;uniform float uB,uT;varying float vH;varying vec2 vU;void main(){float p=pow(fract(vU.x*2.-uT*.22),14.);gl_FragColor=vec4(uC*(uB+.3*vH)+uC*p*(.4+.7*vH),1.);}'}))}
-world.add(neonMesh(WI-.06,.12,.05,'#7FE0FF',1.25,0),neonMesh(WI-.42,.05,.022,'#3D7BFF',.75,.15),neonMesh(WO+.02,.3,.03,'#F0C674',.85,0));
+function neonMesh(w,z,rad,c,base,y0,gold){return new THREE.Mesh(perPortal(()=>new THREE.TubeGeometry(archCurve(w,HS,y0,z),160,rad,6,false).translate(0,PLAT,0)),sMat({additive:true,uniforms:addU({uC:{value:new THREE.Color(c)},uB:{value:base},uG:gold?U.uGold:{value:1}}),vertexShader:V_HOV,
+ fragmentShader:'uniform vec3 uC;uniform float uB,uT,uG;varying float vH;varying vec2 vU;void main(){float p=pow(fract(vU.x*2.-uT*.22),14.);gl_FragColor=vec4((uC*(uB+.3*vH)+uC*p*(.4+.7*vH))*uG,1.);}'}))}
+world.add(neonMesh(WI-.06,.12,.05,'#7FE0FF',1.25,0),neonMesh(WI-.42,.05,.022,'#3D7BFF',.75,.15),neonMesh(WO+.02,.3,.03,'#F0C674',.85,0,true));
 // Emitter discs at the base of each portal.
 const DISC_FS='uniform float uT;varying float vH;varying vec2 vU;void main(){float r=length(vU-.5)*2.;if(r>1.)discard;float sp=1.5+2.5*vH;'+
  'float c=pow(.5+.5*sin(r*30.-uT*sp),6.)*.35*(1.-r)+exp(-abs(r-.93)*34.)*1.1+exp(-abs(r-.62)*46.)*.65+exp(-r*3.2)*.45;'+
  'vec3 col=vec3(.3,.66,1.)*c*(.75+.75*vH)+vec3(1.,.78,.42)*exp(-abs(r-.985)*70.)*.8;gl_FragColor=vec4(col,1.);}';
 world.add(new THREE.Mesh(perPortal(()=>new THREE.CircleGeometry(2.05,64).rotateX(-Math.PI/2).translate(0,PLAT+.02,.95)),sMat({additive:true,uniforms:addU(),vertexShader:V_HOV,fragmentShader:DISC_FS})));
 // Lamps at the crown of each arch.
-world.add(new THREE.Mesh(perPortal(()=>new THREE.SphereGeometry(.2,16,10).translate(0,PLAT+HS+WO/2+.22,.15)),basic('#FFE6B5',1.7)));
+world.add(new THREE.Mesh(perPortal(()=>new THREE.SphereGeometry(.2,16,10).translate(0,PLAT+HS+WO/2+.22,.15)),lampMat));
 
 // Rising light particles inside the portals, and soft glow points (lamps, glyphs, orbs).
-const PTS_VS='uniform float uHov[7],uScale,uT;attribute float aPortal,aSize,aSeed;attribute vec3 aColor;varying vec3 vC;varying float vA;';
+const PTS_VS='uniform float uHov[7],uScale,uT,uGold;attribute float aPortal,aSize,aSeed;attribute vec3 aColor;varying vec3 vC;varying float vA;';
 const PTS_FS='varying vec3 vC;varying float vA;void main(){vec2 c=gl_PointCoord-.5;float d=dot(c,c)*4.;if(d>1.)discard;gl_FragColor=vec4(vC*exp(-d*4.5)*vA,1.);}';
 function points(arr,vs){const n=arr.length,P=new Float32Array(n*3),C=new Float32Array(n*3),S=new Float32Array(n),D=new Float32Array(n),I=new Float32Array(n);
  arr.forEach((p,i)=>{P.set(p.p,i*3);C.set(p.c,i*3);S[i]=p.s;D[i]=p.seed==null?Math.random():p.seed;I[i]=p.i==null?6:p.i});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('aColor',new THREE.BufferAttribute(C,3));g.setAttribute('aSize',new THREE.BufferAttribute(S,1));g.setAttribute('aSeed',new THREE.BufferAttribute(D,1));g.setAttribute('aPortal',new THREE.BufferAttribute(I,1));
- const o=new THREE.Points(g,sMat({additive:true,uniforms:{uT:U.uT,uHov:U.uHov,uScale:U.uScale},vertexShader:PTS_VS+vs,fragmentShader:PTS_FS}));o.frustumCulled=false;return o}
+ const o=new THREE.Points(g,sMat({additive:true,uniforms:{uT:U.uT,uHov:U.uHov,uScale:U.uScale,uGold:U.uGold},vertexShader:PTS_VS+vs,fragmentShader:PTS_FS}));o.frustumCulled=false;return o}
 {const glow=[],rise=[];const lamp=new THREE.Vector3();
- portalObj.forEach((o,i)=>{lamp.set(0,PLAT+HS+WO/2+.22,.15).applyMatrix4(o.matrix);glow.push({p:lamp.toArray(),c:[1.,.72,.35],s:1.6,i});
+ portalObj.forEach((o,i)=>{lamp.set(0,PLAT+HS+WO/2+.22,.15).applyMatrix4(o.matrix);glow.push({p:lamp.toArray(),c:[1.,.72,.35],s:1.6,i,seed:2}); // seed 2 marks a gold lamp glow
   _v.set(0,GLY_Y,GLY_Z).applyMatrix4(o.matrix);glow.push({p:_v.toArray(),c:[.07,.18,.48],s:4.2,i});
   _v.set(0,PLAT+.25,1.0).applyMatrix4(o.matrix);glow.push({p:_v.toArray(),c:[.12,.3,.8],s:4.5,i});
   for(let k=0;k<70;k++){_v.set((Math.random()-.5)*3.4,0,.2+Math.random()*.6).applyMatrix4(o.matrix);rise.push({p:_v.toArray(),c:Math.random()<.2?[1.,.8,.45]:[.5,.82,1.],s:.05+Math.random()*.07,i})}});
- world.add(points(glow,'void main(){float h=uHov[int(aPortal+.5)];vC=aColor;vA=1.+h*.9;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=aSize*(1.+.2*h)*uScale/-mv.z;gl_Position=projectionMatrix*mv;}'));
+ world.add(points(glow,'void main(){float h=uHov[int(aPortal+.5)];vC=aColor;vA=(1.+h*.9)*(aSeed>1.5?uGold:1.);vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=aSize*(1.+.2*h)*uScale/-mv.z;gl_Position=projectionMatrix*mv;}'));
  world.add(points(rise,`void main(){float h=uHov[int(aPortal+.5)];float span=${(TOP-.4).toFixed(2)};float y=mod(aSeed*span+uT*(.25+.5*h)*(.6+aSeed),span);vec3 p=position;p.y=${PLAT.toFixed(2)}+y;p.x+=sin(uT*.7+aSeed*30.)*.06;
   vC=aColor;vA=(.45+.9*h)*smoothstep(0.,.6,y)*smoothstep(span,span-1.5,y)*(.6+.4*sin(uT*3.+aSeed*50.));vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=aSize*uScale/-mv.z;gl_Position=projectionMatrix*mv;}`))}
 
@@ -336,18 +342,19 @@ function fitCamera(){const a=innerWidth/innerHeight;camera.aspect=a;const hf=82*
  U.uScale.value=renderer.getDrawingBufferSize(_v2).y/(2*Math.tan(vf/2));if(mode!=='focus')toOverviewGoal()}
 function toOverviewGoal(){goal.az=nearAz(Math.PI);goal.r=fit.r;goal.h=fit.h;goal.tx=0;goal.ty=fit.ty;goal.tz=-2.5}
 function nearAz(a){while(a-cam.az>Math.PI)a-=Math.PI*2;while(a-cam.az<-Math.PI)a+=Math.PI*2;return a}
-function updateCamera(dt){const sp=reduceMotion?3:1;const kA=1-Math.exp(-dt*2.1*sp),kR=1-Math.exp(-dt*(mode==='intro'?1.1:3.0)*sp),kT=1-Math.exp(-dt*2.6*sp);
+function updateCamera(dt){if(mode==='gallery'&&G){G.camera(dt);return}const sp=reduceMotion?3:1;const kA=1-Math.exp(-dt*2.1*sp),kR=1-Math.exp(-dt*(mode==='intro'?1.1:3.0)*sp),kT=1-Math.exp(-dt*2.6*sp);
  cam.az+=(goal.az-cam.az)*kA;cam.r+=(goal.r-cam.r)*kR;cam.h+=(goal.h-cam.h)*kR;cam.tx+=(goal.tx-cam.tx)*kT;cam.ty+=(goal.ty-cam.ty)*kT;cam.tz+=(goal.tz-cam.tz)*kT;
- if(!dragging&&mode==='focus'){look.yawT*=Math.exp(-dt*1.5);look.pitchT*=Math.exp(-dt*1.5)}
+ if(!dragging&&(mode==='focus'||mode==='enter')){look.yawT*=Math.exp(-dt*1.5);look.pitchT*=Math.exp(-dt*1.5)}
  const kl=1-Math.exp(-dt*6);look.yaw+=(look.yawT-look.yaw)*kl;look.pitch+=(look.pitchT-look.pitch)*kl;
  const bob=Math.sin(time*.35)*.06*motion;
  camera.position.set(Math.sin(cam.az)*cam.r,cam.h+bob,-Math.cos(cam.az)*cam.r);camera.lookAt(cam.tx,cam.ty,cam.tz);camera.rotateY(look.yaw);camera.rotateX(look.pitch)}
-function focusPortal(i){if(i<0||i>5)return;const th=ANG[i];focus=i;mode='focus';look.yawT=look.pitchT=0;
+function focusPortal(i){if(i<0||i>5||mode==='gallery'||mode==='enter')return;const th=ANG[i];focus=i;mode='focus';if(CATS[i].id===GALLERY_READY)loadGallery(); // prefetch code + catalog (no build) once that portal is chosen
+look.yawT=look.pitchT=0;
  goal.az=nearAz(th);goal.r=8.4;goal.h=4.75;const t=onCircle(th,R-GLY_Z,GLY_Y);goal.tx=t.x;goal.ty=t.y+.05;goal.tz=t.z;
  const c=CATS[i];$('cIdx').textContent=String(i+1).padStart(2,'0')+' / 06';$('cName').textContent=c.name;$('cLine').textContent=c.line;$('card').classList.add('on');$('card').setAttribute('aria-hidden','false');
  chipEls.forEach((b,k)=>{b.classList.toggle('on',k===i);b.setAttribute('aria-pressed',k===i?'true':'false')});hint(false);
  try{history.replaceState(null,'','#'+c.id)}catch(e){}}
-function toAtrium(){if(mode==='intro')return;mode='atrium';focus=-1;look.yawT=look.pitchT=0;toOverviewGoal();$('card').classList.remove('on');$('card').setAttribute('aria-hidden','true');chipEls.forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false')});
+function toAtrium(){if(mode==='intro'||mode==='gallery'||mode==='enter')return;mode='atrium';focus=-1;look.yawT=look.pitchT=0;toOverviewGoal();$('card').classList.remove('on');$('card').setAttribute('aria-hidden','true');chipEls.forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false')});
  try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
 
 // ================= UI =================
@@ -357,23 +364,27 @@ let toastT=0;function toast(m){const t=$('toast');t.textContent=m;t.classList.ad
 let hintOn=false;function hint(on){if(on===hintOn)return;hintOn=on;$('hint').classList.toggle('on',on)}
 $('prev').addEventListener('click',()=>focusPortal((focus+5)%6));$('next').addEventListener('click',()=>focusPortal((focus+1)%6));
 $('atrium').addEventListener('click',toAtrium);
-$('enter').addEventListener('click',()=>toast('Product galleries open in Phase 2.'));
+$('enter').addEventListener('click',()=>enterGallery(focus));
+function enterGallery(i){if(mode!=='focus'||i<0)return;
+ if(CATS[i].id!==GALLERY_READY){toast('The '+CATS[i].short+' gallery opens after the first gallery is approved.');return}
+ mode='enter';$('card').classList.remove('on');$('card').setAttribute('aria-hidden','true');$('chips').classList.add('away');hint(false);
+ loadGallery().then(g=>g.enter(i,CATS[i])).catch(e=>{console.warn(e);mode='focus';$('chips').classList.remove('away');focusPortal(i);toast('The gallery could not load. Please try again.')})}
 $('back').addEventListener('click',()=>{try{sessionStorage.setItem('usi-return','market')}catch(e){}});
 
 // Pointer: drag to look, tap a portal to glide to it, swipe left/right between portals.
 const cv=renderer.domElement,ray=new THREE.Raycaster(),ndc=new THREE.Vector2();let dragging=false,ptr=null;
 function pick(x,y){ndc.set(x/innerWidth*2-1,-(y/innerHeight)*2+1);ray.setFromCamera(ndc,camera);const h=ray.intersectObjects(glyphs.map(g=>g.hit),false);return h.length?h[0].object.userData.i:-1}
-cv.addEventListener('pointerdown',e=>{try{cv.setPointerCapture(e.pointerId)}catch(_){}if(ptr)return;ptr={id:e.pointerId,x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()};dragging=true;if(mode==='intro')endIntro()});
-cv.addEventListener('pointermove',e=>{if(ptr&&e.pointerId===ptr.id){const dx=e.clientX-ptr.x,dy=e.clientY-ptr.y;ptr.x=e.clientX;ptr.y=e.clientY;const k=camera.fov*Math.PI/180/innerHeight;const ym=mode==='focus'?.22:fit.yaw;
+cv.addEventListener('pointerdown',e=>{try{cv.setPointerCapture(e.pointerId)}catch(_){}if(mode==='enter')return;if(mode==='gallery'){G.pointer(e);return}if(ptr)return;ptr={id:e.pointerId,x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()};dragging=true;if(mode==='intro')endIntro()});
+cv.addEventListener('pointermove',e=>{if(mode==='gallery'){G.pointer(e);return}if(ptr&&e.pointerId===ptr.id){const dx=e.clientX-ptr.x,dy=e.clientY-ptr.y;ptr.x=e.clientX;ptr.y=e.clientY;const k=camera.fov*Math.PI/180/innerHeight;const ym=mode==='focus'?.22:fit.yaw;
   look.yawT=clamp(look.yawT+dx*k,-ym,ym);look.pitchT=clamp(look.pitchT+dy*k*.6,-.14,.16);if(Math.abs(ptr.x-ptr.sx)+Math.abs(ptr.y-ptr.sy)>8)hint(false)}
  else if(e.pointerType==='mouse'){hover=pick(e.clientX,e.clientY);cv.style.cursor=hover>=0?'pointer':'grab'}});
-const endPtr=e=>{if(!ptr||e.pointerId!==ptr.id)return;const dx=e.clientX-ptr.sx,dy=e.clientY-ptr.sy,dtm=performance.now()-ptr.t;ptr=null;dragging=false;
+const endPtr=e=>{if(mode==='gallery'){G.pointer(e);return}if(!ptr||e.pointerId!==ptr.id)return;const dx=e.clientX-ptr.sx,dy=e.clientY-ptr.sy,dtm=performance.now()-ptr.t;ptr=null;dragging=false;
  if(e.type!=='pointerup')return;
  if(Math.hypot(dx,dy)<10&&dtm<450){const i=pick(e.clientX,e.clientY);if(i>=0&&i!==focus)focusPortal(i);else if(i<0&&mode==='focus'&&e.pointerType!=='mouse'){}}
  else if(mode==='focus'&&Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6&&dtm<500){look.yawT=0;focusPortal((focus+(dx<0?1:5))%6)}};
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('pointerleave',()=>{if(!ptr)hover=-1});
-addEventListener('keydown',e=>{if(mode==='intro'){endIntro();return}const k=e.key;
+addEventListener('keydown',e=>{if(mode==='intro'){endIntro();return}if(mode==='enter')return;if(mode==='gallery'){G.key(e);return}const k=e.key;
  if(k==='ArrowRight')focusPortal(focus<0?3:(focus+1)%6);else if(k==='ArrowLeft')focusPortal(focus<0?2:(focus+5)%6);
  else if(k==='Escape')toAtrium();else if(k==='Enter'&&focus>=0&&document.activeElement===cv)$('enter').click();
  else if(k>='1'&&k<='6')focusPortal(+k-1)});
@@ -381,20 +392,30 @@ function endIntro(){if(mode!=='intro')return;mode='atrium';toOverviewGoal();hint
 
 // Labels follow the portal crowns in the atrium view.
 const _lp=new THREE.Vector3();
-function updateLabels(){const show=mode!=='focus';for(let i=0;i<6;i++){const el=labelEls[i];_lp.set(0,PLAT+HS+WO/2+.95,.3).applyMatrix4(portalObj[i].matrix);_lp.project(camera);
+function updateLabels(){const show=mode==='atrium'||mode==='intro';for(let i=0;i<6;i++){const el=labelEls[i];_lp.set(0,PLAT+HS+WO/2+.95,.3).applyMatrix4(portalObj[i].matrix);_lp.project(camera);
  const vis=show&&_lp.z<1&&Math.abs(_lp.x)<1.05&&_lp.y<1.1;el.style.opacity=vis?(mode==='intro'?0:(.75+.25*H[i])):0;el.style.pointerEvents=vis?'auto':'none';
  if(vis)el.style.transform='translate('+((_lp.x*.5+.5)*innerWidth).toFixed(1)+'px,'+((-_lp.y*.5+.5)*innerHeight).toFixed(1)+'px) translate(-50%,-100%)'}}
+
+// ================= Gallery loader (Phase 2): nothing is fetched or built until it is needed =================
+let G=null,gLoad=null;
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.async=true;s.onload=res;s.onerror=()=>rej(new Error('load '+src));document.head.appendChild(s)})}
+function loadGallery(){if(!gLoad){gLoad=loadScript('./marketplace/gallery.js?v=2').then(()=>{G=window.__mkGallery(MK);return G});gLoad.catch(()=>{gLoad=null})}return gLoad}
+const MK={THREE,$,scene,world,camera,renderer,U,floorU,atriumOnly,tier:()=>tier,motion,reduceMotion,coarse,points,toast,hint,clamp,HASH,
+ cam,goal,look,ANG,R,PLAT,HS,onCircle,cats:CATS,
+ setMode:m=>{mode=m},mode:()=>mode,fit:()=>fitCamera(),
+ toPortal:i=>{mode='focus';$('chips').classList.remove('away');focusPortal(i)}}; // back in the atrium, beside the portal we left through
 
 // ================= Adaptive quality and FPS meter =================
 let qT=-2,qF=0,autoSteps=0;
 const ladder=[()=>tier.mirror>.34&&(setMirror(.33),1),()=>tier.mirror>0&&(setMirror(0),1),()=>composer&&(composer=null,1),()=>dpr>1.25&&(setDpr(1.25),1),()=>dpr>1&&(setDpr(1),1)];
 function setDpr(v){dpr=v;renderer.setPixelRatio(v);resize()}
-function quality(dt){if(forced)return;qT+=dt;if(qT<0)return;qF++;if(qT>=2.5){const fps=qF/qT;qT=0;qF=0;if(fps<45){for(const f of ladder)if(f()){autoSteps++;break}}}}
+function quality(dt){if(forced||window.__bench)return; // the benchmark measures each scene at a fixed quality
+qT+=dt;if(qT<0)return;qF++;if(qT>=2.5){const fps=qF/qT;qT=0;qF=0;if(fps<45){for(const f of ladder)if(f()){autoSteps++;break}}}}
 const fpsEl=$('fps'),showFps=/[?&]fps=1/.test(qs);fpsEl.hidden=!showFps;let fT=0,fN=0;const stats={fps:0,calls:0,tris:0};
-function meter(dt){fT+=dt;fN++;if(fT>=.5){stats.fps=fN/fT;fT=0;fN=0;if(showFps)fpsEl.textContent=stats.fps.toFixed(0)+' fps  '+tierName+(autoSteps?' -'+autoSteps:'')+'\n'+renderer.domElement.width+'×'+renderer.domElement.height+' @'+dpr+'\n'+stats.calls+' draws  '+(stats.tris/1000).toFixed(0)+'k tris\nmirror '+(tier.mirror?tier.mirror:'off')+'  glow '+(composer?'on':'off')}}
+function meter(dt){fT+=dt;fN++;if(fT>=.5){stats.fps=fN/fT;fT=0;fN=0;if(showFps)fpsEl.textContent=stats.fps.toFixed(0)+' fps  '+tierName+(autoSteps?' -'+autoSteps:'')+'\n'+renderer.domElement.width+'×'+renderer.domElement.height+' @'+dpr+'\n'+stats.calls+' draws  '+(stats.tris/1000).toFixed(0)+'k tris\nmirror '+(tier.mirror?tier.mirror:'off')+'  glow '+(composer?'on':'off')+(G&&G.built()?'\ngallery '+(mode==='gallery'?'in':'built')+(capped?'  idle 30':''):'')}}
 
 // ================= Resize, visibility, loop =================
-function resize(){renderer.setSize(innerWidth,innerHeight);if(composer)composer.setSize(...renderer.getDrawingBufferSize(_v2).toArray());if(tier.mirror)setMirror(tier.mirror);fitCamera()}
+function resize(){renderer.setSize(innerWidth,innerHeight);if(G)G.resize();if(composer)composer.setSize(...renderer.getDrawingBufferSize(_v2).toArray());if(tier.mirror)setMirror(tier.mirror);fitCamera()}
 addEventListener('resize',resize);fitCamera();
 const clock=new THREE.Clock();let time=0,raf=0,paused=false;
 document.addEventListener('visibilitychange',()=>{if(document.hidden){paused=true;cancelAnimationFrame(raf)}else if(paused){paused=false;clock.getDelta();qT=-1.5;qF=0;raf=requestAnimationFrame(frame)}});
@@ -402,17 +423,37 @@ function updateMirror(){camera.updateMatrixWorld();mirCam.position.set(camera.po
  mirCam.projectionMatrix.copy(camera.projectionMatrix);mirCam.updateMatrixWorld();mirCam.matrixWorldInverse.copy(mirCam.matrixWorld).invert();texM.copy(BIAS).multiply(mirCam.projectionMatrix).multiply(mirCam.matrixWorldInverse)}
 function update(dt){
  if(mode==='intro'&&performance.now()-introStart>2800)endIntro() // wall clock, so slow devices don't get a longer intro
+ if(world.visible){ // the atrium's animation is skipped entirely while a gallery is showing
  for(let i=0;i<6;i++){const tgt=i===focus?1:i===hover?.6:mode==='intro'?0:.12;H[i]+=(tgt-H[i])*Math.min(1,dt*3);glyphs[i].hU.value=H[i];glyphs[i].up(dt,time,H[i]);glyphs[i].g.position.y=GLY_Y+Math.sin(time*.9+i)*.09*motion}
  H[6]+=((focus<0?.45:.25)-H[6])*Math.min(1,dt*2);crystalU.uH.value=H[6];
  crystal.rotation.y+=dt*.12*motion;crystal.position.y=5.25+Math.sin(time*.6)*.1*motion;crystal.userData.core.rotation.y-=dt*.3*motion;
- for(const o of crystal.userData.orbits)o.g.rotation.z+=dt*o.sp*motion;
- updateCamera(dt);for(const b of billboards)b.quaternion.copy(camera.quaternion);updateLabels()}
+ for(const o of crystal.userData.orbits)o.g.rotation.z+=dt*o.sp*motion}
+ if(G)G.update(dt);
+ updateCamera(dt);if(world.visible){for(const b of billboards)b.quaternion.copy(camera.quaternion);goldGlow()}updateLabels()}
+// Up close, the portal gold eases down by GOLD_NEAR: every channel scaled equally, so the same gold hue with less light. Full strength in the atrium overview.
+const GOLD_NEAR=.34,_pc=new THREE.Vector3();let goldNow=1;
+function goldGlow(){let d=1e9;for(const o of portalObj){_pc.set(0,PLAT+HS*.6,0).applyMatrix4(o.matrix);d=Math.min(d,_pc.distanceTo(camera.position))}
+ const t=clamp((16-d)/6.5,0,1),g=1-GOLD_NEAR*t*t*(3-2*t);if(Math.abs(g-goldNow)<.002)return;goldNow=g;U.uGold.value=g;
+ noseMat.color.copy(noseBase).multiplyScalar(g);lampMat.color.copy(lampBase).multiplyScalar(g);portalGold.envMapIntensity=1.4*g;portalGold.emissiveIntensity=.6*g;portalGold.color.copy(goldBase).multiplyScalar(g)}
 function render(){renderer.info.reset();if(mirRT){updateMirror();renderer.setRenderTarget(mirRT);renderer.render(scene,mirCam);renderer.setRenderTarget(null)}
  if(composer)composer.render();else renderer.render(scene,camera);stats.calls=renderer.info.render.calls;stats.tris=renderer.info.render.triangles}
-function frame(){if(paused)return;raf=requestAnimationFrame(frame);const raw=clock.getDelta(),dt=Math.min(raw,.05);time+=dt;U.uT.value=time*motion;update(dt);render();quality(raw);meter(raw)} // animation uses capped dt; FPS meter and quality ladder use real elapsed time
+let capped=false,capAcc=0;
+function frame(){if(paused)return;raf=requestAnimationFrame(frame);const raw=clock.getDelta();
+ capped=!!(G&&G.idle());if(capped){capAcc+=raw;if(capAcc<1/31)return}const step=capped?capAcc:raw;capAcc=0; // product panel open and still: ~30 fps to save battery
+ const dt=Math.min(step,.05);time+=dt;U.uT.value=time*motion;update(dt);render();if(!capped)quality(step);meter(step);if(window.__bench)window.__bench.frame(step,capped)} // animation uses capped dt; FPS meter and quality ladder use real elapsed time
 // Shader warm-up before the first frame, then fade in.
 try{renderer.compile(scene,camera)}catch(e){}
-const start=(location.hash||'').slice(1),si=CATS.findIndex(c=>c.id===start);
-raf=requestAnimationFrame(frame);requestAnimationFrame(()=>{$('veil').style.opacity=0;if(si>=0){endIntro();focusPortal(si)}});
-window.__market={cam:()=>({cam,goal,look,mode,focus}),stats:()=>Object.assign({tier:tierName,dpr,mirror:tier.mirror,bloom:!!composer,autoSteps,canvas:[cv.width,cv.height]},stats),focus:focusPortal,atrium:toAtrium,skipIntro:endIntro};
+const start=(location.hash||'').slice(1),si=CATS.findIndex(c=>c.id===start),deep=/^(agents\/gallery|p=)/.test(start);
+raf=requestAnimationFrame(frame);requestAnimationFrame(()=>{$('veil').style.opacity=0;window.__mkReady=performance.now();
+ if(deep){endIntro();focusPortal(0);loadGallery().then(g=>{enterGallery(0);const pm=start.match(/^p=([\w-]+)/);if(pm)g.openWhenReady(pm[1])}).catch(()=>{})}
+ else if(si>=0){endIntro();focusPortal(si)}});
+// GPU memory estimate (WebGL can't report real usage): canvas + render targets + textures + geometry buffers.
+function gpuMB(){const sz=renderer.getDrawingBufferSize(new THREE.Vector2()),px=sz.x*sz.y;let b=px*8; // colour + depth
+ if(composer)b+=px*4*(tier.aa?2:1)+px*8+px*4*(tierName==='high'?1:.25)*1.33*2; // composer targets, bloom mip chain
+ if(mirRT)b+=mirRT.width*mirRT.height*8;b+=tier.sky*tier.sky*24*1.33+256*256*24*1.6; // sky cube + environment map
+ const seen=new Set();scene.traverse(o=>{const g=o.geometry;if(!g||seen.has(g))return;seen.add(g);for(const k in g.attributes){const a=g.attributes[k];b+=a.array?a.array.byteLength:0}if(g.index)b+=g.index.array.byteLength;if(o.isInstancedMesh)b+=o.instanceMatrix.array.byteLength});
+ if(G)b+=G.textureBytes();return +(b/1048576).toFixed(1)}
+window.__market={cam:()=>({cam,goal,look,mode,focus}),stats:()=>Object.assign({tier:tierName,forced:!!forced,dpr,mirror:tier.mirror,bloom:!!composer,autoSteps,canvas:[cv.width,cv.height],mode,capped,gallery:!!(G&&G.built()),textures:renderer.info.memory.textures,geometries:renderer.info.memory.geometries},stats),
+ focus:focusPortal,atrium:toAtrium,skipIntro:endIntro,gpuMB,enterGallery:i=>{i=i||0;if(mode!=='focus')focusPortal(i);enterGallery(i)},gallery:()=>G,loadGallery};
+if(/[?&]bench=1/.test(qs))loadScript('./marketplace/bench.js?v=2').catch(e=>console.warn(e));
 })();
