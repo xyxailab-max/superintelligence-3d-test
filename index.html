@@ -230,9 +230,9 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   for(let e=0;e<2;e++){const i=e?o+m-1:o;for(let t=0;t<3;t++)ends[(c*2+e)*3+t]=cp[i*3+t];endAlong[c*2+e]=e;endSeed[c*2+e]=sd[o]/255}o+=m}
  return{pos,next,side,along,seed,hue,lev,idx,glowIdx,ends,endAlong,endSeed}}
 (()=>{if(/brain=classic/.test(location.search))return;
- const url='brain/brain-'+(coarse?'lo':'hi')+'.bin';
+ const url0='brain/brain-'+(coarse?'lo':'hi'),url=url0+(/[?&]look=nano\b/.test(location.search)?'-nano':'')+'.bin';
  const get=async()=>{if(window.DecompressionStream){try{const r=await fetch(url+'.gz');if(r.ok){const b=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();if(new Uint8Array(b,0,4)[0]===85)return b}}catch(e){}}
-  const r=await fetch(url);if(!r.ok)throw new Error('brain '+r.status);return r.arrayBuffer()};
+  let r=await fetch(url);if(!r.ok&&url!==url0+'.bin')r=await fetch(url0+'.bin');if(!r.ok)throw new Error('brain '+r.status);return r.arrayBuffer()};
  get().then(buf=>{const dv=new DataView(buf);if(String.fromCharCode(dv.getUint8(0),dv.getUint8(1),dv.getUint8(2),dv.getUint8(3))!=='USIB')throw new Error('bad brain file');
   const hl=dv.getUint32(4,true),h=JSON.parse(new TextDecoder().decode(new Uint8Array(buf,8,hl))),base=8+hl,TA={'<i2':Int16Array,'|i1':Int8Array,'|u1':Uint8Array,'<u4':Uint32Array,'<u2':Uint16Array};
   const A=k=>{const [o,dt,n]=h.parts[k];return new TA[dt](buf,base+o,n)};const mn=h.bmin,mx=h.bmax;
@@ -243,8 +243,8 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   const nr=A('nor'),nf=new Float32Array(nr.length);for(let i=0;i<nr.length;i++)nf[i]=nr[i]/127;g.setAttribute('normal',new THREE.BufferAttribute(nf,3));
   g.setAttribute('aFold',new THREE.BufferAttribute(new Uint8Array(A('fold')),1,true));g.setAttribute('aGrp',new THREE.BufferAttribute(new Uint8Array(A('grp')),1,false));
   g.setIndex(new THREE.BufferAttribute(new Uint32Array(A('idx')),1));
-  // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment and ?look=exp2 its colour-corrected variant, for side-by-side review.
-  const LOOK_EXP2=/[?&]look=exp2\b/.test(location.search),LOOK_EXP=LOOK_EXP2||/[?&]look=exp\b/.test(location.search);
+  // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment ?look=exp2 its colour-corrected variant and ?look=nano the nano-neural fibre experiment, for side-by-side review.
+  const LOOK_NANO=/[?&]look=nano\b/.test(location.search),LOOK_EXP2=/[?&]look=exp2\b/.test(location.search),LOOK_EXP=LOOK_NANO||LOOK_EXP2||/[?&]look=exp\b/.test(location.search);
   const [surf,glowL,lines,sp]=LOOK_EXP?(()=>{
   // ---- EXPERIMENT (?look=exp): cinematic sapphire pass ----
   // Surface: deeper sapphire with dark valleys; restrained light on selected ridges and a soft sapphire sheen on the crests;
@@ -257,7 +257,7 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   // strand so no colour channel saturates (saturated blue drifts to turquoise, saturated gold to white), the brighter-wins
   // (max) blend for crossing strands so intersections cannot stack into overexposure, and gold synapses laid over the blue
   // instead of added to it.
-  const CC=LOOK_EXP2,KNEE=(v,k,h)=>'{float m=max('+v+'.r,max('+v+'.g,'+v+'.b));'+v+'*=m>'+k+'?('+k+'+'+h+'*(1.-exp(-(m-'+k+')/'+h+')))/m:1.;}';
+  const CC=LOOK_EXP2||LOOK_NANO,KNEE=(v,k,h)=>'{float m=max('+v+'.r,max('+v+'.g,'+v+'.b));'+v+'*=m>'+k+'?('+k+'+'+h+'*(1.-exp(-(m-'+k+')/'+h+')))/m:1.;}';
   const MAXB=CC&&typeof renderer!=='undefined'&&(renderer.capabilities.isWebGL2||!!renderer.extensions.get('EXT_blend_minmax'));
   g.setAttribute('aGrp',new THREE.BufferAttribute(new Float32Array(A('grp')),1));
   const CEN='vec3(0.,.02,-.05)';
@@ -276,6 +276,54 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
    'col+=vec3(.22,.55,1.)*step(.5,vG)*step(vG,1.5)*(.05+.08*crest+.05*act);'+
    'float r=rad(vW,vC)*(.88+.12*sin(uTime*.7));float leak=r*(.35+.9*groove);vec3 rc=mix(vec3(.12,.40,1.),'+(CC?'vec3(.94,.78,.46)':'vec3(1.,.72,.36)')+',smoothstep(.78,1.,r)*smoothstep(.2,.7,groove));col+=rc*leak*.75;'+
    (CC?'col+=vec3(.28,.58,1.)*fr*.36;'+KNEE('col','.62','.24'):'col+=vec3(.30,.66,1.)*fr*.40;')+'if(uOnly>.5)col=rc*leak*.6;gl_FragColor=vec4(col*uFade,1.);}'}));
+  // ---- NANO-NEURAL FREQUENCIES (?look=nano) ----
+  // Instead of ribbons, thousands of hair-thin filaments grown on the brain's own surface mesh at load time: each walks
+  // along a fold contour (so the network follows the anatomy), and about half start from a point on an existing
+  // filament, so they branch and connect. All filaments are one LineSegments draw (native 1-device-pixel GPU lines), with
+  // tiny pulses that travel outwards through the connected network; a few filaments carry rare warm-gold pulses.
+  if(LOOK_NANO){
+   const P=g.getAttribute('position').array,NM=g.getAttribute('normal').array,FD=A('fold'),GR=A('grp'),IX=A('idx'),NV=P.length/3;
+   const deg=new Uint32Array(NV+1);for(let i=0;i<IX.length;i++)deg[IX[i]+1]+=2;for(let i=0;i<NV;i++)deg[i+1]+=deg[i];
+   const adj=new Uint32Array(deg[NV]),fil=deg.slice(0,NV);for(let t=0;t<IX.length;t+=3){const a=IX[t],b=IX[t+1],c=IX[t+2];adj[fil[a]++]=b;adj[fil[a]++]=c;adj[fil[b]++]=c;adj[fil[b]++]=a;adj[fil[c]++]=a;adj[fil[c]++]=b}
+   let rs=0x9e3779b9;const rnd=()=>{rs|=0;rs=rs+0x6D2B79F5|0;let t=Math.imul(rs^rs>>>15,1|rs);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+   const NF=Math.round(Math.min(4200,NV/14)),paths=[],pts=[];// pts: [pathIndex,pointIndex] pool for branching
+   for(let f=0;f<NF;f++){let v,d,d0=0,root,bx;
+    if(pts.length&&rnd()<.62){const [pi,k]=pts[(rnd()*pts.length)|0],pp=paths[pi];v=pp.v[k];const k2=Math.min(k+1,pp.v.length-1),k1=Math.max(k-1,0);
+     const tx=P[pp.v[k2]*3]-P[pp.v[k1]*3],ty=P[pp.v[k2]*3+1]-P[pp.v[k1]*3+1],tz=P[pp.v[k2]*3+2]-P[pp.v[k1]*3+2],nx=NM[v*3],ny=NM[v*3+1],nz=NM[v*3+2],s=rnd()<.5?-1:1;
+     d=[(ny*tz-nz*ty)*s+tx*.8,(nz*tx-nx*tz)*s+ty*.8,(nx*ty-ny*tx)*s+tz*.8];d0=pp.d[k];root=pp.root;bx=1}
+    else{do v=(rnd()*NV)|0;while((GR[v]===2&&rnd()<.8)||(GR[v]===1&&rnd()<.7));d=[rnd()-.5,rnd()-.5,rnd()-.5];root=rnd();bx=0}
+    let l=Math.hypot(d[0],d[1],d[2])||1;d=d.map(x=>x/l);const f0=FD[v],path=[v],seen=new Set([v]),L=bx?8+((rnd()*18)|0):22+((rnd()*30)|0);
+    for(let s=0;s<L;s++){let best=-1e9,bc=-1,bd=null;for(let j=deg[v];j<deg[v+1];j++){const c=adj[j];if(seen.has(c))continue;
+      let ex=P[c*3]-P[v*3],ey=P[c*3+1]-P[v*3+1],ez=P[c*3+2]-P[v*3+2];const el=Math.hypot(ex,ey,ez)||1;ex/=el;ey/=el;ez/=el;const al=ex*d[0]+ey*d[1]+ez*d[2];if(al<.05)continue;
+      const sc=al*1.6-Math.abs(FD[c]-f0)/255*9+rnd()*.3;if(sc>best){best=sc;bc=c;bd=[ex,ey,ez]}}
+     if(bc<0)break;d=[.55*d[0]+.45*bd[0],.55*d[1]+.45*bd[1],.55*d[2]+.45*bd[2]];l=Math.hypot(d[0],d[1],d[2])||1;d=d.map(x=>x/l);path.push(bc);seen.add(bc);v=bc}
+    if(path.length<6)continue;
+    // smooth the walk, lift it just off the surface, and accumulate the path distance from the network root
+    const n=path.length,X=new Float32Array(n*3),Nn=new Float32Array(n*3);for(let i=0;i<n;i++)for(let a=0;a<3;a++){X[i*3+a]=P[path[i]*3+a];Nn[i*3+a]=NM[path[i]*3+a]}
+    for(let it=0;it<3;it++){const Y=X.slice();for(let i=1;i<n-1;i++)for(let a=0;a<3;a++)X[i*3+a]=.25*Y[i*3-3+a]+.5*Y[i*3+a]+.25*Y[i*3+3+a]}
+    for(let i=0;i<n*3;i++)X[i]+=Nn[i]*.006;
+    const dd=new Float32Array(n);dd[0]=d0;for(let i=1;i<n;i++)dd[i]=dd[i-1]+Math.hypot(X[i*3]-X[i*3-3],X[i*3+1]-X[i*3-2],X[i*3+2]-X[i*3-1]);
+    const pi=paths.length;paths.push({v:path,d:dd,root,X,N:Nn,seed:rnd(),bx});for(let k=2;k<n-2;k+=3)pts.push([pi,k])}
+   let ns=0;for(const p of paths)ns+=p.v.length-1;
+   const lp=new Float32Array(ns*6),ln=new Float32Array(ns*6),lD=new Float32Array(ns*2),lR=new Float32Array(ns*2),lS=new Float32Array(ns*2),lA=new Float32Array(ns*2),jp=[],jd=[],jr=[],js=[];let o=0;
+   for(const p of paths){const n=p.v.length;if(p.bx&&p.seed<.35){jp.push(p.X[0],p.X[1],p.X[2]);jd.push(p.d[0]);jr.push(p.root);js.push(p.seed)}
+    for(let i=0;i<n-1;i++)for(const k of [i,i+1]){for(let a=0;a<3;a++){lp[o*3+a]=p.X[k*3+a];ln[o*3+a]=p.N[k*3+a]}lD[o]=p.d[k];lR[o]=p.root;lS[o]=p.seed;lA[o]=k/(n-1);o++}}
+   const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.BufferAttribute(lp,3));lg.setAttribute('aNrm',new THREE.BufferAttribute(ln,3));lg.setAttribute('aDist',new THREE.BufferAttribute(lD,1));lg.setAttribute('aRoot',new THREE.BufferAttribute(lR,1));lg.setAttribute('aSeed',new THREE.BufferAttribute(lS,1));lg.setAttribute('aAl',new THREE.BufferAttribute(lA,1));
+   // micro-signal: short (~.05 units) and fast enough to read as a frequency, not a comet; ~1 in 4 cycles per network
+   const NFLOW='float flow(float d,float rs){float x=uTime*.42+rs*29.-d;float k=floor(x/1.1),f=x-k*1.1;float on=step(.74,fract(sin(k*12.9898+rs*78.233)*43758.5453));return on*smoothstep(0.,.006,f)*exp(-f*38.);}';
+   const lines=new THREE.LineSegments(lg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+    vertexShader:'uniform float uTime,uOnly;'+NFLOW+'attribute vec3 aNrm;attribute float aDist,aRoot,aSeed,aAl;varying vec3 vC;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vec3 n=normalize(mat3(modelViewMatrix)*aNrm);'+
+     'float face=smoothstep(.04,.35,abs(dot(n,normalize(-mv.xyz))));float tp=pow(sin(3.14159*aAl),.5);float seam=1.-.5*exp(-position.x*position.x/.0016);float p=flow(aDist,aRoot);float gold=step(.965,fract(aSeed*53.17));'+
+     'vC=(vec3(.20,.44,1.)*(.42+.2*fract(aSeed*7.31))*tp*(1.-.85*uOnly)+mix(vec3(.50,.88,1.),vec3(.94,.78,.46),gold)*p*2.2*pow(tp,.3)*(1.-.45*uOnly))*face*seam;gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'uniform float uFade;varying vec3 vC;void main(){vec3 c=vC;'+KNEE('c','.5','.35')+'gl_FragColor=vec4(c*uFade,1.);}'}));
+   const J={pos:new Float32Array(jp),dist:new Float32Array(jd),root:new Float32Array(jr),seed:new Float32Array(js)},sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(J.pos,3));sg.setAttribute('aDist',new THREE.BufferAttribute(J.dist,1));sg.setAttribute('aRoot',new THREE.BufferAttribute(J.root,1));sg.setAttribute('aSeed',new THREE.BufferAttribute(J.seed,1));
+   // synaptic points where a filament branches off: almost invisible at rest, a brief warm-gold flicker when a signal passes
+   const sp=new THREE.Points(sg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.NormalBlending,
+    vertexShader:'uniform float uTime,uS,uOnly;'+NFLOW+'attribute float aDist,aRoot,aSeed;varying float vI;void main(){float p=flow(aDist-.01,aRoot);vI=(.05+1.2*p)*(1.-.5*uOnly);vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.006+.006*p)*uS/max(-mv.z,.001),1.5,7.);gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);gl_FragColor=vec4(vec3(.94,.78,.46),clamp(a*vI,0.,1.)*uFade);}'}));
+   const glowL=new THREE.Object3D();sp.frustumCulled=lines.frustumCulled=false;surf.renderOrder=1;lines.renderOrder=3;sp.renderOrder=4;
+   neuro.nanoStats={filaments:paths.length,segments:ns,synapses:jd.length};
+   return[surf,glowL,lines,sp]}
   const cp=deq(A('cpos')),cl=A('clen'),cs=A('cseed'),ch=A('chue'),cv=A('clev');
   const R=buildRibbons(cp,cl,A('calong'),cs,ch,cv),F=treeFlow(cp,cl,cv,cs),nv=R.pos.length/3,aD=new Float32Array(nv),aRt=new Float32Array(nv);
   for(let v=0;v<nv;v++){aD[v]=F.dist[v>>1];aRt[v]=F.root[v>>1]}
