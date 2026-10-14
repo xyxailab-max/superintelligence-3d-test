@@ -210,6 +210,17 @@ const brainHalo=halo('#7FE0FF',3.4,.3);brainHalo.renderOrder=0;brainScene.add(br
 const neuro={ready:false,fade:0,U:{uTime:U.uTime,uFade:{value:0},uOnly:{value:0},uS:U.uS,uPR:U.uPR,uRes:{value:new THREE.Vector2(1,1)}}};
 // Turns pathway polylines into ribbon geometry (two vertices per point, offset in screen space by the shader), plus the
 // junction points used for the gold synapses.
+// Path distance of every curve point from its tree's trunk root (trunk -> branch -> twig, using the stored order:
+// a trunk, then each branch followed by its twigs), the tree's root seed, and the junction points where children leave.
+function treeFlow(cp,cl,lv,sd){const n=cp.length/3,dist=new Float32Array(n),root=new Float32Array(n);let o=0,rs=0;const T=[0,0],B=[0,0],jp=[],jd=[],jr=[],js=[];
+ const near=(s,m,x,y,z)=>{let b=1e9,bi=s;for(let i=s;i<s+m;i++){const dx=cp[i*3]-x,dy=cp[i*3+1]-y,dz=cp[i*3+2]-z,d=dx*dx+dy*dy+dz*dz;if(d<b){b=d;bi=i}}return bi};
+ for(let c=0;c<cl.length;c++){const m=cl[c],L=lv?lv[o]:0;let d0=0;
+  if(L===0){T[0]=o;T[1]=m;rs=sd[o]/255}else{const P=L===1?T:B;if(P[1]){d0=dist[near(P[0],P[1],cp[o*3],cp[o*3+1],cp[o*3+2])];
+   const h=(sd[o]*.618034+c*.0137)%1;if(h<.55){jp.push(cp[o*3],cp[o*3+1],cp[o*3+2]);jd.push(d0);jr.push(rs);js.push(sd[o]/255)}}}
+  if(L===1){B[0]=o;B[1]=m}
+  dist[o]=d0;root[o]=rs;for(let j=1;j<m;j++){const i=o+j;dist[i]=dist[i-1]+Math.hypot(cp[i*3]-cp[i*3-3],cp[i*3+1]-cp[i*3-2],cp[i*3+2]-cp[i*3-1]);root[i]=rs}
+  o+=m}
+ return{dist,root,junc:{pos:new Float32Array(jp),dist:new Float32Array(jd),root:new Float32Array(jr),seed:new Float32Array(js)}}}
 function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=cl[i];let ni=0,ng=0,o0=0;for(let i=0;i<cl.length;i++){ni+=(cl[i]-1)*6;if(!lv||lv[o0]<2)ng+=(cl[i]-1)*6;o0+=cl[i]}
  const pos=new Float32Array(n*6),next=new Float32Array(n*6),side=new Float32Array(n*2),along=new Float32Array(n*2),seed=new Float32Array(n*2),hue=new Float32Array(n*2),lev=new Float32Array(n*2),idx=new Uint32Array(ni),glowIdx=new Uint32Array(ng),
   ends=new Float32Array(cl.length*6),endAlong=new Float32Array(cl.length*2),endSeed=new Float32Array(cl.length*2);
@@ -232,6 +243,65 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   const nr=A('nor'),nf=new Float32Array(nr.length);for(let i=0;i<nr.length;i++)nf[i]=nr[i]/127;g.setAttribute('normal',new THREE.BufferAttribute(nf,3));
   g.setAttribute('aFold',new THREE.BufferAttribute(new Uint8Array(A('fold')),1,true));g.setAttribute('aGrp',new THREE.BufferAttribute(new Uint8Array(A('grp')),1,false));
   g.setIndex(new THREE.BufferAttribute(new Uint32Array(A('idx')),1));
+  // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment for side-by-side review.
+  const LOOK_EXP=/[?&]look=exp\b/.test(location.search);
+  const [surf,glowL,lines,sp]=LOOK_EXP?(()=>{
+  // ---- EXPERIMENT (?look=exp): cinematic sapphire pass ----
+  // Surface: deeper sapphire with dark valleys; restrained light on selected ridges and a soft sapphire sheen on the crests;
+  // the inner light now leaks out mainly through the valleys near the centre, so the brain reads as lit from within.
+  // Network: energy flows. Each tree knows its path distance from the trunk root, so a pulse that starts on a trunk
+  // carries on into its branches and twigs. Trunks have a luminous core inside a softer glow. Gold synapses sit at the
+  // junctions and swell gently when a pulse reaches them; gold trees carry occasional gold pulses.
+  g.setAttribute('aGrp',new THREE.BufferAttribute(new Float32Array(A('grp')),1));
+  const CEN='vec3(0.,.02,-.05)';
+  const RAD='float rad(vec3 wp,vec3 cw){vec3 rd=normalize(wp-cameraPosition),oc=cw-cameraPosition;float tc=dot(oc,rd);float dr=length(oc-rd*tc);return step(0.,tc)*exp(-dr*dr*7.);}';
+  const surf=new THREE.Mesh(g,new THREE.ShaderMaterial({uniforms:neuro.U,
+   vertexShader:'attribute float aFold,aGrp;varying vec3 vN,vW,vL,vC;varying float vF,vG;void main(){vF=aFold;vG=aGrp;vL=position;vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;vC=(modelMatrix*vec4('+CEN+',1.)).xyz;vN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*viewMatrix*w;}',
+   fragmentShader:GLSL_NOISE+'uniform float uTime,uFade,uOnly;varying vec3 vN,vW,vL,vC;varying float vF,vG;'+RAD+'void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,3.);vec3 L=normalize(vec3(-.45,.75,.5));float dif=max(dot(N,L),0.);float spec=pow(max(dot(N,normalize(L+V)),0.),40.);'+
+   'float crest=smoothstep(.25,.95,vF),groove=smoothstep(.6,.1,vF);float act=smoothstep(.35,.85,vn(vL*3.2+vec3(0.,uTime*.07,uTime*.045)));'+
+   'float ridge=smoothstep(.52,.8,vn(vL*2.4+vec3(3.1,uTime*.02,0.)))*smoothstep(.5,.95,vF);'+
+   'vec3 q=vL*11.+vec3(vn(vL*5.)*1.5);float vein=pow(1.-abs(vn(q)*2.-1.),7.)*.7+pow(1.-abs(vn(q*2.1+3.7)*2.-1.),9.)*.5;'+
+   'vec3 col=vec3(.030,.072,.235)*(.22+.78*crest)*(.50+.50*dif);'+
+   'col+=vec3(.04,.12,.40)*groove*(.05+.05*act);'+
+   'col+=vec3(.15,.40,1.)*vein*(.025+.04*act)*crest;'+
+   'col+=vec3(.10,.32,.95)*ridge*(.10+.10*act)*(.45+.55*dif);'+
+   'col+=vec3(.35,.62,1.)*spec*crest*.12;'+
+   'col+=vec3(.22,.55,1.)*step(.5,vG)*step(vG,1.5)*(.05+.08*crest+.05*act);'+
+   'float r=rad(vW,vC)*(.88+.12*sin(uTime*.7));float leak=r*(.35+.9*groove);vec3 rc=mix(vec3(.12,.40,1.),vec3(1.,.72,.36),smoothstep(.78,1.,r)*smoothstep(.2,.7,groove));col+=rc*leak*.75;'+
+   'col+=vec3(.30,.66,1.)*fr*.40;if(uOnly>.5)col=rc*leak*.6;gl_FragColor=vec4(col*uFade,1.);}'}));
+  const cp=deq(A('cpos')),cl=A('clen'),cs=A('cseed'),ch=A('chue'),cv=A('clev');
+  const R=buildRibbons(cp,cl,A('calong'),cs,ch,cv),F=treeFlow(cp,cl,cv,cs),nv=R.pos.length/3,aD=new Float32Array(nv),aRt=new Float32Array(nv);
+  for(let v=0;v<nv;v++){aD[v]=F.dist[v>>1];aRt[v]=F.root[v>>1]}
+  const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.BufferAttribute(R.pos,3));rg.setAttribute('aNext',new THREE.BufferAttribute(R.next,3));
+  rg.setAttribute('aSide',new THREE.BufferAttribute(R.side,1));rg.setAttribute('aAlong',new THREE.BufferAttribute(R.along,1));rg.setAttribute('aSeed',new THREE.BufferAttribute(R.seed,1));rg.setAttribute('aHue',new THREE.BufferAttribute(R.hue,1));rg.setAttribute('aLev',new THREE.BufferAttribute(R.lev,1));
+  rg.setAttribute('aDist',new THREE.BufferAttribute(aD,1));rg.setAttribute('aRoot',new THREE.BufferAttribute(aRt,1));rg.setIndex(new THREE.BufferAttribute(R.idx,1));
+  const gg=new THREE.BufferGeometry();for(const k of ['position','aNext','aSide','aAlong','aSeed','aHue','aLev','aDist','aRoot'])gg.setAttribute(k,rg.getAttribute(k));gg.setIndex(new THREE.BufferAttribute(R.glowIdx,1));
+  // flow(): a calm comet-like pulse that moves outwards from the trunk root at .3 units/s and continues into every branch.
+  // Each tree fires on roughly 3 of 10 cycles (one cycle is about 6 s), so only a few pulses travel at once.
+  const FLOW='float flow(float d,float rs,float tail,float rise){float x=uTime*.30+rs*13.-d;float k=floor(x/1.7),f=x-k*1.7;float on=step(.62,fract(sin(k*12.9898+rs*78.233)*43758.5453));return on*smoothstep(0.,rise,f)*exp(-f*tail);}';
+  const strandVS=glow=>'uniform float uTime,uPR;uniform vec2 uRes;'+GLSL_NOISE+FLOW+RAD+'attribute vec3 aNext;attribute float aSide,aAlong,aSeed,aHue,aLev,aDist,aRoot;varying float vI,vP,vS,vH,vL;void main(){'+
+   'vec4 a=projectionMatrix*modelViewMatrix*vec4(position,1.),b=projectionMatrix*modelViewMatrix*vec4(aNext,1.);vH=aHue;vL=aLev;vec2 sa=a.xy/a.w,sb=b.xy/b.w;vec2 dir=(sb-sa)*uRes;float dl=length(dir);dir=dl>1e-5?dir/dl:vec2(1.,0.);vec2 nrm=vec2(-dir.y,dir.x);'+
+   'float w='+(glow?'(aLev<.5?9.:5.)':'(aLev<.5?2.8:aLev<1.5?1.3:.8)')+';a.xy+=nrm*aSide*w*uPR/uRes*2.*a.w;gl_Position=a;vS=aSide;'+
+   'float act=smoothstep(.35,.85,vn(position*3.2+vec3(0.,uTime*.07,uTime*.045)));float wave=pow(.5+.5*sin(dot(position,vec3(.3,.22,1.))*3.2-uTime*.42),6.);'+
+   'vec3 wp=(modelMatrix*vec4(position,1.)).xyz,cw=(modelMatrix*vec4('+CEN+',1.)).xyz;float r=rad(wp,cw);'+
+   'float taper=aLev<.5?pow(sin(3.14159*clamp(aAlong*.9+.05,0.,1.)),.35):pow(clamp((1.-aAlong)*1.6,0.,1.),.7);float lw=aLev<.5?1.:aLev<1.5?.62:.42;float vary=.75+.25*fract(aSeed*7.31);'+
+   'float seam=1.-.45*exp(-position.x*position.x/.0016);float gd=1.-.12*aHue;'+
+   'vI=taper*lw*vary*gd*(.58+.34*act+.15*wave)*(1.+1.3*r)*seam;vP=flow(aDist,aRoot,7.,.015)*pow(taper,.3)*(aLev<.5?1.:aLev<1.5?.8:.6)*seam;'+(glow?'vI*=.18;vP*=.22;':'')+'}';
+  const strandFS=glow=>'uniform float uFade;varying float vI,vP,vS,vH,vL;void main(){'+
+   (glow?'float a=exp(-vS*vS*3.2);vec3 c=mix(vec3(.08,.36,1.),vec3(1.,.66,.26),vH)*vI*a+mix(vec3(.20,.62,1.),vec3(1.,.72,.34),vH)*vP*a;'
+        :'float e=1.-abs(vS);float body=e*e*(3.-2.*e),core=pow(e,6.)*(vL<.5?1.3:vL<1.5?.5:0.);'+
+         'vec3 c=(mix(vec3(.10,.42,1.),vec3(1.,.66,.26)*1.1,vH)*body+mix(vec3(.42,.80,1.),vec3(1.,.84,.52),vH)*core*.9)*vI+mix(vec3(.25,.70,1.),vec3(1.,.74,.36),vH)*(body*.8+core*1.2)*vP*2.2;')+
+   'gl_FragColor=vec4(c*uFade,1.);}';
+  const strandMat=glow=>new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,vertexShader:strandVS(glow),fragmentShader:strandFS(glow)});
+  const glowL=new THREE.Mesh(gg,strandMat(true)),lines=new THREE.Mesh(rg,strandMat(false));
+  // Gold synapses only at junctions (where a branch or twig leaves its parent), about 55% of them: barely lit at rest,
+  // swelling softly for under a second when that tree's pulse arrives - so the gold is tied to the blue network.
+  const J=F.junc,sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(J.pos,3));sg.setAttribute('aDist',new THREE.BufferAttribute(J.dist,1));sg.setAttribute('aRoot',new THREE.BufferAttribute(J.root,1));sg.setAttribute('aSeed',new THREE.BufferAttribute(J.seed,1));
+  const sp=new THREE.Points(sg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+   vertexShader:'uniform float uTime,uS;'+FLOW+'attribute float aDist,aRoot,aSeed;varying float vI;void main(){float p=flow(aDist,aRoot,4.,.08);vI=.22+.06*sin(uTime*.6+aSeed*40.)+1.1*p;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.016+.016*p)*uS/max(-mv.z,.001),2.,16.);gl_Position=projectionMatrix*mv;}',
+   fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;gl_FragColor=vec4(vec3(1.,.70,.30)*a*vI*uFade,1.);}'}));
+  sp.frustumCulled=lines.frustumCulled=glowL.frustumCulled=false;surf.renderOrder=1;glowL.renderOrder=2;lines.renderOrder=3;sp.renderOrder=4;
+  return[surf,glowL,lines,sp]})():(()=>{
   // ---- Living Superintelligence look (illuminated neural organism) ----
   // Surface: deep midnight blue, never black; soft blue light inside the folds; a faint organic capillary texture so it
   // reads as living tissue rather than plastic; a drifting activity field and slow waves; and an inner radiance - blue with
@@ -275,6 +345,7 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
    vertexShader:'uniform float uTime,uS;'+SIG+'attribute float aAlong,aSeed;varying float vI;void main(){float p=sig(aAlong,aSeed);vI=.36+.16*sin(uTime*.9+aSeed*40.)+1.25*p;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.017+.016*p)*uS/max(-mv.z,.001),2.,20.);gl_Position=projectionMatrix*mv;}',
    fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;gl_FragColor=vec4(vec3(1.,.70,.30)*a*vI*uFade,1.);}'}));
   sp.frustumCulled=lines.frustumCulled=glowL.frustumCulled=false;surf.renderOrder=1;glowL.renderOrder=2;lines.renderOrder=3;sp.renderOrder=4;
+  return[surf,glowL,lines,sp]})();
   const ng=new THREE.Group();ng.add(surf,glowL,lines,sp);brain.add(ng);neuro.group=ng;neuro.glowL=glowL;neuro.ready=true;if(brainBloom.ok&&state==='brain')$('glowT').hidden=false;
   try{renderer.compile(brainScene,camera)}catch(e){}
  }).catch(e=>{console.warn('Neural brain unavailable, keeping the crystal brain.',e)})})();
