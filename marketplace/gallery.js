@@ -7,7 +7,7 @@ const {THREE,$,scene,camera,renderer,U}=MK,clamp=MK.clamp,motion=MK.motion,reduc
 const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,sm=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
 
 // ================= Data (fetched once, as soon as this file loads) =================
-const dataP=fetch('./marketplace/catalog.json?v=2',{cache:'force-cache'}).then(r=>{if(!r.ok)throw new Error('catalog '+r.status);return r.json()});
+const dataP=fetch('./marketplace/catalog.json?v=3',{cache:'force-cache'}).then(r=>{if(!r.ok)throw new Error('catalog '+r.status);return r.json()});
 const fontsP=Promise.race([Promise.all(["600 40px 'Cormorant Garamond'","600 16px Manrope","700 16px Manrope"].map(f=>document.fonts?document.fonts.load(f):0)),new Promise(r=>setTimeout(r,1500))]).catch(()=>{});
 const price=p=>p.price&&p.price.amount>0?'$'+p.price.amount:'Free';
 
@@ -36,15 +36,22 @@ function art(c,x,y,w,h,kind,seed){const r=rnd(seed+1);c.save();c.beginPath();c.r
  else{c.beginPath();for(let i=0;i<=50;i++){const t=i/50,px=x+w*.12+t*w*.76,py=cy+Math.sin(t*5.5)*h*.2*(1-t*.4);i?c.lineTo(px,py):c.moveTo(px,py)}c.setLineDash([2,9]);stroke(AQ,2.2,10);c.setLineDash([]);
   for(const t of [0,.5,1])dot(x+w*.12+t*w*.76,cy+Math.sin(t*5.5)*h*.2*(1-t*.4),5,t===1?GD:AQ,16)}
  c.restore()}
+// Approved illustrations: when a product has an "image", it replaces the painted preview on its card and in the panel.
+// Each image is loaded once, downscaled to at most 800 px wide and kept on the CPU only, so the card atlas (and GPU memory) stays the same size.
+function loadImg(url){return new Promise(res=>{const im=new Image();let done=false;const fin=v=>{if(!done){done=true;res(v)}};im.decoding='async';
+ im.onload=()=>{try{const k=Math.min(1,800/im.naturalWidth),cv=document.createElement('canvas');cv.width=Math.round(im.naturalWidth*k);cv.height=Math.round(im.naturalHeight*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);fin(cv)}catch(e){fin(null)}};
+ im.onerror=()=>{console.warn('preview image missing: '+url);fin(null)};setTimeout(()=>fin(null),8000);im.src=url})}
+function preview(c,x,y,w,h,p,seed,img){if(!img){art(c,x,y,w,h,p.art,seed);return}
+ const s=Math.max(w/img.width,h/img.height),sw=w/s,sh=h/s;c.save();c.fillStyle='#05060F';c.fillRect(x,y,w,h);c.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,x,y,w,h);c.restore()} // cover-fit, centred
 function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 function wrap(c,t,maxW,maxL){const out=[];let line='';for(const w of t.split(' ')){const n=line?line+' '+w:w;if(c.measureText(n).width>maxW&&line){out.push(line);line=w}else line=n}if(line)out.push(line);
  if(out.length>maxL){out.length=maxL;let l=out[maxL-1];while(l&&c.measureText(l+'…').width>maxW)l=l.slice(0,-1);out[maxL-1]=l.replace(/[\s,.;:]+$/,'')+'…'}return out}
 
 // ================= Atlas: all card faces of one gallery in one texture =================
 const COLS=4,ROWS=2,TW=384,TH=512; // 1536 x 1024; card face aspect 3:4 matches the card geometry
-function buildAtlas(list,creators){const cv=document.createElement('canvas');cv.width=COLS*TW;cv.height=ROWS*TH;const c=cv.getContext('2d');
+function buildAtlas(list,creators,imgs){const cv=document.createElement('canvas');cv.width=COLS*TW;cv.height=ROWS*TH;const c=cv.getContext('2d');
  list.forEach((p,i)=>{const x=(i%COLS)*TW,y=Math.floor(i/COLS)*TH,pad=22,aw=TW-pad*2,ah=Math.round(TH*.5);
-  c.save();rr(c,x+pad,y+pad,aw,ah,16);c.clip();art(c,x+pad,y+pad,aw,ah,p.art,i*7+3);c.restore();
+  c.save();rr(c,x+pad,y+pad,aw,ah,16);c.clip();preview(c,x+pad,y+pad,aw,ah,p,i*7+3,imgs[i]);c.restore();
   c.save();rr(c,x+pad+.5,y+pad+.5,aw-1,ah-1,16);c.strokeStyle='rgba(127,224,255,.35)';c.lineWidth=1;c.stroke();c.restore();
   // "Sample" tag on the art
   c.font="700 11px Manrope, system-ui, sans-serif";const tg='SAMPLE',tw=c.measureText(tg).width+18;c.save();rr(c,x+pad+12,y+pad+12,tw,22,11);c.fillStyle='rgba(7,9,20,.72)';c.fill();c.strokeStyle='rgba(240,198,116,.55)';c.stroke();c.restore();
@@ -52,9 +59,9 @@ function buildAtlas(list,creators){const cv=document.createElement('canvas');cv.
   let ty=y+pad+ah+40;c.textBaseline='alphabetic';
   c.font="600 13px Manrope, system-ui, sans-serif";c.fillStyle='#9AA3C7';c.fillText(String(i+1).padStart(2,'0')+'  ·  AI AGENT',x+pad+2,ty);ty+=40;
   c.font="600 36px 'Cormorant Garamond', Georgia, serif";c.fillStyle='#E9EDFF';for(const l of wrap(c,p.title,aw-4,2)){c.fillText(l,x+pad,ty);ty+=36}
-  c.font="400 15.5px Manrope, system-ui, sans-serif";c.fillStyle='#9AA3C7';ty+=4;for(const l of wrap(c,p.short,aw-6,2)){c.fillText(l,x+pad+1,ty);ty+=22}
+  c.font="400 15.5px Manrope, system-ui, sans-serif";c.fillStyle='#D3DAF4'/* brighter for readability; stays below the title and the glow threshold */;ty+=4;for(const l of wrap(c,p.short,aw-6,2)){c.fillText(l,x+pad+1,ty);ty+=22}
   const by=y+TH-pad-14;c.strokeStyle='rgba(240,198,116,.28)';c.beginPath();c.moveTo(x+pad,by-30);c.lineTo(x+TW-pad,by-30);c.stroke();
-  c.font="600 14px Manrope, system-ui, sans-serif";c.fillStyle='#C9D0EE';c.fillText((creators[p.creatorId]||{}).name||'',x+pad+1,by);
+  c.font="600 14px Manrope, system-ui, sans-serif";c.fillStyle='#E2E7FB';c.fillText((creators[p.creatorId]||{}).name||'',x+pad+1,by);
   c.font="700 19px Manrope, system-ui, sans-serif";c.fillStyle='#F0C674';const pr=price(p);c.fillText(pr,x+TW-pad-c.measureText(pr).width,by)});
  const t=new THREE.CanvasTexture(cv);t.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());t.minFilter=THREE.LinearMipmapLinearFilter;t.generateMipmaps=true;return t}
 
@@ -83,10 +90,10 @@ const POOL_FS=`uniform float uP;varying vec2 vU;varying float vS;void main(){vec
 const POOL_VS='attribute float aI;uniform float uS[NC];varying vec2 vU;varying float vS;void main(){vU=uv;vS=uS[int(aI+.5)];gl_Position=projectionMatrix*viewMatrix*modelMatrix*instanceMatrix*vec4(position,1.);}';
 
 // ================= One gallery =================
-function makeGallery(cat,list,creators){const N=list.length,t0=performance.now();
+function makeGallery(cat,list,creators,imgs){const N=list.length,t0=performance.now();
  const grp=new THREE.Group();grp.visible=false;scene.add(grp);
  const aOf=i=>FACE+(i-(N-1)/2)*SP,pos=(i,r,y)=>MK.onCircle(aOf(i),r,y);
- const uS={value:new Array(N).fill(0)},uP={value:0},atlas=buildAtlas(list,creators);
+ const uS={value:new Array(N).fill(0)},uP={value:0},atlas=buildAtlas(list,creators,imgs);
  const def='#define NC '+N+'\n';
  // Cards: one instanced mesh, one draw call, one shared geometry, material and texture.
  const cardGeo=new THREE.PlaneGeometry(CW,CH);const aI=new Float32Array(N).map((_,i)=>i);cardGeo.setAttribute('aI',new THREE.InstancedBufferAttribute(aI,1));
@@ -111,7 +118,7 @@ function makeGallery(cat,list,creators){const N=list.length,t0=performance.now()
   grp.add(MK.points(d,'void main(){vec3 p=position;p.y=mod(p.y+uT*(.07+.1*aSeed),7.);p.x+=sin(uT*.13+aSeed*40.)*.3;vC=aColor;vA=(.3+.5*(.5+.5*sin(uT*1.7+aSeed*70.)))*smoothstep(0.,1.,p.y)*smoothstep(7.,5.5,p.y);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=aSize*uScale/-mv.z;gl_Position=projectionMatrix*mv;}'))}
  cards.layers.enable(1);back.layers.enable(1); // cards reflect in the existing mirror floor; nothing else is added to the reflection pass
  const bytes=atlas.image.width*atlas.image.height*4*1.33;
- return {cat,list,N,grp,cards,uS,uP,aOf,bytes,buildMs:Math.round(performance.now()-t0),
+ return {cat,list,imgs,N,grp,cards,uS,uP,aOf,bytes,buildMs:Math.round(performance.now()-t0),
   dispose(){scene.remove(grp);grp.traverse(x=>{if(x.geometry)x.geometry.dispose();if(x.material)x.material.dispose()});atlas.dispose()}}}
 
 // ================= Manager: only one gallery is ever visible; at most two kept in memory =================
@@ -119,7 +126,8 @@ const built=new Map();let cur=null,catIndex=-1,data=null,creators={};
 async function getGallery(cat){if(built.has(cat.id)){const g=built.get(cat.id);built.delete(cat.id);built.set(cat.id,g);return g}
  data=data||await dataP;await fontsP;creators={};for(const c of data.creators)creators[c.id]=c;
  const list=data.products.filter(p=>p.category===cat.id&&p.status==='approved').slice(0,COLS*ROWS);if(!list.length)throw new Error('empty');
- const g=makeGallery(cat,list,creators);built.set(cat.id,g);while(built.size>2){const [k,old]=built.entries().next().value;if(old===cur)break;old.dispose();built.delete(k)}return g}
+ const imgs=await Promise.all(list.map(p=>p.image?loadImg(p.image):null));
+ const g=makeGallery(cat,list,creators,imgs);built.set(cat.id,g);while(built.size>2){const [k,old]=built.entries().next().value;if(old===cur)break;old.dispose();built.delete(k)}return g}
 
 // ================= Camera, state and transitions =================
 const st={phase:'off',t:0,view:0,viewT:0,dolly:0,dollyT:0,sel:-1,panel:false,pk:0,lastInput:0,pending:null,wash:0};
@@ -165,7 +173,7 @@ const panel=$('panel'),pArt=$('pArt');
 function fillPanel(i){const p=cur.list[i],c=creators[p.creatorId]||{name:'',bio:''};$('pName').textContent=p.title;$('pCat').textContent=cur.cat.name;$('pPrice').textContent=price(p)+(p.price.amount>0?' · one-time':'');
  $('pDesc').textContent=p.description;$('pCreator').textContent=c.name;$('pBio').textContent=c.bio;$('pCrest').textContent=c.name.split(' ').filter(w=>/^[A-Z]/.test(w)).map(w=>w[0]).slice(0,2).join('');
  const tg=$('pTags');tg.textContent='';for(const t of p.tags||[]){const s=document.createElement('span');s.textContent=t;tg.appendChild(s)}
- const ctx=pArt.getContext('2d');art(ctx,0,0,pArt.width,pArt.height,p.art,i*7+3)}
+ const ctx=pArt.getContext('2d');preview(ctx,0,0,pArt.width,pArt.height,p,i*7+3,cur.imgs[i])}
 function open(i){if(!cur||st.phase!=='on'||i<0||i>=cur.N)return;st.viewT=i;st.sel=i;fillPanel(i);updateBar();st.lastInput=performance.now();
  if(!st.panel){st.panel=true;panel.classList.add('on');panel.setAttribute('aria-hidden','false');document.body.classList.add('panel-open');try{history.pushState({usiP:cur.list[i].id},'','#p='+cur.list[i].id)}catch(e){}}
  else try{history.replaceState({usiP:cur.list[i].id},'','#p='+cur.list[i].id)}catch(e){}
