@@ -37,6 +37,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 #toast b{display:block;font:600 clamp(24px,3.4vw,34px)/1.1 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;color:var(--ink);text-shadow:0 2px 20px rgba(5,6,15,.95)}
 #toast span{display:block;margin-top:8px;font:600 11px/1 Manrope,system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
 @media(max-width:640px){#dest{bottom:max(160px,calc(env(safe-area-inset-bottom) + 150px))}}
+#glowT{position:fixed;left:max(14px,env(safe-area-inset-left));top:max(14px,env(safe-area-inset-top));z-index:4;border:1px solid rgba(127,224,255,.35);background:rgba(14,18,38,.6);color:#E9EDFF;font:600 12px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;padding:9px 13px;border-radius:99px;cursor:pointer;transition:opacity .9s ease}
+#fps{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));z-index:7;font:600 12px/1.3 Manrope,ui-monospace,monospace;color:#9FE3FF;background:rgba(7,9,20,.7);border:1px solid rgba(127,224,255,.25);padding:6px 9px;border-radius:8px;pointer-events:none;white-space:pre}
+#fps[hidden],#glowT[hidden]{display:none}
 #error{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:24px;font:italic 500 22px 'Cormorant Garamond',Georgia,serif;color:var(--mist);z-index:7}
 @media(max-width:420px){#dock{gap:18px}#dock a{font-size:11px;letter-spacing:.15em}#stick{width:106px;height:106px}#knob{left:31px;top:31px;width:42px;height:42px}}
 </style>
@@ -50,6 +53,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
   <a href="https://usesuperintelligence.com/marketplace.html#sell">For Creators</a>
   <a href="https://usesuperintelligence.com/agents.html">Agent Hub</a>
 </nav>
+<button id="glowT" hidden aria-label="Toggle brain glow (test)">Glow: On</button><div id="fps" hidden></div>
 <div id="hud" hidden>
   <div id="stick" aria-label="Move"><div id="knob"></div></div>
   <button id="exit" aria-label="Return to the brain" title="Return to the brain">↺</button>
@@ -203,7 +207,7 @@ const crystalGroup=new THREE.Group();while(brain.children.length)crystalGroup.ad
 const brainHalo=halo('#7FE0FF',3.4,.3);brainHalo.renderOrder=0;brainScene.add(brainHalo);trueColors(brainScene);
 // Anatomical neural brain (BodyParts3D atlas, CC BY 4.0, (c) DBCLS - modified). Loads in the background; the crystal brain shows
 // until it is ready, and remains the fallback if loading fails. Add ?brain=classic to compare with the crystal brain.
-const neuro={ready:false,fade:0,U:{uTime:U.uTime,uFade:{value:0},uS:U.uS,uPR:U.uPR,uRes:{value:new THREE.Vector2(1,1)}}};
+const neuro={ready:false,fade:0,U:{uTime:U.uTime,uFade:{value:0},uOnly:{value:0},uS:U.uS,uPR:U.uPR,uRes:{value:new THREE.Vector2(1,1)}}};
 // Turns pathway polylines into ribbon geometry (two vertices per point, offset in screen space by the shader), plus the
 // junction points used for the gold synapses.
 function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=cl[i];let ni=0,ng=0,o0=0;for(let i=0;i<cl.length;i++){ni+=(cl[i]-1)*6;if(!lv||lv[o0]<2)ng+=(cl[i]-1)*6;o0+=cl[i]}
@@ -237,7 +241,7 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   const RAD='float rad(vec3 wp,vec3 cw){vec3 rd=normalize(wp-cameraPosition),oc=cw-cameraPosition;float tc=dot(oc,rd);float dr=length(oc-rd*tc);return step(0.,tc)*exp(-dr*dr*7.);}';
   const surf=new THREE.Mesh(g,new THREE.ShaderMaterial({uniforms:neuro.U,
    vertexShader:'attribute float aFold,aGrp;varying vec3 vN,vW,vL,vC;varying float vF,vG;void main(){vF=aFold;vG=aGrp;vL=position;vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;vC=(modelMatrix*vec4('+CEN+',1.)).xyz;vN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*viewMatrix*w;}',
-   fragmentShader:GLSL_NOISE+'uniform float uTime,uFade;varying vec3 vN,vW,vL,vC;varying float vF,vG;'+RAD+'void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.8);vec3 L=normalize(vec3(-.45,.75,.5));float dif=max(dot(N,L),0.);'+
+   fragmentShader:GLSL_NOISE+'uniform float uTime,uFade,uOnly;varying vec3 vN,vW,vL,vC;varying float vF,vG;'+RAD+'void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.8);vec3 L=normalize(vec3(-.45,.75,.5));float dif=max(dot(N,L),0.);'+
    'float crest=smoothstep(.25,.95,vF),groove=smoothstep(.6,.1,vF);float act=smoothstep(.35,.85,vn(vL*3.2+vec3(0.,uTime*.07,uTime*.045)));'+
    'float wave=pow(.5+.5*sin(dot(vL,vec3(.3,.22,1.))*3.2-uTime*.42),6.);float cd=length(vL-'+CEN+'),fw=pow(.5+.5*sin(cd*9.-uTime*1.1),14.);'+
    'vec3 q=vL*11.+vec3(vn(vL*5.)*1.5);float vein=pow(1.-abs(vn(q)*2.-1.),7.)*.7+pow(1.-abs(vn(q*2.1+3.7)*2.-1.),9.)*.5;'+
@@ -246,7 +250,7 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
    'col+=vec3(.18,.45,1.)*vein*(.035+.05*act)*(.5+.5*crest);'+
    'col+=vec3(.20,.48,1.)*fw*.06+vec3(.22,.55,1.)*step(.5,vG)*step(vG,1.5)*(.06+.10*crest+.06*act);'+
    'float r=rad(vW,vC)*(.55+.65*groove)*(.88+.12*sin(uTime*.7));col+=mix(vec3(.18,.45,1.),vec3(1.,.72,.34),smoothstep(.55,1.,r))*r*.62;'+
-   'col+=vec3(.498,.878,1.)*fr*.5;gl_FragColor=vec4(col*uFade,1.);}'}));
+   'col+=vec3(.498,.878,1.)*fr*.5;if(uOnly>.5)col=mix(vec3(.18,.45,1.),vec3(1.,.72,.34),smoothstep(.55,1.,r))*r*.55;gl_FragColor=vec4(col*uFade,1.);}'}));
   // Neural trees: trunks along the crests (widest, brightest), branches, then fine twigs - with a soft glow underlay under
   // trunks and branches that lights the surface around them, so the brain looks lit by its own network.
   const R=buildRibbons(deq(A('cpos')),A('clen'),A('calong'),A('cseed'),A('chue'),A('clev'));
@@ -271,7 +275,7 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
    vertexShader:'uniform float uTime,uS;'+SIG+'attribute float aAlong,aSeed;varying float vI;void main(){float p=sig(aAlong,aSeed);vI=.36+.16*sin(uTime*.9+aSeed*40.)+1.25*p;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.017+.016*p)*uS/max(-mv.z,.001),2.,20.);gl_Position=projectionMatrix*mv;}',
    fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;gl_FragColor=vec4(vec3(1.,.70,.30)*a*vI*uFade,1.);}'}));
   sp.frustumCulled=lines.frustumCulled=glowL.frustumCulled=false;surf.renderOrder=1;glowL.renderOrder=2;lines.renderOrder=3;sp.renderOrder=4;
-  const ng=new THREE.Group();ng.add(surf,glowL,lines,sp);brain.add(ng);neuro.group=ng;neuro.ready=true;
+  const ng=new THREE.Group();ng.add(surf,glowL,lines,sp);brain.add(ng);neuro.group=ng;neuro.glowL=glowL;neuro.ready=true;if(brainBloom.ok&&state==='brain')$('glowT').hidden=false;
   try{renderer.compile(brainScene,camera)}catch(e){}
  }).catch(e=>{console.warn('Neural brain unavailable, keeping the crystal brain.',e)})})();
 function updateNeuro(dt){if(!neuro.ready)return;renderer.getDrawingBufferSize(neuro.U.uRes.value);if(neuro.fade<1){neuro.fade=Math.min(1,neuro.fade+dt/1.4);neuro.U.uFade.value=neuro.fade*neuro.fade*(3-2*neuro.fade);if(neuro.fade>.35)crystalGroup.visible=false}}
@@ -632,12 +636,12 @@ const _qa=new THREE.Quaternion(),_qb=new THREE.Quaternion(),AX=new THREE.Vector3
 function rotateBrain(dx,dy){_qa.setFromAxisAngle(AY,dx);_qb.setFromAxisAngle(AX,dy);brain.quaternion.premultiply(_qa).premultiply(_qb)}
 function hubFov(){const a=camera.aspect;return clamp(2*Math.atan(Math.tan(32.5*Math.PI/180)/a)*180/Math.PI,46,80)}
 
-function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');$('credit').classList.add('hide');buildHub()}
+function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');$('credit').classList.add('hide');$('glowT').classList.add('hide');buildHub()}
 function toHub(){renderer.toneMappingExposure=1.2;cosmos.rotation.x=.33;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.2;resetQuality()}
 function arriveHub(){state='hub';hud.hidden=false;hud.classList.remove('hide');veil.style.opacity=0;fadeEl.style.opacity=0}
 function requestSkip(){if(state==='enter'&&skipT<0)skipT=0}
 function exitHub(){if(state!=='hub')return;state='leave';E=0}
-function toBrain(){$('credit').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
+function toBrain(){$('credit').classList.remove('hide');$('glowT').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
 
 // Pointers: brain = 1-finger rotate + pinch zoom; hub = swipe to look.
 const cv=renderer.domElement,ptrs=new Map();let pinch0=0;
@@ -667,13 +671,47 @@ addEventListener('resize',resize);fitBrain();
 let qT=-1.5,qF=0;function resetQuality(){qT=-1.5;qF=0}
 // Bloom: only bright emissive parts glow (high threshold). Rendered into an sRGB target so the custom shaders keep
 // their exact colors. Turned off automatically on slow devices, or with ?bloom=0 in the address.
+// Brain-only glow (bloom experiment, test site only). A separate half-resolution render contains ONLY the brain's bright
+// elements - neural strands, gold synapses, passing signals and the inner radiance - with the surface drawn black so it still
+// hides strands behind it. Stars, space, surface shading and the soft glow underlay are excluded, so the anatomy stays sharp.
+// That image is thresholded and blurred (tight half-res glow + wide quarter-res glow) and only the glow is added on top of the
+// normal, sharp frame. Brain screen only. Glow button toggles it; ?brainbloom=0 starts off; it switches itself off if the
+// frame rate drops.
+const brainBloom={want:!/brainbloom=0/.test(location.search)&&!/bloom=1/.test(location.search),on:false,ok:false,auto:false};
+function setupBrainBloom(){try{const bb=brainBloom,mk=()=>new THREE.WebGLRenderTarget(2,2,{type:THREE.HalfFloatType});
+ bb.src=mk();bb.h1=mk();bb.h2=mk();bb.q1=mk();bb.q2=mk();
+ bb.qs=new THREE.Scene();bb.oc=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+ const VS='varying vec2 vU;void main(){vU=uv;gl_Position=vec4(position.xy,0.,1.);}';
+ bb.blur=new THREE.ShaderMaterial({uniforms:{tS:{value:null},uD:{value:new THREE.Vector2()},uT:{value:0}},depthTest:false,depthWrite:false,vertexShader:VS,
+  fragmentShader:'uniform sampler2D tS;uniform vec2 uD;uniform float uT;varying vec2 vU;vec3 s(vec2 o){vec3 c=texture2D(tS,vU+o).rgb;if(uT>0.){float l=max(c.r,max(c.g,c.b));c*=smoothstep(uT,uT+.35,l);}return c;}'+
+  'void main(){vec3 c=s(vec2(0.))*.2270;c+=(s(uD*1.3846)+s(-uD*1.3846))*.3162;c+=(s(uD*3.2308)+s(-uD*3.2308))*.0703;gl_FragColor=vec4(c,1.);}'});
+ bb.comp=new THREE.ShaderMaterial({uniforms:{tA:{value:null},tB:{value:null},uK:{value:1}},transparent:true,depthTest:false,depthWrite:false,blending:THREE.AdditiveBlending,vertexShader:VS,
+  fragmentShader:'uniform sampler2D tA,tB;uniform float uK;varying vec2 vU;void main(){vec3 c=texture2D(tA,vU).rgb*1.25+texture2D(tB,vU).rgb*1.75;c=c/(1.+.35*max(c.r,max(c.g,c.b)));gl_FragColor=vec4(c*uK,1.);}'});
+ bb.quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),bb.blur);bb.quad.frustumCulled=false;bb.qs.add(bb.quad);
+ sizeBrainBloom();bb.ok=true;setGlow(bb.want)}catch(e){console.warn('Brain glow unavailable',e);brainBloom.ok=false}}
+function sizeBrainBloom(){const bb=brainBloom;if(!bb.src)return;const sz=renderer.getDrawingBufferSize(new THREE.Vector2()),w=Math.max(2,sz.x>>1),h=Math.max(2,sz.y>>1),qw=Math.max(2,w>>1),qh=Math.max(2,h>>1);
+ bb.src.setSize(w,h);bb.h1.setSize(w,h);bb.h2.setSize(w,h);bb.q1.setSize(qw,qh);bb.q2.setSize(qw,qh);bb.w=w;bb.h=h;bb.qw=qw;bb.qh=qh}
+function bbPass(mat,target){const bb=brainBloom;bb.quad.material=mat;renderer.setRenderTarget(target);renderer.render(bb.qs,bb.oc)}
+function setGlow(on,auto){brainBloom.on=!!on&&brainBloom.ok;brainBloom.auto=!!auto;$('glowT').textContent='Glow: '+(brainBloom.on?'On':auto?'Off (auto)':'Off')}
+function renderBrainBloom(){const bb=brainBloom,ng=neuro.group;if(!bb.on||!bb.ok||!neuro.ready||current!==brainScene||!ng)return false;
+ const hidden=[cosmos,brainHalo,crystalGroup,neuro.glowL],was=hidden.map(o=>o.visible);hidden.forEach(o=>o.visible=false);
+ neuro.U.uOnly.value=1;renderer.setClearColor(0x000000,1);renderer.setRenderTarget(bb.src);renderer.clear();renderer.render(brainScene,camera);
+ neuro.U.uOnly.value=0;renderer.setClearColor('#070914',1);hidden.forEach((o,i)=>o.visible=was[i]);
+ const B=bb.blur.uniforms;B.tS.value=bb.src.texture;B.uD.value.set(1/bb.w,0);B.uT.value=.34;bbPass(bb.blur,bb.h1);
+ B.tS.value=bb.h1.texture;B.uD.value.set(0,1/bb.h);B.uT.value=0;bbPass(bb.blur,bb.h2);
+ B.tS.value=bb.h2.texture;B.uD.value.set(2/bb.qw,0);bbPass(bb.blur,bb.q1);
+ B.tS.value=bb.q1.texture;B.uD.value.set(0,2/bb.qh);bbPass(bb.blur,bb.q2);
+ renderer.setRenderTarget(null);renderer.render(current,camera);
+ const C=bb.comp.uniforms;C.tA.value=bb.h2.texture;C.tB.value=bb.q2.texture;C.uK.value=neuro.U.uFade.value;bb.quad.material=bb.comp;
+ const ac=renderer.autoClear;renderer.autoClear=false;renderer.render(bb.qs,bb.oc);renderer.autoClear=ac;return true}
+let fpsT=0,fpsN=0;function fpsMeter(dt){if($('fps').hidden)return;fpsT+=dt;fpsN++;if(fpsT>=.5){$('fps').textContent=(fpsN/fpsT).toFixed(0)+' fps\nglow '+(brainBloom.on&&current===brainScene?'on':'off')+(brainBloom.auto?' (auto)':'');fpsT=0;fpsN=0}}
 let composer=null,renderPass=null,bloom=null;
 function setupBloom(){try{if(!THREE.EffectComposer||!THREE.UnrealBloomPass||!THREE.RenderPass||!/bloom=1/.test(location.search))return;
  const sz=renderer.getDrawingBufferSize(new THREE.Vector2()),MS=renderer.capabilities.isWebGL2&&THREE.WebGLMultisampleRenderTarget,rt=MS?new THREE.WebGLMultisampleRenderTarget(sz.x,sz.y):new THREE.WebGLRenderTarget(sz.x,sz.y);if(MS)rt.samples=4;rt.texture.encoding=THREE.sRGBEncoding;
  composer=new THREE.EffectComposer(renderer,rt);renderPass=new THREE.RenderPass(current,camera);bloom=new THREE.UnrealBloomPass(new THREE.Vector2(sz.x,sz.y),.55,.45,.72);composer.addPass(renderPass);composer.addPass(bloom);composer.setSize(sz.x,sz.y)}catch(e){console.warn(e);composer=null}}
-function sizeBloom(){if(!composer)return;const sz=renderer.getDrawingBufferSize(new THREE.Vector2());composer.setSize(sz.x,sz.y)}
+function sizeBloom(){sizeBrainBloom();if(!composer)return;const sz=renderer.getDrawingBufferSize(new THREE.Vector2());composer.setSize(sz.x,sz.y)}
 function bloomFor(){if(!bloom)return;if(current===hubScene){bloom.threshold=.7;bloom.strength=.6;bloom.radius=.45}else if(current===tunnelScene){bloom.threshold=.5;bloom.strength=.75;bloom.radius=.5}else{bloom.threshold=.78;bloom.strength=.42;bloom.radius=.4}}
-function quality(dt){if(composer===null&&dprStep>=DPR_STEPS.length-1)return;qT+=dt;if(qT<0)return;qF++;if(qT>=2.5){const fps=qF/qT;qT=0;qF=0;if(fps<42&&composer){composer=null;return}if(fps<42&&dprStep<DPR_STEPS.length-1){dprStep++;renderer.setPixelRatio(DPR_STEPS[dprStep]);renderer.setSize(innerWidth,innerHeight)}}}
+function quality(dt){fpsMeter(dt);const bbActive=brainBloom.on&&current===brainScene&&neuro.ready;if(!bbActive&&composer===null&&dprStep>=DPR_STEPS.length-1)return;qT+=dt;if(qT<0)return;qF++;if(qT>=2.5){const fps=qF/qT;qT=0;qF=0;if(fps<40&&bbActive){setGlow(false,true);return}if(fps<42&&composer){composer=null;return}if(fps<42&&dprStep<DPR_STEPS.length-1){dprStep++;renderer.setPixelRatio(DPR_STEPS[dprStep]);renderer.setSize(innerWidth,innerHeight)}}}
 
 const _v=new THREE.Vector3(),_w=new THREE.Vector3(),clock=new THREE.Clock();let time=0;
 function updateBrain(dt){
@@ -733,13 +771,14 @@ function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta()
  for(const g of galaxies)g.rotation.y+=dt*.004*motion;if(hub.sky)for(const g of hub.sky)g.rotateY(dt*.004*motion);cosmos.rotation.y+=dt*.0015*motion;
  if(state==='brain')updateBrain(dt);else if(state==='enter')updateEnter(dt);else if(state==='hub')updateHub(dt);else if(state==='leave')updateLeave(dt);else if(state==='fly')updateFly(dt);else if(state==='arrive')updateArrive(dt);
  if(current===hubScene)animateHub(dt);
- updatePointScale();if(composer){renderPass.scene=current;bloomFor();composer.render(dt)}else renderer.render(current,camera);quality(dt)}
+ updatePointScale();if(composer){renderPass.scene=current;bloomFor();composer.render(dt)}else if(!renderBrainBloom())renderer.render(current,camera);quality(dt)}
 let ret=null;try{ret=sessionStorage.getItem('usi-return');if(ret)sessionStorage.removeItem('usi-return')}catch(e){}
 if(ret&&DEST.some(d=>d.id===ret)){buildHub();toHub();placeNear(ret);dock.classList.add('hide');state='arrive';E=0;fadeEl.style.opacity=1}
 addEventListener('pageshow',e=>{if(e.persisted&&state==='fly')restoreFromFly()});
 // Prebuild the hub and warm up shaders after the brain is showing, so the entrance has no hitch.
 setTimeout(()=>{try{buildHub();renderer.compile(tunnelScene,camera);const prev=cosmos.parent;hubScene.add(cosmos);renderer.compile(hubScene,camera);if(prev)prev.add(cosmos)}catch(e){console.warn(e)}},1200);
-setupBloom();
+setupBloom();setupBrainBloom();if(/fps=1/.test(location.search))$('fps').hidden=false;
+$('glowT').addEventListener('click',()=>{setGlow(!brainBloom.on);qT=-1.5;qF=0});
 frame();
 })();
 </script>
