@@ -229,6 +229,94 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
    if(j<m-1){const a=i*2,q=[a,a+1,a+2,a+1,a+3,a+2];for(const x of q)idx[k++]=x;if(L<2)for(const x of q)glowIdx[kg++]=x}}
   for(let e=0;e<2;e++){const i=e?o+m-1:o;for(let t=0;t<3;t++)ends[(c*2+e)*3+t]=cp[i*3+t];endAlong[c*2+e]=e;endSeed[c*2+e]=sd[o]/255}o+=m}
  return{pos,next,side,along,seed,hue,lev,idx,glowIdx,ends,endAlong,endSeed}}
+// ---- COMBO (?look=combo): the anatomical brain as a living particle cloud, hollow inside, with floating hologram objects ----
+// The surface is sampled into glittering particles (gold crown, teal and cyan body, pink and violet edges) over a faint glass
+// rim, a soft dust fills the volume, and small wireframe objects drift inside. Preview of combining the live site's
+// particle brain with the anatomical shape; the objects here are stand-ins until the live site's own objects are brought over.
+function comboBrain(g){
+ const grp=new THREE.Group(),mats=[],objs=[],CEN=new THREE.Vector3(0,-.04,-.05),fade=()=>neuro.U.uFade.value;
+ const P=g.getAttribute('position').array,I=g.index.array,nt=I.length/3,cum=new Float32Array(nt);let tot=0;
+ for(let t=0;t<nt;t++){const a=I[t*3]*3,b=I[t*3+1]*3,c=I[t*3+2]*3,ux=P[b]-P[a],uy=P[b+1]-P[a+1],uz=P[b+2]-P[a+2],vx=P[c]-P[a],vy=P[c+1]-P[a+1],vz=P[c+2]-P[a+2];
+  tot+=Math.hypot(uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx);cum[t]=tot}
+ const pick=()=>{const r=rand()*tot;let lo=0,hi=nt-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<r)lo=m+1;else hi=m}
+  let u=rand(),v=rand();if(u+v>1){u=1-u;v=1-v}const a=I[lo*3]*3,b=I[lo*3+1]*3,c=I[lo*3+2]*3;return[0,1,2].map(k=>P[a+k]+(P[b+k]-P[a+k])*u+(P[c+k]-P[a+k])*v)};
+ // Particle shell + inner dust.
+ const NS=coarse?22000:46000,ND=coarse?3500:7000,N=NS+ND,pos=new Float32Array(N*3),col=new Float32Array(N*3),sd=new Float32Array(N),sz=new Float32Array(N);
+ const PAL={gold:[1,.80,.40],teal:[.30,.95,.82],cyan:[.50,.86,1],pink:[1,.42,.78],violet:[.66,.45,1],white:[.93,.95,1]};
+ for(let i=0;i<N;i++){const shell=i<NS;let p=pick();
+  if(shell){for(let k=0;k<3;k++)p[k]+=randn()*.012}else{const k=.12+.8*Math.cbrt(rand());p=[0,1,2].map(j=>CEN.getComponent(j)+(p[j]-CEN.getComponent(j))*k)}
+  const ty=(p[1]+.98)/1.68,ez=Math.abs(p[2])/.91;let c;
+  if(rand()<.07)c=PAL.white;else if(ty>.76&&rand()<.8)c=PAL.gold;else if((ez>.6||ty<.3)&&rand()<.75)c=rand()<.55?PAL.pink:PAL.violet;else c=rand()<.6?PAL.teal:PAL.cyan;
+  if(!shell&&rand()<.5)c=rand()<.5?PAL.teal:PAL.white;
+  pos.set(p,i*3);col.set(c,i*3);sd[i]=rand();sz[i]=shell?.6+rand()*.9+(rand()<.04?1.6:0):.35+rand()*.6}
+ const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pos,3));pg.setAttribute('aCol',new THREE.BufferAttribute(col,3));
+ pg.setAttribute('aSeed',new THREE.BufferAttribute(sd,1));pg.setAttribute('aSz',new THREE.BufferAttribute(sz,1));
+ const cloud=new THREE.Points(pg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+  vertexShader:'uniform float uTime,uS,uFade;attribute vec3 aCol;attribute float aSeed,aSz;varying vec3 vC;varying float vA;void main(){'+
+   'vec3 p=position+.010*vec3(sin(uTime*.6+aSeed*40.),sin(uTime*.5+aSeed*31.),sin(uTime*.7+aSeed*23.));vec4 mv=modelViewMatrix*vec4(p,1.);'+
+   'vC=aCol;vA=(.5+.5*sin(uTime*(1.1+aSeed*2.6)+aSeed*60.))*uFade;gl_PointSize=clamp(.0085*aSz*uS/max(-mv.z,.001),1.,14.);gl_Position=projectionMatrix*mv;}',
+  fragmentShader:'varying vec3 vC;varying float vA;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,0.,q);gl_FragColor=vec4(vC*a*a*vA*1.05,1.);}'}));
+ cloud.frustumCulled=false;cloud.renderOrder=3;
+ // Faint glass rim so the shape still reads at the silhouette.
+ const glass=new THREE.Mesh(g,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+  vertexShader:'varying vec3 vN,vW;void main(){vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;vN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*viewMatrix*w;}',
+  fragmentShader:'uniform float uFade;varying vec3 vN,vW;void main(){float fr=pow(1.-abs(dot(normalize(vN),normalize(cameraPosition-vW))),3.);gl_FragColor=vec4(vec3(.30,.55,1.)*fr*.16*uFade,1.);}'}));
+ glass.renderOrder=1;grp.add(glass,cloud);
+ // Hologram objects: thin wireframes with glowing points at their vertices.
+ const lineMat=(c,op)=>{const m=new THREE.LineBasicMaterial({color:c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});m.userData.op=op||.9;mats.push(m);return m};
+ const dotMat=(c,s,op)=>{const m=new THREE.PointsMaterial({color:c,size:s||.07,map:glowTex,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});m.userData.op=op||1;mats.push(m);return m};
+ const segs=pts=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));return g};
+ const poly=(f,n)=>{const a=[];for(let i=0;i<n;i++)a.push(...f(i/n),...f((i+1)/n));return segs(a)};
+ const ring=(r,y,n=40)=>poly(t=>[Math.cos(t*6.2832)*r,y||0,Math.sin(t*6.2832)*r],n);
+ const L=(o,geo,c,op)=>{o.add(new THREE.LineSegments(geo,lineMat(c,op)));return o};
+ const E=(o,geo,c,op)=>L(o,new THREE.EdgesGeometry(geo,1),c,op),W=(o,geo,c,op)=>L(o,new THREE.WireframeGeometry(geo),c,op);
+ const D=(o,geo,c,s,op)=>{o.add(new THREE.Points(geo,dotMat(c,s,op)));return o};
+ const B={
+  tesla(){const o=new THREE.Group();L(o,poly(t=>[Math.cos(t*6.2832*7)*.22,-.55+t*1.0,Math.sin(t*6.2832*7)*.22],140),'#F0A060');
+   const tor=new THREE.TorusGeometry(.42,.11,6,22);tor.rotateX(Math.PI/2);tor.translate(0,.58,0);W(o,tor,'#B48CFF',.6);D(o,ring(.42,.58,18),'#E6C8FF',.09);
+   const n=4*8,bolt=new THREE.BufferGeometry();bolt.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*2*3),3));L(o,bolt,'#E0C8FF',1);
+   o.userData.tick=t=>{if(rand()>.35)return;const a=bolt.attributes.position.array;let k=0;for(let b=0;b<4;b++){const an=rand()*6.2832;let x=Math.cos(an)*.5,y=.58,z=Math.sin(an)*.5;
+     for(let s=0;s<8;s++){const nx=x*1.12+(rand()-.5)*.16,ny=y+(rand()-.5)*.18,nz=z*1.12+(rand()-.5)*.16;a.set([x,y,z,nx,ny,nz],k);k+=6;x=nx;y=ny;z=nz}}bolt.attributes.position.needsUpdate=true};return o},
+  hourglass(){const o=new THREE.Group(),pr=[[.4,-.56],[.4,-.5],[.03,0],[.4,.5],[.4,.56]].map(([r,y])=>new THREE.Vector2(r,y));W(o,new THREE.LatheGeometry(pr,10),'#7FE0FF',.55);
+   for(const y of [.6,-.6])E(o,new THREE.CylinderGeometry(.48,.48,.05,10).translate(0,y,0),'#BDF4FF');const s=[];for(let i=0;i<60;i++){const r=rand()*.25;s.push(Math.cos(i)*r,-.5+rand()*.2*(1-r*3),Math.sin(i)*r)}D(o,segs(s),'#FFE6A0',.05);return o},
+  planet(){const o=new THREE.Group();W(o,new THREE.SphereGeometry(.42,12,8),'#FFB0D8',.5);const r=new THREE.Group();L(r,ring(.72),'#F0C674');L(r,ring(.62),'#F0C674',.6);D(r,ring(.67,0,30),'#FFE6A0',.06);r.rotation.x=1.2;o.add(r);return o},
+  crystal(){const o=new THREE.Group(),g=new THREE.IcosahedronGeometry(.45,0);E(o,g,'#F0C674');D(o,g,'#FFE6A0',.08);return o},
+  octa(){const o=new THREE.Group(),g=new THREE.OctahedronGeometry(.45,0);g.scale(1,1.4,1);E(o,g,'#B48CFF');D(o,g,'#E6C8FF',.08);return o},
+  dodeca(){const o=new THREE.Group(),g=new THREE.DodecahedronGeometry(.42,0);E(o,g,'#5FF2D0');D(o,g,'#BFFFEF',.08);return o},
+  pyramid(){const o=new THREE.Group(),g=new THREE.ConeGeometry(.55,.8,4,1);E(o,g,'#FF9A7A');D(o,g,'#FFD2B8',.08);return o},
+  knot(){const o=new THREE.Group();L(o,poly(t=>{const u=t*6.2832*2,r=.3+.12*Math.cos(1.5*u);return[r*Math.cos(u),.12*Math.sin(1.5*u)*2,r*Math.sin(u)]},220),'#7FE0FF');return o},
+  cube(){const o=new THREE.Group(),cs=['#FF5A7A','#5FF2D0','#F0C674','#7FA8FF','#FFFFFF','#B48CFF'];for(let x=-1;x<=1;x++)for(let y=-1;y<=1;y++)for(let z=-1;z<=1;z++){const g=new THREE.BoxGeometry(.24,.24,.24);g.translate(x*.27,y*.27,z*.27);E(o,g,cs[(x+y*2+z*3+9)%6],.75)}return o},
+  dna(){const o=new THREE.Group();for(const ph of [0,Math.PI])L(o,poly(t=>[Math.cos(t*12+ph)*.2,-.6+t*1.2,Math.sin(t*12+ph)*.2],90),ph?'#FF6EC7':'#5FF2D0');
+   const r=[];for(let i=0;i<=18;i++){const t=i/18,a=t*12;r.push(Math.cos(a)*.2,-.6+t*1.2,Math.sin(a)*.2,-Math.cos(a)*.2,-.6+t*1.2,-Math.sin(a)*.2)}L(o,segs(r),'#BDF4FF',.4);return o},
+  jelly(){const o=new THREE.Group();W(o,new THREE.SphereGeometry(.4,12,5,0,6.2832,0,Math.PI/2),'#7FE0FF',.45);const ts=new THREE.Group();
+   for(let i=0;i<8;i++){const a=i/8*6.2832;L(ts,poly(t=>[Math.cos(a)*.3*(1-t*.4)+Math.sin(t*9+i)*.04,-t*.8,Math.sin(a)*.3*(1-t*.4)],16),'#FF9AD8',.6)}o.add(ts);
+   o.userData.tick=t=>{ts.scale.y=1+.12*Math.sin(t*2.2);o.children[0].scale.set(1+.05*Math.sin(t*2.2),1-.06*Math.sin(t*2.2),1+.05*Math.sin(t*2.2))};return o},
+  galaxy(){const o=new THREE.Group(),a=[],b=[];for(let i=0;i<500;i++){const arm=i%2,r=Math.pow(rand(),.7)*.6,an=r*7+arm*Math.PI+randn()*.25;(rand()<.3?b:a).push(Math.cos(an)*r,randn()*.02,Math.sin(an)*r)}
+   D(o,segs(a),'#B48CFF',.05);D(o,segs(b),'#FFFFFF',.05);D(o,segs([0,0,0]),'#FFE6C0',.35);o.userData.spin=.5;o.rotation.x=.5;return o},
+  atom(){const o=new THREE.Group();for(let i=0;i<3;i++){const r=new THREE.Group();L(r,poly(t=>[Math.cos(t*6.2832)*.55,0,Math.sin(t*6.2832)*.2],48),'#7FE0FF',.8);r.rotation.set(i*1.05,i*.6,0);o.add(r)}
+   E(o,new THREE.IcosahedronGeometry(.1,0),'#FFE6A0');D(o,segs([0,0,0]),'#FFE6A0',.25);return o},
+  ufo(){const o=new THREE.Group(),s=new THREE.SphereGeometry(.5,14,6);s.scale(1,.22,1);W(o,s,'#7FA8FF',.5);W(o,new THREE.SphereGeometry(.2,10,5,0,6.2832,0,Math.PI/2).translate(0,.08,0),'#BDF4FF',.6);
+   const b=[];for(let i=0;i<120;i++){const y=-rand()*.7,r=(-y)*.5*Math.sqrt(rand()),a=rand()*6.2832;b.push(Math.cos(a)*r,y-.1,Math.sin(a)*r)}D(o,segs(b),'#9FE8FF',.04,.7);return o},
+  tree(){const o=new THREE.Group(),a=[];const br=(x,y,z,dx,dy,dz,l,d)=>{const ex=x+dx*l,ey=y+dy*l,ez=z+dz*l;a.push(x,y,z,ex,ey,ez);if(d<5)for(let k=0;k<2+(d<2);k++){const an=rand()*6.2832,sp=.5;br(ex,ey,ez,dx+Math.cos(an)*sp,dy,dz+Math.sin(an)*sp,l*.72,d+1)}};
+   br(0,-.55,0,0,1,0,.4,0);L(o,segs(a),'#F0C674',.75);return o},
+  city(){const o=new THREE.Group();L(o,ring(.6,-.3),'#BDF4FF');L(o,ring(.5,-.36),'#7FE0FF',.6);for(let i=0;i<8;i++){const h=.2+rand()*.6,g=new THREE.BoxGeometry(.12,h,.12);const a=i/8*6.2832,r=i%3?.3:.08;g.translate(Math.cos(a)*r,-.3+h/2,Math.sin(a)*r);E(o,g,'#BDF4FF',.8)}return o},
+  butterfly(){const o=new THREE.Group(),wing=s=>{const w=new THREE.Group();L(w,poly(t=>{const a=t*6.2832,r=.45*Math.abs(Math.sin(2*a))+.05;return[s*Math.abs(Math.cos(a))*r*1.1,Math.sin(a)*r,0]},60),'#FF6EC7');return w};
+   const l=wing(-1),r=wing(1);o.add(l,r);L(o,segs([0,-.25,0,0,.25,0]),'#FFFFFF');o.userData.tick=t=>{const f=.9*Math.sin(t*7);l.rotation.y=f;r.rotation.y=-f};return o},
+  bulb(){const o=new THREE.Group();W(o,new THREE.SphereGeometry(.32,10,8).translate(0,.15,0),'#FFE07A',.5);E(o,new THREE.CylinderGeometry(.14,.14,.22,8).translate(0,-.25,0),'#F0C674');
+   L(o,poly(t=>[Math.cos(t*30)*.06,-.05+t*.25,Math.sin(t*30)*.06],60),'#FFF6C8');D(o,segs([0,.15,0]),'#FFF2B0',.4);return o},
+  rocket(){const o=new THREE.Group();E(o,new THREE.CylinderGeometry(.14,.14,.6,8),'#FFFFFF');E(o,new THREE.ConeGeometry(.14,.3,8).translate(0,.45,0),'#FF9A7A');
+   for(let i=0;i<3;i++){const a=i/3*6.2832;L(o,segs([Math.cos(a)*.14,-.3,Math.sin(a)*.14,Math.cos(a)*.32,-.42,Math.sin(a)*.32,Math.cos(a)*.32,-.42,Math.sin(a)*.32,Math.cos(a)*.14,-.1,Math.sin(a)*.14]),'#7FE0FF')}
+   const f=[];for(let i=0;i<50;i++)f.push(randn()*.05,-.35-rand()*.35,randn()*.05);D(o,segs(f),'#FFB070',.05);return o},
+  blackhole(){const o=new THREE.Group(),a=[];for(let i=0;i<400;i++){const r=.2+Math.pow(rand(),2)*.45,an=rand()*6.2832;a.push(Math.cos(an)*r,randn()*.015,Math.sin(an)*r)}
+   D(o,segs(a),'#FFA040',.05);L(o,ring(.19),'#FFE6C0');o.userData.spin=.9;o.rotation.x=.35;return o}};
+ const kinds=['tesla','hourglass','planet','crystal','knot','cube','dna','jelly','galaxy','atom','ufo','tree','city','butterfly','bulb','rocket','blackhole','pyramid','octa','dodeca','crystal','jelly','planet','octa','galaxy','dodeca','crystal','jelly'];
+ const placed=[];for(const k of kinds){let p=null;for(let tr=0;tr<300&&!p;tr++){const s=pick(),f=.3+.38*rand(),c=new THREE.Vector3(...s).sub(CEN).multiplyScalar(f).add(CEN);
+   if(c.y<-.42)continue;if(placed.every(q=>q.distanceTo(c)>.26))p=c}if(!p)continue;placed.push(p);
+  const o=B[k]();o.scale.setScalar(.1+rand()*.04);o.position.copy(p);o.rotation.y=rand()*6.2832;
+  o.userData.base=p.clone();o.userData.ph=rand()*6.2832;o.userData.spin=(o.userData.spin||.25)*(rand()<.5?-1:1);grp.add(o);objs.push(o)}
+ neuro.tick=dt=>{const t=U.uTime.value,f=fade();for(const m of mats)m.opacity=m.userData.op*f;
+  for(const o of objs){const u=o.userData;o.position.y=u.base.y+.018*Math.sin(t*.7+u.ph);o.position.x=u.base.x+.01*Math.sin(t*.43+u.ph*2);o.rotation.y+=u.spin*dt;if(u.tick)u.tick(t)}};
+ return grp}
 (()=>{if(/brain=classic/.test(location.search))return;
  const url0='brain/brain-'+(coarse?'lo':'hi'),url=url0+(/[?&]look=nano\b/.test(location.search)?'-nano':'')+'.bin';
  const get=async()=>{if(window.DecompressionStream){try{const r=await fetch(url+'.gz');if(r.ok){const b=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();if(new Uint8Array(b,0,4)[0]===85)return b}}catch(e){}}
@@ -243,8 +331,9 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   const nr=A('nor'),nf=new Float32Array(nr.length);for(let i=0;i<nr.length;i++)nf[i]=nr[i]/127;g.setAttribute('normal',new THREE.BufferAttribute(nf,3));
   g.setAttribute('aFold',new THREE.BufferAttribute(new Uint8Array(A('fold')),1,true));g.setAttribute('aGrp',new THREE.BufferAttribute(new Uint8Array(A('grp')),1,false));
   g.setIndex(new THREE.BufferAttribute(new Uint32Array(A('idx')),1));
-  // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment ?look=exp2 its colour-corrected variant and ?look=nano the nano-neural fibre experiment, for side-by-side review.
+  // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment ?look=exp2 its colour-corrected variant and ?look=nano the nano-neural fibre experiment and ?look=combo the particle brain with floating objects, for side-by-side review.
   const LOOK_NANO=/[?&]look=nano\b/.test(location.search),LOOK_EXP2=/[?&]look=exp2\b/.test(location.search),LOOK_EXP=LOOK_NANO||LOOK_EXP2||/[?&]look=exp\b/.test(location.search);
+  if(/[?&]look=combo\b/.test(location.search)){const ng=comboBrain(g);brain.add(ng);neuro.group=ng;neuro.glowL=new THREE.Object3D();neuro.ready=true;if(brainBloom.ok&&state==='brain')$('glowT').hidden=false;try{renderer.compile(brainScene,camera)}catch(e){}return}
   const [surf,glowL,lines,sp]=LOOK_EXP?(()=>{
   // ---- EXPERIMENT (?look=exp): cinematic sapphire pass ----
   // Surface: deeper sapphire with dark valleys; restrained light on selected ridges and a soft sapphire sheen on the crests;
@@ -407,7 +496,7 @@ function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=
   const ng=new THREE.Group();ng.add(surf,glowL,lines,sp);brain.add(ng);neuro.group=ng;neuro.glowL=glowL;neuro.ready=true;if(brainBloom.ok&&state==='brain')$('glowT').hidden=false;
   try{renderer.compile(brainScene,camera)}catch(e){}
  }).catch(e=>{console.warn('Neural brain unavailable, keeping the crystal brain.',e)})})();
-function updateNeuro(dt){if(!neuro.ready)return;renderer.getDrawingBufferSize(neuro.U.uRes.value);if(neuro.fade<1){neuro.fade=Math.min(1,neuro.fade+dt/1.4);neuro.U.uFade.value=neuro.fade*neuro.fade*(3-2*neuro.fade);if(neuro.fade>.35)crystalGroup.visible=false}}
+function updateNeuro(dt){if(!neuro.ready)return;if(neuro.tick)neuro.tick(dt);renderer.getDrawingBufferSize(neuro.U.uRes.value);if(neuro.fade<1){neuro.fade=Math.min(1,neuro.fade+dt/1.4);neuro.U.uFade.value=neuro.fade*neuro.fade*(3-2*neuro.fade);if(neuro.fade>.35)crystalGroup.visible=false}}
 const brainQ0=new THREE.Quaternion().setFromEuler(new THREE.Euler(.18,-1.05,0,'YXZ'));brain.quaternion.copy(brainQ0);
 
 // Fit the brain to ~70% of the shorter screen side.
