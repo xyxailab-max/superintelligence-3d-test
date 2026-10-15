@@ -148,6 +148,8 @@ function planet(x,y,z,r,c1,c2,atm,ring){const g=new THREE.Group();g.position.set
  if(ring){const rm=new THREE.Mesh(new THREE.RingGeometry(r*1.35,r*2.2,128,1),new THREE.ShaderMaterial({transparent:true,side:THREE.DoubleSide,depthWrite:false,uniforms:{uR:{value:r}},vertexShader:'varying float vR;void main(){vR=length(position.xy);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'uniform float uR;varying float vR;void main(){float t=(vR/uR-1.35)/.85;float a=(.25+.25*sin(t*55.)+.2*sin(t*17.))*smoothstep(0.,.08,t)*smoothstep(1.,.85,t);gl_FragColor=vec4(mix(vec3(.94,.78,.45),vec3(.62,.66,.82),t)*.8,a*.55);}'}));rm.rotation.set(1.25,.2,.35);g.add(rm)}
  cosmos.add(g);return g}
 const planets=[planet(-260,70,-430,38,'#2A2F6E','#5C4FA8','#7FE0FF',true),planet(330,-25,-390,20,'#4A3420','#B8894A','#F0C674',false),planet(130,150,-560,9,'#6E8FB5','#C9DDF0','#9FE3FF',false)];
+// ?look=combo: nothing orbits the brain - its galaxies and planets are hidden on the brain screen (stars stay; the hub keeps its own).
+const LOOK_COMBO=/[?&]look=combo\b/.test(location.search);function comboSky(onBrain){if(!LOOK_COMBO)return;for(const o of [...galaxies,...planets])o.visible=!onBrain}comboSky(true);
 
 // ================= Opening scene: the crystal brain =================
 const brainScene=new THREE.Scene();brainScene.add(cosmos);
@@ -333,7 +335,7 @@ function comboBrain(g){
   g.setIndex(new THREE.BufferAttribute(new Uint32Array(A('idx')),1));
   // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment ?look=exp2 its colour-corrected variant and ?look=nano the nano-neural fibre experiment and ?look=combo the particle brain with floating objects, for side-by-side review.
   const LOOK_NANO=/[?&]look=nano\b/.test(location.search),LOOK_EXP2=/[?&]look=exp2\b/.test(location.search),LOOK_EXP=LOOK_NANO||LOOK_EXP2||/[?&]look=exp\b/.test(location.search);
-  if(/[?&]look=combo\b/.test(location.search)){const ng=comboBrain(g);brain.add(ng);neuro.group=ng;neuro.glowL=new THREE.Object3D();neuro.ready=true;if(brainBloom.ok&&state==='brain')$('glowT').hidden=false;try{renderer.compile(brainScene,camera)}catch(e){}return}
+  if(LOOK_COMBO){const ng=comboBrain(g);brain.add(ng);neuro.group=ng;neuro.glowL=new THREE.Object3D();neuro.ready=true;if(brainBloom.ok&&state==='brain')$('glowT').hidden=false;try{renderer.compile(brainScene,camera)}catch(e){}return}
   const [surf,glowL,lines,sp]=LOOK_EXP?(()=>{
   // ---- EXPERIMENT (?look=exp): cinematic sapphire pass ----
   // Surface: deeper sapphire with dark valleys; restrained light on selected ridges and a soft sapphire sheen on the crests;
@@ -855,11 +857,11 @@ function rotateBrain(dx,dy){_qa.setFromAxisAngle(AY,dx);_qb.setFromAxisAngle(AX,
 function hubFov(){const a=camera.aspect;return clamp(2*Math.atan(Math.tan(32.5*Math.PI/180)/a)*180/Math.PI,46,80)}
 
 function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');$('credit').classList.add('hide');$('glowT').classList.add('hide');buildHub()}
-function toHub(){renderer.toneMappingExposure=1.2;cosmos.rotation.x=.33;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.2;resetQuality()}
+function toHub(){renderer.toneMappingExposure=1.2;cosmos.rotation.x=.33;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;comboSky(false);galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.2;resetQuality()}
 function arriveHub(){state='hub';hud.hidden=false;hud.classList.remove('hide');veil.style.opacity=0;fadeEl.style.opacity=0}
 function requestSkip(){if(state==='enter'&&skipT<0)skipT=0}
 function exitHub(){if(state!=='hub')return;state='leave';E=0}
-function toBrain(){$('credit').classList.remove('hide');$('glowT').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
+function toBrain(){$('credit').classList.remove('hide');$('glowT').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;comboSky(true);setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
 
 // Pointers: brain = 1-finger rotate + pinch zoom; hub = swipe to look.
 const cv=renderer.domElement,ptrs=new Map();let pinch0=0;
