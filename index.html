@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Use Superintelligence</title>
 <meta name="theme-color" content="#070914">
+<link rel="icon" type="image/png" sizes="32x32" href="brand/favicon_32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="brand/favicon_48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -37,7 +40,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 #toast b{display:block;font:600 clamp(24px,3.4vw,34px)/1.1 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;color:var(--ink);text-shadow:0 2px 20px rgba(5,6,15,.95)}
 #toast span{display:block;margin-top:8px;font:600 11px/1 Manrope,system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
 @media(max-width:640px){#dest{bottom:max(160px,calc(env(safe-area-inset-bottom) + 150px))}}
-#glowT{position:fixed;left:max(14px,env(safe-area-inset-left));top:max(14px,env(safe-area-inset-top));z-index:4;border:1px solid rgba(127,224,255,.35);background:rgba(14,18,38,.6);color:#E9EDFF;font:600 12px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;padding:9px 13px;border-radius:99px;cursor:pointer;transition:opacity .9s ease}
+#brand{position:fixed;left:max(18px,env(safe-area-inset-left));top:max(14px,env(safe-area-inset-top));z-index:4;display:block;line-height:0;transition:opacity .9s ease}
+#brand img{display:block;height:52px;width:auto}
+@media(max-width:1024px){#brand img{height:44px}}
+@media(max-width:640px){#brand img{height:38px}}
+#glowT{position:fixed;left:max(14px,env(safe-area-inset-left));top:calc(max(14px,env(safe-area-inset-top)) + 62px);z-index:4;border:1px solid rgba(127,224,255,.35);background:rgba(14,18,38,.6);color:#E9EDFF;font:600 12px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;padding:9px 13px;border-radius:99px;cursor:pointer;transition:opacity .9s ease}
 #fps{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));z-index:7;font:600 12px/1.3 Manrope,ui-monospace,monospace;color:#9FE3FF;background:rgba(7,9,20,.7);border:1px solid rgba(127,224,255,.25);padding:6px 9px;border-radius:8px;pointer-events:none;white-space:pre}
 #fps[hidden],#glowT[hidden]{display:none}
 #error{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:24px;font:italic 500 22px 'Cormorant Garamond',Georgia,serif;color:var(--mist);z-index:7}
@@ -48,6 +55,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 <canvas id="scene" aria-label="Use Superintelligence: an interactive 3D crystal brain"></canvas>
 <div id="labels"></div>
 <a id="credit" href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html" target="_blank" rel="noopener">3D anatomy: BodyParts3D © DBCLS, CC BY 4.0 (modified)</a>
+<a id="brand" href="./" aria-label="Use Super Intelligence — home"><img src="brand/logo-horizontal.webp" width="238" height="120" alt="Use Super Intelligence" draggable="false"></a>
 <nav id="dock" aria-label="Main">
   <a href="https://usesuperintelligence.com/marketplace.html">Marketplace</a>
   <a href="https://usesuperintelligence.com/marketplace.html#sell">For Creators</a>
@@ -760,17 +768,17 @@ let state='brain',current=brainScene,E=0,skipT=-1,idle=0;
 const rotVel={x:0,y:0},zoom={v:0,t:0};
 const P={x:ENTRY.x,z:ENTRY.z,yaw:0,pitch:.06,yawT:0,pitchT:.06,phase:0};
 const walk={x:0,y:0},keys={};
-const veil=$('veil'),fadeEl=$('fade'),dock=$('dock'),hud=$('hud');
+const veil=$('veil'),fadeEl=$('fade'),dock=$('dock'),brand=$('brand'),hud=$('hud');
 const _qa=new THREE.Quaternion(),_qb=new THREE.Quaternion(),AX=new THREE.Vector3(1,0,0),AY=new THREE.Vector3(0,1,0);
 function rotateBrain(dx,dy){_qa.setFromAxisAngle(AY,dx);_qb.setFromAxisAngle(AX,dy);brain.quaternion.premultiply(_qa).premultiply(_qb)}
 function hubFov(){const a=camera.aspect;return clamp(2*Math.atan(Math.tan(32.5*Math.PI/180)/a)*180/Math.PI,46,80)}
 
-function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');$('credit').classList.add('hide');$('glowT').classList.add('hide');buildHub()}
+function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');brand.classList.add('hide');$('credit').classList.add('hide');$('glowT').classList.add('hide');buildHub()}
 function toHub(){renderer.toneMappingExposure=1.2;cosmos.rotation.x=.33;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.2;resetQuality()}
 function arriveHub(){state='hub';hud.hidden=false;hud.classList.remove('hide');veil.style.opacity=0;fadeEl.style.opacity=0}
 function requestSkip(){if(state==='enter'&&skipT<0)skipT=0}
 function exitHub(){if(state!=='hub')return;state='leave';E=0}
-function toBrain(){$('credit').classList.remove('hide');$('glowT').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
+function toBrain(){$('credit').classList.remove('hide');$('glowT').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');brand.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
 
 // Pointers: brain = 1-finger rotate + pinch zoom; hub = swipe to look.
 const cv=renderer.domElement,ptrs=new Map();let pinch0=0;
@@ -902,7 +910,7 @@ function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta()
  if(current===hubScene)animateHub(dt);
  updatePointScale();if(composer){renderPass.scene=current;bloomFor();composer.render(dt)}else if(!renderBrainBloom())renderer.render(current,camera);quality(dt)}
 let ret=null;try{ret=sessionStorage.getItem('usi-return');if(ret)sessionStorage.removeItem('usi-return')}catch(e){}
-if(ret&&DEST.some(d=>d.id===ret)){buildHub();toHub();placeNear(ret);dock.classList.add('hide');state='arrive';E=0;fadeEl.style.opacity=1}
+if(ret&&DEST.some(d=>d.id===ret)){buildHub();toHub();placeNear(ret);dock.classList.add('hide');brand.classList.add('hide');state='arrive';E=0;fadeEl.style.opacity=1}
 addEventListener('pageshow',e=>{if(e.persisted&&state==='fly')restoreFromFly()});
 // Prebuild the hub and warm up shaders after the brain is showing, so the entrance has no hitch.
 setTimeout(()=>{try{buildHub();renderer.compile(tunnelScene,camera);const prev=cosmos.parent;hubScene.add(cosmos);renderer.compile(hubScene,camera);if(prev)prev.add(cosmos)}catch(e){console.warn(e)}},1200);
