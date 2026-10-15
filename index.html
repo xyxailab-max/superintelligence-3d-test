@@ -256,7 +256,7 @@ function comboBrain(g){
  const cloud=new THREE.Points(pg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
   vertexShader:'uniform float uTime,uS,uFade;attribute vec3 aCol;attribute float aSeed,aSz;varying vec3 vC;varying float vA;void main(){'+
    'vec3 p=position+.010*vec3(sin(uTime*.6+aSeed*40.),sin(uTime*.5+aSeed*31.),sin(uTime*.7+aSeed*23.));vec4 mv=modelViewMatrix*vec4(p,1.);'+
-   'vC=aCol;vA=(.5+.5*sin(uTime*(1.1+aSeed*2.6)+aSeed*60.))*uFade;gl_PointSize=clamp(.0085*aSz*uS/max(-mv.z,.001),1.,14.);gl_Position=projectionMatrix*mv;}',
+   'float dz=-mv.z;vC=aCol;vA=(.5+.5*sin(uTime*(1.1+aSeed*2.6)+aSeed*60.))*uFade*smoothstep(.06,.55,dz)*(.45+.55*smoothstep(.4,1.6,dz));gl_PointSize=clamp(.0085*aSz*uS/max(dz,.001),1.,6.);gl_Position=projectionMatrix*mv;}',
   fragmentShader:'varying vec3 vC;varying float vA;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,0.,q);gl_FragColor=vec4(vC*a*a*vA*1.05,1.);}'}));
  cloud.frustumCulled=false;cloud.renderOrder=3;
  // Faint glass rim so the shape still reads at the silhouette.
@@ -266,7 +266,7 @@ function comboBrain(g){
  glass.renderOrder=1;grp.add(glass,cloud);
  // Hologram objects: thin wireframes with glowing points at their vertices.
  const lineMat=(c,op)=>{const m=new THREE.LineBasicMaterial({color:c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});m.userData.op=op||.9;mats.push(m);return m};
- const dotMat=(c,s,op)=>{const m=new THREE.PointsMaterial({color:c,size:s||.07,map:glowTex,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});m.userData.op=op||1;mats.push(m);return m};
+ const dotMat=(c,s,op)=>{const m=new THREE.PointsMaterial({color:c,size:Math.min(12,(s||.07)*55),sizeAttenuation:false,map:glowTex,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});m.userData.op=op||1;m.userData.sz=m.size;mats.push(m);return m};
  const segs=pts=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));return g};
  const poly=(f,n)=>{const a=[];for(let i=0;i<n;i++)a.push(...f(i/n),...f((i+1)/n));return segs(a)};
  const ring=(r,y,n=40)=>poly(t=>[Math.cos(t*6.2832)*r,y||0,Math.sin(t*6.2832)*r],n);
@@ -316,7 +316,7 @@ function comboBrain(g){
    if(c.y<-.42)continue;if(placed.every(q=>q.distanceTo(c)>.26))p=c}if(!p)continue;placed.push(p);
   const o=B[k]();o.scale.setScalar(.1+rand()*.04);o.position.copy(p);o.rotation.y=rand()*6.2832;
   o.userData.base=p.clone();o.userData.ph=rand()*6.2832;o.userData.spin=(o.userData.spin||.25)*(rand()<.5?-1:1);grp.add(o);objs.push(o)}
- neuro.tick=dt=>{const t=U.uTime.value,f=fade();for(const m of mats)m.opacity=m.userData.op*f;
+ neuro.tick=dt=>{const t=U.uTime.value,f=fade(),near=Math.min(1,.45/Math.max(camera.position.length(),.01));for(const m of mats){m.opacity=m.userData.op*f;if(m.userData.sz)m.size=Math.max(1,m.userData.sz*near)}
   for(const o of objs){const u=o.userData;o.position.y=u.base.y+.018*Math.sin(t*.7+u.ph);o.position.x=u.base.x+.01*Math.sin(t*.43+u.ph*2);o.rotation.y+=u.spin*dt;if(u.tick)u.tick(t)}};
  return grp}
 (()=>{if(/brain=classic/.test(location.search))return;
@@ -502,6 +502,8 @@ function updateNeuro(dt){if(!neuro.ready)return;if(neuro.tick)neuro.tick(dt);ren
 const brainQ0=new THREE.Quaternion().setFromEuler(new THREE.Euler(.18,-1.05,0,'YXZ'));brain.quaternion.copy(brainQ0);
 
 // Fit the brain to ~70% of the shorter screen side.
+// ?look=combo: zooming flies into the brain, down to a spot among the floating objects; the tunnel starts only on double-tap or Enter.
+const camDist=()=>LOOK_COMBO?fitD*Math.pow(.28/fitD,Math.max(0,zoom.v))*(zoom.v<0?1-zoom.v*.62:1):fitD*(1-zoom.v*.62);
 let fitD=3;function fitBrain(){const t2=2*Math.tan(20*Math.PI/180),dW=1.69/(.70*t2*camera.aspect),dH=1.30/(.84*t2);fitD=Math.max(dW,dH)}
 
 // ================= Neural tunnel =================
@@ -874,7 +876,7 @@ let lastTap={t:-1e9,x:0,y:0};
 const endPtr=e=>{const p=ptrs.get(e.pointerId);if(e.type==='pointerup'&&p&&state==='brain'&&ptrs.size===1&&Math.hypot(e.clientX-p.sx,e.clientY-p.sy)<12&&performance.now()-p.t<300){const now=performance.now();if(now-lastTap.t<340&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<40){lastTap.t=-1e9;zoom.t=1;startEntrance()}else lastTap={t:now,x:e.clientX,y:e.clientY}}if(e.type==='pointerup'&&p&&state==='hub'&&Math.hypot(e.clientX-p.sx,e.clientY-p.sy)<10&&performance.now()-p.t<350)tapHub(e.clientX,e.clientY);ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0};
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('wheel',e=>{e.preventDefault();if(state==='brain')zoom.t=clamp(zoom.t-e.deltaY*.0011,-.3,1)},{passive:false});
-addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if(state==='brain'){if(k==='+'||k==='='||k==='e')zoom.t=clamp(zoom.t+.12,-.3,1);if(k==='-'||k==='q')zoom.t=clamp(zoom.t-.12,-.3,1);if(k==='enter')zoom.t=1}else if(state==='enter')requestSkip();else if(state==='hub'&&k==='escape')exitHub();else if(state==='hub'&&k==='enter'&&curDest)flyTo(curDest)});
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if(state==='brain'){if(k==='+'||k==='='||k==='e')zoom.t=clamp(zoom.t+.12,-.3,1);if(k==='-'||k==='q')zoom.t=clamp(zoom.t-.12,-.3,1);if(k==='enter'){zoom.t=1;if(LOOK_COMBO)startEntrance()}}else if(state==='enter')requestSkip();else if(state==='hub'&&k==='escape')exitHub();else if(state==='hub'&&k==='enter'&&curDest)flyTo(curDest)});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 // Joystick.
 const stick=$('stick'),knob=$('knob');let stickId=null;
@@ -938,9 +940,9 @@ function updateBrain(dt){
  if(!ptrs.size){idle+=dt;rotateBrain(rotVel.x,rotVel.y);const f=Math.pow(.9,dt*60);rotVel.x*=f;rotVel.y*=f}
  const auto=smooth(2.5,5,idle);_qa.setFromAxisAngle(AY,auto*.06*dt*motion);brain.quaternion.premultiply(_qa);
  zoom.v+=(zoom.t-zoom.v)*Math.min(1,dt*6);
- camera.position.set(0,0,fitD*(1-zoom.v*.62));camera.lookAt(0,0,0);
- brainHalo.material.opacity=(neuro.ready?.36:.28)+.04*Math.sin(time*.8);if(neuro.ready)brainHalo.scale.setScalar(3.4+.4*neuro.U.uFade.value);updateNeuro(dt);
- if(zoom.v>.86)startEntrance()}
+ camera.position.set(0,0,camDist());camera.lookAt(0,0,0);
+ brainHalo.material.opacity=((neuro.ready?.36:.28)+.04*Math.sin(time*.8))*(LOOK_COMBO?1-smooth(.1,.6,zoom.v):1);if(neuro.ready)brainHalo.scale.setScalar(3.4+.4*neuro.U.uFade.value);updateNeuro(dt);
+ if(zoom.v>.86&&!LOOK_COMBO)startEntrance()}
 function updateHub(dt){
  const mx=walk.x+(keys.d?1:0)-(keys.a?1:0),my=walk.y+(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0);
  P.yawT+=((keys.arrowleft?1:0)-(keys.arrowright?1:0))*dt*1.6;
@@ -982,7 +984,7 @@ function tapHub(cx,cy){_ndc.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.set
 function updateEnter(dt){E+=dt;
  if(skipT>=0){skipT+=dt;fadeEl.style.opacity=Math.min(1,skipT/.3);if(skipT>=.3&&current!==hubScene){toHub();veil.style.opacity=0}if(current===hubScene){updateHub(0);const o=1-smooth(.3,1.1,skipT);fadeEl.style.opacity=o;if(o<=0){skipT=-1;arriveHub()}}return}
  if(reduceMotion){fadeEl.style.opacity=Math.min(1,E/.7);if(E>=.7&&current!==hubScene)toHub();if(current===hubScene){updateHub(0);fadeEl.style.opacity=1-smooth(.7,1.6,E);if(E>=1.6)arriveHub()}return}
- if(E<1.5){updateBrain(dt);const u=smooth(0,1.5,E);camera.position.set(0,0,lerp(fitD*(1-zoom.v*.62),.12,u*u*u));camera.lookAt(0,0,0);veil.style.opacity=smooth(1,1.5,E)}
+ if(E<1.5){updateBrain(dt);const u=smooth(0,1.5,E);camera.position.set(0,0,lerp(camDist(),.12,u*u*u));camera.lookAt(0,0,0);veil.style.opacity=smooth(1,1.5,E)}
  else if(E<5.5){if(current!==tunnelScene){current=tunnelScene;camera.fov=55}const u=smooth(1.5,5.5,E),s=u*.95;tc(s,_v);tc(s+.03,_w);camera.position.copy(_v);camera.up.set(0,1,0);camera.lookAt(_w);camera.rotateZ(Math.sin(u*Math.PI)*.25*motion);camera.fov=55+17*Math.sin(u*Math.PI);camera.updateProjectionMatrix();veil.style.opacity=(1-smooth(1.5,2.1,E))+smooth(5.1,5.5,E)}
  else{if(current!==hubScene)toHub();updateHub(0);veil.style.opacity=1-smooth(5.5,6.6,E);if(E>=6.6)arriveHub()}}
 function updateLeave(dt){E+=dt;fadeEl.style.opacity=Math.min(1,E/.5);if(E>=.5&&current!==brainScene)toBrain();if(current===brainScene){updateBrain(dt);fadeEl.style.opacity=1-smooth(.5,1.3,E);if(E>=1.3){fadeEl.style.opacity=0;state='brain'}}}
