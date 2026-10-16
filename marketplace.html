@@ -1,0 +1,454 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Marketplace — Prompts, Agents, Courses & Templates | Use Superintelligence</title>
+<meta name="description" content="Discover AI prompt packs, agents, courses and templates from independent creators. Creators: list your AI product free during launch, with a Featured spot.">
+<meta name="theme-color" content="#070914">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://usesuperintelligence.com/marketplace.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Use Superintelligence">
+<meta property="og:title" content="AI Marketplace — Prompts, Agents, Courses & Templates | Use Superintelligence">
+<meta property="og:description" content="Discover AI prompt packs, agents, courses and templates from independent creators. Creators: list your AI product free during launch, with a Featured spot.">
+<meta property="og:url" content="https://usesuperintelligence.com/marketplace.html">
+<meta property="og:image" content="https://usesuperintelligence.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Marketplace — Prompts, Agents, Courses & Templates | Use Superintelligence">
+<meta name="twitter:description" content="Discover AI prompt packs, agents, courses and templates from independent creators. Creators: list your AI product free during launch, with a Featured spot.">
+<meta name="twitter:image" content="https://usesuperintelligence.com/og.png">
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a catalog under a night sky. Search + category rail on top, product grid below, creator storefront and product sheet as overlays, "list your product" at the foot. */
+  :root {
+    --void: #070914;
+    --panel: #0e1226;
+    --line: #232a4a;
+    --ink: #e9edff;
+    --mist: #9aa3c7;
+    --aether: #7fe0ff;
+    --gold: #f0c674;
+    --good: #7be3a8;
+    --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+    --sans: "Manrope", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(ellipse 90% 50% at 70% 0%, #151b40 0%, var(--void) 60%) fixed, var(--void); color: var(--ink); font: 15px/1.6 var(--sans); padding-inline: 16px; -webkit-font-smoothing: antialiased; }
+  a { color: var(--aether); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-block: 18px 56px; display: grid; gap: 28px; }
+  nav.site { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  nav.site .home { font: 500 0.7rem/1 var(--mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--aether); text-decoration: none; }
+  nav.site .links { display: flex; gap: 8px; flex-wrap: wrap; }
+  nav.site .links a { font-size: 0.85rem; font-weight: 500; color: var(--ink); text-decoration: none; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); }
+  nav.site .links a[aria-current="page"] { color: var(--void); background: var(--aether); border-color: var(--aether); }
+
+  .hero h1 { font: 400 clamp(2.4rem, 6.4vw, 4.2rem)/1.02 var(--serif); margin: 6px 0 10px; text-wrap: balance; max-width: 18ch; }
+  .hero h1 em { color: var(--gold); }
+  .hero p { margin: 0; color: var(--mist); max-width: 60ch; }
+  .search { margin-top: 18px; display: flex; gap: 8px; max-width: 620px; }
+  .search input { flex: 1; min-width: 0; font: 1rem/1.3 var(--sans); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 13px 16px; }
+  .cats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .cats button { font: 500 0.82rem/1 var(--sans); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; cursor: pointer; }
+  .cats button[aria-pressed="true"] { color: var(--void); background: var(--ink); border-color: var(--ink); }
+  .cats button .n { color: var(--mist); font: 0.72rem var(--mono); margin-left: 6px; }
+  .cats button[aria-pressed="true"] .n { color: var(--void); }
+  input:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .bar h2 { margin: 0; font: 500 1.6rem/1.1 var(--serif); }
+  .bar small { color: var(--mist); font: 0.75rem var(--mono); }
+  .sample { font: 0.72rem/1.4 var(--mono); color: var(--gold); border: 1px dashed color-mix(in srgb, var(--gold) 60%, transparent); border-radius: 10px; padding: 8px 12px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+  .card { text-align: left; font: inherit; color: inherit; background: color-mix(in srgb, var(--panel) 60%, transparent); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 10px; align-content: start; cursor: pointer; transition: border-color .2s; }
+  .card.featured { border-color: color-mix(in srgb, var(--gold) 70%, var(--line)); }
+  .feat { color: var(--gold); font: 500 0.68rem var(--mono); letter-spacing: 0.08em; }
+  .card:hover { border-color: color-mix(in srgb, var(--aether) 55%, var(--line)); }
+  .card .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .type { font: 500 0.66rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--aether); }
+  .price { font: 600 0.9rem/1 var(--sans); }
+  .price.free { color: var(--good); }
+  .card h3 { margin: 0; font: 600 1.05rem/1.3 var(--sans); text-wrap: balance; }
+  .card p { margin: 0; color: var(--mist); font-size: 0.9rem; }
+  .by { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--mist); }
+  .av { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 600 0.7rem/1 var(--sans); color: var(--void); flex: none; }
+  .verified { color: var(--aether); font: 0.68rem var(--mono); }
+  .empty { color: var(--mist); padding: 24px; border: 1px dashed var(--line); border-radius: 16px; }
+
+  .creators { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .creator { text-align: left; font: inherit; color: inherit; background: transparent; border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; gap: 12px; align-items: center; cursor: pointer; }
+  .creator:hover { border-color: var(--aether); }
+  .creator .av { width: 40px; height: 40px; font-size: 0.95rem; }
+  .creator b { display: block; font-weight: 600; }
+  .creator span { color: var(--mist); font-size: 0.8rem; }
+
+  .sheet[hidden] { display: none; }
+  .sheet { position: fixed; inset: 0; z-index: 20; background: rgba(4, 6, 16, 0.72); display: grid; place-items: center; padding: 16px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+  .sheet .box { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; width: min(620px, 100%); max-height: 100%; overflow-y: auto; padding: 24px; display: grid; gap: 14px; }
+  .sheet h3 { margin: 0; font: 500 2rem/1.1 var(--serif); }
+  .sheet ul { margin: 0; padding-left: 20px; color: var(--mist); }
+  .sheet .close { justify-self: end; font: 500 0.75rem var(--mono); letter-spacing: 0.1em; color: var(--mist); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+  .btn { font: 600 0.9rem/1 var(--sans); color: var(--void); background: var(--aether); border: 0; border-radius: 12px; padding: 13px 18px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; }
+  .btn.ghost { color: var(--ink); background: transparent; border: 1px solid var(--line); }
+  .btn:disabled { opacity: 0.55; cursor: progress; }
+  .inline { display: flex; gap: 8px; flex-wrap: wrap; }
+  .inline input { flex: 1 1 220px; min-width: 0; }
+  .msg { font-size: 0.88rem; color: var(--mist); }
+  .msg.ok { color: var(--good); }
+  .msg.bad { color: #ff9a9a; }
+
+  .list { border: 1px solid var(--line); border-radius: 20px; padding: 24px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 28px; background: color-mix(in srgb, var(--panel) 55%, transparent); }
+  .list h2 { margin: 0 0 8px; font: 400 2.2rem/1.05 var(--serif); }
+  .list h2 em { color: var(--gold); }
+  .list ol { margin: 12px 0 0; padding-left: 20px; color: var(--mist); display: grid; gap: 6px; }
+  form.submit { display: grid; gap: 10px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  label.f { display: grid; gap: 4px; font-size: 0.8rem; color: var(--mist); }
+  .f input, .f select, .f textarea, .inline input { font: 0.95rem/1.3 var(--sans); color: var(--ink); background: var(--void); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .f textarea { resize: vertical; min-height: 70px; }
+  .check { display: flex; gap: 8px; align-items: flex-start; font-size: 0.82rem; color: var(--mist); }
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .plan { border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 10px; align-content: start; background: color-mix(in srgb, var(--panel) 55%, transparent); }
+  .plan.hot { border-color: var(--gold); }
+  .plan .tag { font: 500 0.68rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--aether); }
+  .plan.hot .tag { color: var(--gold); }
+  .plan .price { font: 400 2.4rem/1 var(--serif); }
+  .plan .price small { font: 0.85rem var(--sans); color: var(--mist); }
+  .plan .price s { opacity: 0.7; margin-left: 4px; }
+  .plan ul { margin: 0; padding-left: 18px; color: var(--mist); display: grid; gap: 4px; font-size: 0.9rem; }
+  .plan .btn { margin-top: 6px; }
+  footer { color: var(--mist); font-size: 0.78rem; }
+
+  @media (max-width: 760px) { .list { grid-template-columns: minmax(0, 1fr); } .two { grid-template-columns: minmax(0, 1fr); } }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+  /* Logo: star + USE / SUPERINTELLIGENCE */
+  .si-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; line-height: 1; }
+  .si-star { width: 21px; height: 21px; flex: none; display: block; }
+  .si-w { display: grid; justify-items: center; gap: 3px; }
+  .si-use { font: 500 0.38rem/1 "JetBrains Mono", ui-monospace, Menlo, monospace; letter-spacing: 0.9em; padding-left: 0.9em; color: #9fe3ff; }
+  .si-name { font: 600 0.64rem/1 "Poppins", "Manrope", system-ui, sans-serif; letter-spacing: 0.22em; padding-left: 0.22em; white-space: nowrap;
+    background: linear-gradient(92deg, #eef2ff 0%, #9fe3ff 42%, #f0c674 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  @media (max-width: 420px) { .si-star { width: 18px; height: 18px; } .si-name { font-size: 0.56rem; letter-spacing: 0.18em; } .si-logo { gap: 5px; } }
+
+  .nl-wrap { margin:36px 0 24px; max-width:640px; }
+  .nl { border:1px solid color-mix(in srgb, #f0c674 45%, #232a4a); background:linear-gradient(135deg, rgba(240,198,116,.08), rgba(127,224,255,.05)); border-radius:16px; padding:18px; display:grid; gap:10px; }
+  .nl .tag { font:600 .66rem/1 "JetBrains Mono", monospace; letter-spacing:.16em; text-transform:uppercase; color:#f0c674; }
+  .nl b { font:600 1.05rem/1.3 Manrope, sans-serif; color:#e9edff; }
+  .nl p { margin:0; color:#9aa3c7; font-size:.86rem; }
+  .nl form { display:flex; gap:8px; flex-wrap:wrap; }
+  .nl input { flex:1 1 180px; min-width:0; font:.95rem/1.2 Manrope, sans-serif; color:#e9edff; background:#070914; border:1px solid #232a4a; border-radius:10px; padding:11px 12px; }
+  .nl button { font:600 .8rem/1 Manrope, sans-serif; color:#070914; background:#f0c674; border:0; border-radius:10px; padding:11px 16px; cursor:pointer; }
+  .nl .done { color:#e9edff; font-size:.9rem; } .nl .done a { color:#7fe0ff; font-weight:600; }
+  .nl small { color:#9aa3c7; font-size:.72rem; } .nl small a { color:inherit; }
+  .nl [hidden] { display:none !important; }
+</style>
+</head><body>
+
+<div class="wrap">
+  <nav class="site" aria-label="Site">
+    <a class="si-logo" href="index.html" aria-label="Use Superintelligence, home"><svg class="si-star" viewBox="62 62 900 900" aria-hidden="true"><defs><linearGradient id="siG" gradientUnits="userSpaceOnUse" x1="92" y1="92" x2="932" y2="932"><stop offset="0" stop-color="#7fe0ff"/><stop offset=".5" stop-color="#d6f5ff"/><stop offset="1" stop-color="#f0c674"/></linearGradient></defs><path d="M512 92 L592 432 L932 512 L592 592 L512 932 L432 592 L92 512 L432 432 Z" fill="none" stroke="url(#siG)" stroke-width="40" stroke-linejoin="round"/><path d="M512 222 L562 462 L802 512 L562 562 L512 802 L462 562 L222 512 L462 462 Z" fill="none" stroke="url(#siG)" stroke-width="22" stroke-linejoin="round" opacity=".75"/><circle cx="512" cy="512" r="44" fill="#f0c674"/></svg><span class="si-w"><span class="si-use">USE</span><span class="si-name">SUPERINTELLIGENCE</span></span></a>
+    <div class="links"><a href="index.html">3D Brain</a><a href="agents.html">Agent Hub</a><a href="marketplace.html" aria-current="page">Marketplace</a><a href="#plans">For creators</a></div>
+  </nav>
+
+  <section class="hero">
+    <h1>Every AI product, <em>one place.</em></h1>
+    <p>Agents, courses, prompt packs, templates and automations from creators you follow. No more "comment for the link": find it here and get it in one tap.</p>
+    <div class="search"><input id="q" type="search" placeholder="Search agents, courses, templates…" aria-label="Search products"></div>
+    <div class="cats" id="cats" aria-label="Categories"></div>
+  </section>
+
+  <section>
+    <div class="bar"><h2 id="listTitle">All products</h2><small id="count"></small></div>
+    <p class="sample" id="sampleNote">Example listings shown. Real creators' products appear here once they join.</p>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <div class="bar"><h2>Creators</h2><small>Tap a creator to see their storefront</small></div>
+    <div class="creators" id="creators"></div>
+  </section>
+
+  <section id="plans">
+    <div class="bar"><h2>For creators</h2><small>Launch offer: everything is free for early creators</small></div>
+    <div class="plans">
+      <div class="plan">
+        <span class="tag">Free listing</span>
+        <div class="price">$0</div>
+        <ul>
+          <li>Your products in the Marketplace</li>
+          <li>Your own creator storefront</li>
+          <li>Freebies delivered for you, emails collected</li>
+          <li>Paid products link to your own checkout</li>
+        </ul>
+        <a class="btn ghost" href="#sell">List for free</a>
+      </div>
+      <div class="plan hot">
+        <span class="tag">Featured · launch offer</span>
+        <div class="price">$0<small> during launch <s>$19 / month</s></small></div>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Pinned at the top of the Marketplace</li>
+          <li>Gold "Featured" badge on your products</li>
+          <li>Shared in our social posts and newsletter</li>
+          <li>Early creators keep Featured free while we launch</li>
+        </ul>
+        <a class="btn" id="featuredBtn" href="#sell">Get featured free</a>
+        <p class="msg" id="featuredMsg"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="list" id="sell">
+    <div>
+      <h2>Sell or share your <em>AI product</em></h2>
+      <p class="msg">Stop answering "send me the link" in your comments. Get a free storefront that hands out your freebies and collects the emails for you. <b style="color:var(--gold)">Free during launch, including Featured.</b></p>
+      <ol>
+        <li>Submit your product below.</li>
+        <li>We review it, usually within a few days.</li>
+        <li>Share one link: usesuperintelligence.com</li>
+      </ol>
+    </div>
+    <form class="submit" id="submitForm" novalidate>
+      <div class="two">
+        <label class="f">Your name or brand<input id="s-creator" required maxlength="80" autocomplete="organization"></label>
+        <label class="f">Email (private)<input id="s-email" type="email" required maxlength="120" autocomplete="email"></label>
+      </div>
+      <label class="f">Product name<input id="s-title" required maxlength="100"></label>
+      <div class="two">
+        <label class="f">Type<select id="s-type" required><option value="">Choose…</option><option>Agent</option><option>Course</option><option>Prompt pack</option><option>Template</option><option>Automation</option><option>Tool</option></select></label>
+        <label class="f">Price (0 = free)<input id="s-price" type="number" min="0" step="1" required inputmode="numeric"></label>
+      </div>
+      <label class="f">Link to your product or checkout<input id="s-url" type="url" required maxlength="300" placeholder="https://"></label>
+      <label class="f">What does it do? (one or two sentences)<textarea id="s-desc" required maxlength="400"></textarea></label>
+      <label class="f">Your social profile (optional)<input id="s-social" maxlength="200" placeholder="@yourhandle or a link"></label>
+      <label class="check"><input id="s-ok" type="checkbox" required> I own this product or have the right to sell it, and I agree to have it reviewed before it's listed and to the <a href="/terms.html" target="_blank" style="color:inherit">Terms</a>.</label>
+      <button class="btn" id="s-btn" type="submit">Submit for review</button>
+      <p class="msg" id="s-msg" role="status"></p>
+    </form>
+  </section>
+
+  <section class="nl-wrap" aria-label="Free guide">
+    <div class="nl" data-source="marketplace"><span class="tag">Free guide</span><b>Get "50 AI prompts that save you hours" free</b><p>Plus one practical AI tip a week. No spam, unsubscribe anytime.</p><form novalidate><input type="email" required maxlength="120" placeholder="Your email" aria-label="Your email" autocomplete="email"><button type="submit">Send it to me</button></form><p class="msg" role="status" hidden></p><small>By joining you agree to our <a href="/privacy.html">Privacy Policy</a>.</small></div>
+  </section>
+
+  <footer>Listings link to each creator's own checkout. Use Superintelligence reviews every listing but doesn't guarantee third-party products. Report a problem: tap a product, then Report. <a href="/privacy.html" style="color:inherit">Privacy</a> · <a href="/terms.html" style="color:inherit">Terms</a></footer>
+</div>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="box" id="sheetBox">
+    <button class="close" id="pClose" type="button">CLOSE ✕</button>
+    <div class="row" style="display:flex;justify-content:space-between;gap:8px"><span class="type" id="pType"></span><span class="price" id="pPrice"></span></div>
+    <h3 id="pTitle"></h3>
+    <div class="by" id="pBy"></div>
+    <p class="msg" id="pDesc" style="color:var(--ink)"></p>
+    <ul id="pGets"></ul>
+    <div id="pAction"></div>
+    <p class="msg" id="pMsg" role="status"></p>
+    <div class="inline"><button class="btn ghost" id="pStore" type="button">See creator's storefront</button><button class="btn ghost" id="pReport" type="button">Report</button></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  // On your own domain: paste your Cloudflare Worker address here (the same one the agents use).
+  const WORKER_URL = "https://superintelligence-guide.fancy-sound-69b6.workers.dev";
+  const LIVE = /^https:\/\//.test(WORKER_URL);
+
+  // EXAMPLE listings so the page isn't empty. Replace them with real creators' products as they join.
+  let EXAMPLE = true;
+  let CREATORS = {
+    nova: { name: "Nova Builds", color: "#7fe0ff", about: "AI agents for small businesses" },
+    atelier: { name: "Prompt Atelier", color: "#f0c674", about: "Prompt packs for writers and marketers" },
+    mira: { name: "Mira Ops", color: "#b9a2ff", about: "Notion templates and automations" },
+    kairo: { name: "Studio Kairo", color: "#7be3a8", about: "Courses on AI for creators" }
+  };
+  let PRODUCTS = [
+    { id: "p1", c: "nova", type: "Agent", title: "Inbox Triage Agent", price: 0, desc: "Sorts your email into urgent, later and spam, and drafts replies for the urgent ones.", gets: ["Setup guide", "Ready-made instructions", "Video walkthrough"] },
+    { id: "p2", c: "nova", type: "Agent", title: "Restaurant Review Responder", price: 19, desc: "Writes polite, on-brand replies to Google and Yelp reviews in seconds.", gets: ["Agent instructions", "10 tone presets", "Updates for a year"] },
+    { id: "p3", c: "atelier", type: "Prompt pack", title: "100 Prompts for Real Estate Agents", price: 0, desc: "Listing descriptions, follow-up texts and social posts, ready to paste.", gets: ["100 prompts", "Example outputs", "PDF + Notion copy"] },
+    { id: "p4", c: "atelier", type: "Prompt pack", title: "Viral Hooks Vault", price: 12, desc: "250 opening lines for short videos, sorted by niche.", gets: ["250 hooks", "Hook formulas", "Monthly additions"] },
+    { id: "p5", c: "mira", type: "Template", title: "AI Content Calendar", price: 0, desc: "A 30-day Notion calendar that plans posts and suggests captions with AI.", gets: ["Notion template", "Caption prompts", "Quick-start video"] },
+    { id: "p6", c: "mira", type: "Automation", title: "Lead to CRM Autopilot", price: 39, desc: "Captures leads from forms and DMs, scores them, and adds them to your CRM.", gets: ["Automation blueprint", "Step-by-step setup", "Email support"] },
+    { id: "p7", c: "kairo", type: "Course", title: "AI for Creators: Zero to First Sale", price: 49, desc: "Build and sell your first AI product in 14 days, with lessons and templates.", gets: ["14 lessons", "Templates", "Community access"] },
+    { id: "p8", c: "kairo", type: "Course", title: "ChatGPT & Claude in 60 Minutes", price: 0, desc: "A fast beginner course: what AI assistants can do and how to ask well.", gets: ["6 short videos", "Cheat sheet", "Practice prompts"] },
+    { id: "p9", c: "nova", type: "Tool", title: "AI Readiness Score", price: 0, desc: "Answer 10 questions and get a score with your next 3 steps.", gets: ["Instant score", "Personal action plan"] },
+    { id: "p10", c: "mira", type: "Template", title: "Freelancer Proposal Kit", price: 15, desc: "Proposal templates with AI prompts that tailor each one to the client.", gets: ["8 templates", "Tailoring prompts", "Pricing guide"] }
+  ];
+  PRODUCTS.forEach((p) => (p.url = "#example"));
+  function exampleNote(a){ if (a.getAttribute("href") === "#example") a.addEventListener("click", function (e) { e.preventDefault(); const m = $("pMsg"); m.className = "msg ok"; m.textContent = "This is an example listing. When real creators join, this button opens their checkout or download page."; }); }
+
+  const TYPES = ["All", "Free", "Agent", "Course", "Prompt pack", "Template", "Automation", "Tool"];
+
+  const $ = (id) => document.getElementById(id);
+  let cat = "All", creator = null, q = "", open = null;
+  const money = (n) => (n ? "$" + n : "Free");
+
+  function cats() {
+    const box = $("cats"); box.innerHTML = "";
+    TYPES.forEach(function (t) {
+      const n = PRODUCTS.filter((p) => t === "All" || (t === "Free" ? !p.price : p.type === t)).length;
+      if (!n && t !== "All") return;
+      const b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-pressed", String(t === cat && !creator));
+      b.innerHTML = '<span></span><span class="n"></span>'; b.firstChild.textContent = t; b.lastChild.textContent = n;
+      b.addEventListener("click", () => { cat = t; creator = null; render(); }); box.appendChild(b);
+    });
+  }
+  function avatar(c, cls) { const s = document.createElement("span"); s.className = cls || "av"; s.style.background = c.color; s.textContent = c.name.split(" ").map((w) => w[0]).join("").slice(0, 2); return s; }
+  function card(p) {
+    const c = CREATORS[p.c], b = document.createElement("button"); b.type = "button"; b.className = "card" + (p.featured ? " featured" : "");
+    b.innerHTML = '<div class="row"><span class="type"></span><span class="price"></span></div><h3></h3><p></p><div class="by"></div>';
+    b.querySelector(".type").textContent = p.type; const pr = b.querySelector(".price"); pr.textContent = money(p.price); if (!p.price) pr.classList.add("free");
+    b.querySelector("h3").textContent = p.title; b.querySelector("p").textContent = p.desc;
+    const by = b.querySelector(".by"); by.appendChild(avatar(c)); by.append(c.name);
+    if (p.featured) { const f = document.createElement("span"); f.className = "feat"; f.textContent = "FEATURED"; by.append(" ", f); }
+    else if (p.house) { const f = document.createElement("span"); f.className = "verified"; f.textContent = "OFFICIAL"; by.append(" ", f); }
+    b.addEventListener("click", () => show(p)); return b;
+  }
+  function render() {
+    cats();
+    const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+    const list = PRODUCTS.filter((p) => (creator ? p.c === creator : cat === "All" || (cat === "Free" ? !p.price : p.type === cat))
+      && words.every((w) => (p.title + " " + p.desc + " " + p.type + " " + CREATORS[p.c].name).toLowerCase().includes(w)));
+    $("listTitle").textContent = creator ? CREATORS[creator].name + "'s storefront" : cat === "All" ? "All products" : cat === "Free" ? "Free products" : cat + "s";
+    $("count").textContent = list.length + (list.length === 1 ? " product" : " products");
+    const g = $("grid"); g.innerHTML = "";
+    if (!list.length) { const e = document.createElement("div"); e.className = "empty"; e.textContent = "Nothing matches yet. Try another word, or list your own product below."; g.appendChild(e); }
+    list.forEach((p) => g.appendChild(card(p)));
+  }
+  function creatorsList() {
+    const box = $("creators"); box.innerHTML = "";
+    Object.keys(CREATORS).forEach(function (k) {
+      const c = CREATORS[k], b = document.createElement("button"); b.type = "button"; b.className = "creator";
+      const t = document.createElement("div"); t.innerHTML = "<b></b><span></span>"; t.firstChild.textContent = c.name; t.lastChild.textContent = c.about;
+      b.append(avatar(c), t); b.addEventListener("click", () => { creator = k; render(); $("listTitle").scrollIntoView({ behavior: "smooth", block: "start" }); });
+      box.appendChild(b);
+    });
+  }
+
+  // ---- product sheet: free = email for the link, paid = go to the creator's checkout
+  async function post(path, body) {
+    if (location.protocol === "file:") return { preview: true };
+    const res = await fetch("/api" + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+    return data;
+  }
+  function show(p) {
+    open = p; const c = CREATORS[p.c];
+    $("pType").textContent = p.type; const pr = $("pPrice"); pr.textContent = money(p.price); pr.className = "price" + (p.price ? "" : " free");
+    $("pTitle").textContent = p.title; $("pDesc").textContent = p.desc;
+    const by = $("pBy"); by.innerHTML = ""; by.append(avatar(c), c.name + " · "); const v = document.createElement("span"); v.className = p.featured ? "feat" : "verified"; v.textContent = EXAMPLE ? "EXAMPLE" : p.featured ? "FEATURED" : p.house ? "OFFICIAL" : "LISTED"; by.appendChild(v);
+    const ul = $("pGets"); ul.innerHTML = ""; (p.gets || []).forEach((g) => { const li = document.createElement("li"); li.textContent = g; ul.appendChild(li); });
+    const act = $("pAction"); act.innerHTML = ""; $("pMsg").textContent = ""; $("pMsg").className = "msg";
+    if (p.house) {
+      const a = document.createElement("a"); a.className = "btn"; a.href = p.url; a.textContent = "Try " + p.title + " free"; act.appendChild(a);
+    } else if (!p.price) {
+      const f = document.createElement("form"); f.className = "inline"; f.noValidate = true;
+      f.innerHTML = '<input id="lead-email" type="email" required maxlength="120" placeholder="Your email" aria-label="Your email" autocomplete="email"><button class="btn" type="submit">Get it free</button>';
+      f.addEventListener("submit", async function (e) {
+        e.preventDefault(); const em = f.querySelector("input").value.trim(), btn = f.querySelector("button"), m = $("pMsg");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { m.textContent = "Enter a valid email address."; m.className = "msg bad"; return; }
+        btn.disabled = true;
+        try { const r = await post("/lead", { product: p.id, title: p.title, creator: c.name, email: em });
+          m.className = "msg ok"; m.textContent = r.preview ? "Preview only: on your live site this saves the email and shows the download link." : "You're in! Here's your link:";
+          if (!r.preview) { const a = document.createElement("a"); a.className = "btn"; a.href = p.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Open " + p.title; exampleNote(a); act.innerHTML = ""; act.appendChild(a); }
+        } catch (err) { m.className = "msg bad"; m.textContent = err.message; } finally { btn.disabled = false; }
+      });
+      act.appendChild(f);
+    } else {
+      const a = document.createElement("a"); a.className = "btn"; a.href = p.url; a.target = "_blank"; a.rel = "noopener sponsored"; a.textContent = "Buy for " + money(p.price) + " on " + c.name + "'s site"; act.appendChild(a);
+    }
+    act.querySelectorAll("a").forEach(exampleNote);
+    $("sheet").hidden = false; $("pClose").focus();
+  }
+  function hide() { $("sheet").hidden = true; open = null; }
+  $("pClose").addEventListener("click", hide);
+  $("sheet").addEventListener("click", (e) => { if (e.target.id === "sheet") hide(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("sheet").hidden) hide(); });
+  $("pStore").addEventListener("click", () => { if (!open) return; creator = open.c; hide(); render(); $("listTitle").scrollIntoView({ behavior: "smooth", block: "start" }); });
+  $("pReport").addEventListener("click", async () => {
+    if (!open) return; const m = $("pMsg");
+    try { const r = await post("/report", { product: open.id, title: open.title }); m.className = "msg ok"; m.textContent = r.preview ? "Preview only: on your live site this sends a report for review." : "Thanks. We'll review this listing."; }
+    catch (err) { m.className = "msg bad"; m.textContent = err.message; }
+  });
+
+  // ---- "List your product" form
+  $("submitForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); const m = $("s-msg"), btn = $("s-btn");
+    const v = (id) => $(id).value.trim();
+    const data = { creator: v("s-creator"), email: v("s-email"), title: v("s-title"), type: v("s-type"), price: v("s-price"), url: v("s-url"), desc: v("s-desc"), social: v("s-social") };
+    const miss = !data.creator || !data.title || !data.type || data.price === "" || !data.desc;
+    if (miss) { m.className = "msg bad"; m.textContent = "Fill in every field except your social profile."; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { m.className = "msg bad"; m.textContent = "Enter a valid email address."; return; }
+    if (!/^https:\/\/\S+\.\S+/.test(data.url)) { m.className = "msg bad"; m.textContent = "The product link must start with https://"; return; }
+    if (!$("s-ok").checked) { m.className = "msg bad"; m.textContent = "Please confirm you own the product or have the right to sell it."; return; }
+    btn.disabled = true;
+    try { const r = await post("/submit", data); m.className = "msg ok"; m.textContent = r.preview ? "Preview only: on your live site this sends your product for review." : "Submitted! We'll email you after we review it."; if (!r.preview) this.reset(); }
+    catch (err) { m.className = "msg bad"; m.textContent = err.message; } finally { btn.disabled = false; }
+  });
+
+  $("q").addEventListener("input", (e) => { q = e.target.value; render(); });
+  creatorsList(); render();
+
+  // ---- Real listings approved in admin.html replace the examples
+  const PALETTE = ["#7fe0ff", "#f0c674", "#b9a2ff", "#7be3a8", "#ff9ec7", "#ffb27a", "#8fb4ff"];
+  function colorFor(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return PALETTE[h % PALETTE.length]; }
+  fetch("/api/listings", { cache: "no-store" })
+    .then((r) => (r.ok ? r.json() : null))
+    .then(function (data) {
+      const items = data && Array.isArray(data.items) ? data.items : [];
+      if (!items.length) return;
+      const cs = {}, ps = [];
+      items.forEach(function (x) {
+        if (!x || !x.id || !x.title || !(/^https:\/\//.test(x.url || "") || String(x.url || "").startsWith(location.origin + "/"))) return;
+        const cid = x.creatorId || "creator";
+        if (!cs[cid]) cs[cid] = { name: x.creator || "Creator", color: colorFor(cid), about: x.social || "AI creator" };
+        ps.push({ id: x.id, c: cid, type: x.type, title: x.title, price: Number(x.price) || 0, desc: x.desc || "", url: x.url, featured: !!x.featured, house: !!x.house, gets: x.house ? ["Free, no sign-up", "Runs on open-source AI", "Chat right in your browser"] : [] });
+      });
+      if (!ps.length) return;
+      ps.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+      EXAMPLE = false; CREATORS = cs; PRODUCTS = ps;
+      const note = $("sampleNote"); if (note) note.style.display = "none";
+      cat = "All"; creator = null; creatorsList(); render();
+    })
+    .catch(function () {});
+})();
+
+  // Featured plan: paste your Stripe Payment Link here (starts with https://buy.stripe.com/)
+  const FEATURED_URL = "PASTE_STRIPE_LINK_HERE";
+  (function () {
+    const b = document.getElementById("featuredBtn"), m = document.getElementById("featuredMsg");
+    if (/^https:\/\//.test(FEATURED_URL)) { b.href = FEATURED_URL; b.target = "_blank"; b.rel = "noopener"; return; }
+    b.addEventListener("click", function () { m.className = "msg ok"; m.textContent = "Free during launch: submit your product below, and early creators get Featured at no cost."; });
+  })();
+</script>
+
+<script>
+(function () {
+  document.querySelectorAll(".nl").forEach(function (box) {
+    var form = box.querySelector("form"), input = box.querySelector("input"), btn = box.querySelector("button"), msg = box.querySelector(".msg");
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var email = input.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.hidden = false; msg.textContent = "Please enter a valid email."; return; }
+      btn.disabled = true; msg.hidden = false; msg.textContent = "Sending…";
+      try {
+        var res = await fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email, source: box.dataset.source }) });
+        var data = await res.json().catch(function () { return {}; });
+        if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+        form.hidden = true; msg.className = "done";
+        msg.innerHTML = (data.already ? "You're already on the list. " : "You're in! Check your inbox. ") + '<a href="' + (data.guide || "/free/50-ai-prompts.pdf") + '" target="_blank" rel="noopener">Download the guide now →</a>';
+      } catch (err) { msg.textContent = err.message; btn.disabled = false; }
+    });
+  });
+})();
+</script>
+</body></html>
