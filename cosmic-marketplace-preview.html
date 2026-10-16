@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>TEST ONLY · Cosmic Marketplace Preview · Use Superintelligence</title>
+<meta name="description" content="The Use Superintelligence Creator Marketplace: AI agents, tools, prompts, creative assets, courses and digital products from independent creators.">
+<meta name="theme-color" content="#070914">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--void:#070914;--deep:#05060F;--panel:#0E1226;--navy:#0A1640;--line:#232A4A;--ink:#E9EDFF;--mist:#9AA3C7;--aether:#7FE0FF;--ice:#9FE3FF;--gold:#F0C674;--signal:#3D7BFF;
+ --glass:rgba(14,18,38,.72);--edge:rgba(127,224,255,.72);--edge-soft:rgba(127,224,255,.32);--gold-edge:rgba(240,198,116,.22);--glow:0 0 24px rgba(127,224,255,.22)}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void);color:var(--ink);font-family:Manrope,system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+#veil{position:fixed;inset:0;background:var(--void);z-index:9;pointer-events:none;transition:opacity 1.4s ease}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(1.2);backdrop-filter:blur(24px) saturate(1.2);border:1px solid var(--edge-soft);box-shadow:var(--glow),inset 0 0 0 1px var(--gold-edge)}
+button{font:inherit;color:inherit;cursor:pointer}
+/* Header */
+#top{position:fixed;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left));z-index:4;pointer-events:none}
+#top>*{pointer-events:auto}
+#brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+#brand svg{width:22px;height:22px;flex:none}
+#brand b{font:600 clamp(19px,2.6vw,26px)/1 'Cormorant Garamond',Georgia,serif;letter-spacing:.01em;background:linear-gradient(90deg,var(--aether),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+#brand span{font:600 10.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--mist);padding-left:10px;border-left:1px solid var(--line)}
+#back{font:600 11px/1 Manrope,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);text-decoration:none;padding:11px 15px;border-radius:99px;transition:color .3s,border-color .3s}
+#back:hover,#back:focus-visible{color:var(--ink);border-color:var(--edge);outline:none}
+/* Floating portal labels */
+#labels{position:fixed;inset:0;pointer-events:none;z-index:2}
+.plabel{position:absolute;left:0;top:0;transform:translate(-50%,-100%);text-align:center;white-space:nowrap;pointer-events:auto;cursor:pointer;opacity:0;transition:opacity .25s;padding:6px 8px}
+.plabel i{display:block;font:600 9.5px/1 Manrope,system-ui,sans-serif;font-style:normal;letter-spacing:.3em;color:var(--gold);opacity:.85;margin-bottom:5px}
+.plabel b{font:500 clamp(14px,1.55vw,19px)/1.1 'Cormorant Garamond',Georgia,serif;color:var(--ink);letter-spacing:.015em;text-shadow:0 0 14px rgba(127,224,255,.55),0 1px 2px rgba(0,0,0,.8)}
+/* Focus card */
+#card{position:fixed;left:50%;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 62px);transform:translate(-50%,16px);width:min(440px,calc(100% - 28px));padding:20px 22px 18px;border-radius:20px;z-index:4;opacity:0;pointer-events:none;transition:opacity .45s ease,transform .45s ease}
+#card.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#card .idx{font:600 10px/1 Manrope,system-ui,sans-serif;letter-spacing:.3em;color:var(--gold);text-transform:uppercase}
+#card h2{margin:9px 0 6px;font:500 clamp(28px,4.2vw,38px)/1.05 'Cormorant Garamond',Georgia,serif;color:var(--ink);letter-spacing:.005em}
+#card p{margin:0 0 16px;font:400 15px/1.5 Manrope,system-ui,sans-serif;color:var(--mist)}
+#card .row{display:flex;align-items:center;gap:10px}
+.round{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--edge-soft);background:rgba(10,22,64,.45);font-size:18px;line-height:1;display:grid;place-items:center;transition:border-color .3s,background .3s}
+.round:hover,.round:focus-visible{border-color:var(--edge);background:rgba(61,123,255,.18);outline:none}
+#enter{flex:1;height:44px;border-radius:99px;border:1px solid rgba(127,224,255,.55);background:linear-gradient(90deg,rgba(61,123,255,.85),rgba(127,224,255,.55));font:700 12px/1 Manrope,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#fff;box-shadow:0 0 20px rgba(61,123,255,.35);transition:filter .3s}
+#enter:hover,#enter:focus-visible{filter:brightness(1.15);outline:none}
+#atrium{position:absolute;top:14px;right:14px;width:34px;height:34px;font-size:15px}
+/* Category chips */
+#chips{position:fixed;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:flex-start;overflow-x:auto;padding:4px max(14px,env(safe-area-inset-left)) 4px;z-index:4;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#chips::-webkit-scrollbar{display:none}
+#chips button:first-child{margin-left:auto}#chips button:last-child{margin-right:auto} /* centred when it fits, scrolls from the first chip when it doesn't */
+#chips button{flex:none;height:38px;padding:0 15px;border-radius:99px;font:600 10.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mist);white-space:nowrap;transition:color .3s,border-color .3s,background .3s}
+#chips button:hover,#chips button:focus-visible{color:var(--ink);outline:none;border-color:var(--edge)}
+#chips button.on{color:var(--ink);border-color:var(--edge);background:rgba(61,123,255,.22)}
+/* Hint, toast, fps, error */
+#hint{position:fixed;left:50%;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 62px);transform:translateX(-50%);font:600 10.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--mist);opacity:0;transition:opacity 1s;z-index:3;pointer-events:none;white-space:nowrap;text-shadow:0 1px 3px #000}
+#hint.on{opacity:.75}
+#toast{position:fixed;left:50%;top:calc(max(14px,env(safe-area-inset-top)) + 58px);transform:translate(-50%,-6px);padding:12px 18px;border-radius:14px;font:600 13px/1.3 Manrope,system-ui,sans-serif;color:var(--ink);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;z-index:6;white-space:nowrap}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#fps{position:fixed;right:max(12px,env(safe-area-inset-right));top:calc(max(14px,env(safe-area-inset-top)) + 50px);z-index:7;font:600 11.5px/1.35 ui-monospace,Menlo,monospace;color:var(--ice);background:rgba(7,9,20,.78);border:1px solid rgba(127,224,255,.25);padding:7px 10px;border-radius:9px;pointer-events:none;white-space:pre}
+#fps[hidden]{display:none}
+body.panel-open #fps{right:auto;left:max(12px,env(safe-area-inset-left))}
+#error{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:24px;font:italic 500 22px 'Cormorant Garamond',Georgia,serif;color:var(--mist);z-index:10}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#chips{transition:opacity .4s,transform .4s}#chips.away{opacity:0;transform:translateY(12px);pointer-events:none}
+/* Gallery transition wash */
+#wash{position:fixed;inset:0;z-index:8;pointer-events:none;opacity:0;visibility:hidden;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 46%,rgba(214,243,255,.96) 0,rgba(127,224,255,.85) 18%,rgba(61,123,255,.78) 42%,#0A1640 72%,#070914 100%)}
+#washName{font:500 clamp(30px,5vw,54px)/1 'Cormorant Garamond',Georgia,serif;color:#070914;letter-spacing:.02em;opacity:.8}
+/* Gallery bar */
+#gbar{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translate(-50%,16px);display:flex;align-items:center;gap:10px;padding:10px;border-radius:99px;z-index:4;opacity:0;pointer-events:none;transition:opacity .45s,transform .45s;max-width:calc(100% - 24px)}
+#gbar.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#gbar .gt{min-width:0;padding:0 8px;text-align:center}
+#gbar .gt i{display:block;font:600 9.5px/1 Manrope,system-ui,sans-serif;font-style:normal;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+#gbar .gt b{display:block;margin-top:6px;font:500 clamp(17px,2vw,22px)/1.05 'Cormorant Garamond',Georgia,serif;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+#gOpen{height:44px;padding:0 20px;border-radius:99px;border:1px solid rgba(127,224,255,.55);background:linear-gradient(90deg,rgba(61,123,255,.85),rgba(127,224,255,.55));font:700 11.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+body.panel-open #gbar{opacity:.0;pointer-events:none}
+@media(min-width:1024px) and (min-aspect-ratio:21/20){body.panel-open #gbar{opacity:1;pointer-events:auto;left:calc((100% - max(380px,35%))/2)}}
+/* Midnight Sapphire Crystal panel */
+#panel{position:fixed;z-index:5;color:var(--ink);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;user-select:text;-webkit-user-select:text;
+ background:linear-gradient(160deg,rgba(10,22,64,.80),rgba(7,9,20,.78));-webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
+ border:1px solid rgba(127,224,255,.42);box-shadow:0 0 34px rgba(61,123,255,.28),inset 0 0 0 1px rgba(240,198,116,.18),inset 0 0 60px rgba(61,123,255,.12);
+ right:max(14px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));bottom:max(14px,env(safe-area-inset-bottom));width:max(380px,calc(35% - 28px));border-radius:24px;padding:22px 24px 24px;
+ transform:translateX(calc(100% + 40px));transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s;opacity:0;pointer-events:none}
+#panel.on{transform:none;opacity:1;pointer-events:auto}
+#pGrab{display:none}
+#pClose{position:absolute;top:14px;right:14px;width:38px;height:38px;font-size:15px;z-index:1}
+#pArt{display:block;width:100%;height:auto;aspect-ratio:18/11;border-radius:16px;border:1px solid rgba(127,224,255,.3);margin-top:34px}
+#panel .pmeta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 0;font:600 10px/1 Manrope,system-ui,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
+#panel .sample{color:var(--mist);letter-spacing:.2em}
+#pName{margin:10px 0 6px;font:500 clamp(30px,3.2vw,40px)/1.02 'Cormorant Garamond',Georgia,serif;letter-spacing:.005em}
+#pPrice{font:700 17px/1 Manrope,system-ui,sans-serif;color:var(--gold);letter-spacing:.02em}
+#pDesc{margin:14px 0 12px;font:400 15px/1.6 Manrope,system-ui,sans-serif;color:#D3DAF4}
+#pTags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+#pTags span{font:600 10.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.08em;color:var(--ice);border:1px solid rgba(127,224,255,.28);border-radius:99px;padding:6px 10px;background:rgba(61,123,255,.08)}
+#panel .creator{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid rgba(240,198,116,.22);border-bottom:1px solid rgba(240,198,116,.22);margin-bottom:18px}
+#panel .crest{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:600 17px/1 'Cormorant Garamond',Georgia,serif;color:var(--gold);border:1px solid rgba(240,198,116,.55);background:radial-gradient(circle at 35% 30%,rgba(240,198,116,.18),rgba(10,22,64,.6))}
+#panel .creator>div:not(.crest){flex:1;min-width:0}#panel .creator b{display:block;font:700 14px/1.2 Manrope,system-ui,sans-serif;color:#F2F4FF}#panel .creator span{display:block;margin-top:3px;font:400 12.5px/1.4 Manrope,system-ui,sans-serif;color:#C3CAE8}
+.ghost{flex:none;height:34px;padding:0 12px;border-radius:99px;border:1px solid rgba(127,224,255,.35);background:transparent;font:600 10.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
+#pExplore{width:100%;height:50px;border-radius:99px;border:1px solid rgba(127,224,255,.55);background:linear-gradient(90deg,#3D7BFF,rgba(127,224,255,.75));font:700 12.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#fff;box-shadow:0 0 22px rgba(61,123,255,.4)}
+#panel .fine{margin:12px 0 0;font:400 11.5px/1.45 Manrope,system-ui,sans-serif;color:var(--mist);text-align:center}
+/* iPad portrait and small landscape: bottom sheet over the lower 55% */
+@media(max-width:1023px),(max-aspect-ratio:21/20){#panel{left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));top:auto;bottom:0;width:auto;height:55%;border-radius:24px 24px 0 0;border-bottom:0;padding:14px 22px calc(18px + env(safe-area-inset-bottom));transform:translateY(105%)}
+ #panel.on{transform:none}#pGrab{display:block;width:100%;height:22px;border:0;background:transparent;padding:0;cursor:grab}#pGrab::after{content:'';display:block;width:46px;height:5px;margin:4px auto 0;border-radius:3px;background:rgba(154,163,199,.5)}
+ #pArt{margin-top:6px;max-height:22vh;width:auto;max-width:100%}}
+@media(max-width:767px){#panel{height:85%}body.panel-open #scene{filter:brightness(.6)}}
+@media(max-width:560px){#brand span{display:none}#card{padding:18px 18px 16px}#card p{font-size:14px;margin-bottom:14px}}
+@media(prefers-reduced-motion:reduce){#card,#toast,.plabel,#veil,#gbar,#panel,#chips{transition-duration:.01s}}
+</style>
+</head>
+<body>
+<canvas id="scene" tabindex="0" aria-label="The Creator Marketplace atrium: a sapphire crystal surrounded by six category portals"></canvas>
+<div id="labels" aria-hidden="true"></div>
+<header id="top">
+  <a id="brand" href="./cosmic-marketplace-preview.html" aria-label="Use Superintelligence Creator Marketplace">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE0FF"/><stop offset="1" stop-color="#F0C674"/></linearGradient></defs><path d="M12 1.5 13.6 10.4 22.5 12 13.6 13.6 12 22.5 10.4 13.6 1.5 12 10.4 10.4Z" fill="none" stroke="url(#sg)" stroke-width="1.1"/><circle cx="12" cy="12" r="1.5" fill="#F0C674"/></svg>
+    <b>Use Superintelligence</b><span>Marketplace</span>
+  </a>
+  <span id="testonly" class="glass" style="font:700 10.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.22em;color:var(--gold);padding:11px 14px;border-radius:99px;margin-left:auto">TEST ONLY · SAMPLE DATA</span>
+  <a id="back" class="glass" href="./index.html">← Universe</a>
+</header>
+<section id="card" class="glass" aria-live="polite" aria-hidden="true">
+  <button id="atrium" class="round" aria-label="Back to the atrium" title="Back to the atrium">✕</button>
+  <div class="idx" id="cIdx">01 / 06</div>
+  <h2 id="cName"></h2>
+  <p id="cLine"></p>
+  <div class="row">
+    <button id="prev" class="round" aria-label="Previous category">‹</button>
+    <button id="enter">Enter gallery</button>
+    <button id="next" class="round" aria-label="Next category">›</button>
+  </div>
+</section>
+<nav id="chips" aria-label="Marketplace categories"></nav>
+<nav id="gbar" class="glass" aria-label="Product gallery" aria-hidden="true">
+  <button id="gBack" class="round" aria-label="Back to the atrium" title="Back to the atrium">←</button>
+  <button id="gPrev" class="round" aria-label="Previous product">‹</button>
+  <div class="gt" aria-live="polite"><i id="gIdx"></i><b id="gName"></b></div>
+  <button id="gNext" class="round" aria-label="Next product">›</button>
+  <button id="gOpen">View</button>
+</nav>
+<aside id="panel" role="dialog" aria-labelledby="pName" aria-hidden="true">
+  <button id="pGrab" aria-label="Close product"></button>
+  <button id="pClose" class="round" aria-label="Close product" title="Close">✕</button>
+  <canvas id="pArt" width="720" height="440" aria-hidden="true"></canvas>
+  <div class="pmeta"><span id="pCat"></span><span class="sample">TEST ONLY · Sample listing</span></div>
+  <h2 id="pName"></h2>
+  <div id="pPrice"></div>
+  <p id="pDesc"></p>
+  <div id="pTags"></div>
+  <div class="creator"><div id="pCrest" class="crest" aria-hidden="true"></div><div><b id="pCreator"></b><span id="pBio"></span></div><button id="pProfile" class="ghost">Profile</button></div>
+  <button id="pExplore">Explore product</button>
+  <p class="fine">Sample data for testing. Listings are free during launch; payments are not active.</p>
+</aside>
+<div id="wash" aria-hidden="true"><div id="washName"></div></div>
+<div id="hint">Drag to look · Tap a portal</div>
+<div id="toast" class="glass" role="status"></div>
+<div id="fps" hidden></div>
+<div id="error"></div>
+<div id="veil"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="./marketplace/market.js"></script>
+</body>
+</html>
