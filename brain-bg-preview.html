@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Use Superintelligence</title>
+<meta name="theme-color" content="#070914">
+<link rel="icon" type="image/png" sizes="32x32" href="brand/favicon_32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="brand/favicon_48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="brand/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--void:#070914;--deep:#05060F;--panel:#0E1226;--line:#232A4A;--ink:#E9EDFF;--mist:#9AA3C7;--aether:#7FE0FF;--gold:#F0C674;--violet:#9B6BFF;--signal:#3D7BFF}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void);color:var(--ink);font-family:Manrope,system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+#veil,#fade{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:6}
+#veil{background:radial-gradient(circle at 50% 50%,#EAF9FF 0%,#9FE3FF 28%,#3D7BFF 60%,#0A1640 100%)}
+#fade{background:var(--void)}
+#dock{position:fixed;left:50%;bottom:max(24px,calc(env(safe-area-inset-bottom) + 12px));transform:translateX(-50%);display:flex;gap:clamp(20px,5vw,48px);z-index:4;transition:opacity .9s ease}
+#dock a{color:var(--mist);text-decoration:none;font:600 12px/1 Manrope,system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;opacity:.7;padding:12px 2px;white-space:nowrap;transition:opacity .3s,color .3s}
+#dock a:hover,#dock a:focus-visible{opacity:1;color:var(--ink);outline:none}
+#credit{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(6px,env(safe-area-inset-bottom));z-index:4;font:500 9.5px/1.3 Manrope,system-ui,sans-serif;letter-spacing:.02em;color:rgba(154,163,199,.55);text-decoration:none;transition:opacity .9s ease}
+#credit:hover,#credit:focus-visible{color:rgba(233,237,255,.9);outline:none}
+.hide{opacity:0!important;pointer-events:none!important}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:3;transition:opacity .8s ease}
+#hud[hidden]{display:none}
+#stick{pointer-events:auto;touch-action:none;position:absolute;left:max(22px,env(safe-area-inset-left));bottom:max(24px,calc(env(safe-area-inset-bottom) + 12px));width:118px;height:118px;border-radius:50%;background:rgba(14,18,38,.5);border:1px solid rgba(127,224,255,.26);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 6px 30px rgba(0,0,0,.4),inset 0 0 24px rgba(127,224,255,.06)}
+#knob{position:absolute;left:36px;top:36px;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#D8F6FF,var(--aether) 45%,var(--signal));box-shadow:0 0 16px rgba(127,224,255,.4)}
+#exit{pointer-events:auto;position:absolute;top:max(16px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(14,18,38,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--mist);font:400 19px/1 Manrope,system-ui,sans-serif;cursor:pointer}
+#exit:hover,#exit:focus-visible{color:var(--ink);border-color:rgba(127,224,255,.5);outline:none}
+#labels{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.lbl::after{content:'';display:block;margin:5px auto 0;width:46%;height:1px;background:linear-gradient(90deg,transparent,rgba(240,198,116,.9),transparent);box-shadow:0 0 8px rgba(240,198,116,.5)}
+.lbl{position:absolute;left:0;top:0;text-align:center;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(18px,2.2vw,25px);line-height:1.15;letter-spacing:.08em;color:#F4F6FF;padding:6px 16px 7px;border-radius:999px;background:rgba(7,9,20,.66);border:1px solid rgba(240,198,116,.28);text-shadow:0 1px 10px rgba(5,6,15,.9);white-space:nowrap;opacity:0;will-change:transform,opacity}
+#dest{pointer-events:auto;position:absolute;left:50%;bottom:max(28px,calc(env(safe-area-inset-bottom) + 16px));transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:10px 10px 10px 20px;border-radius:99px;border:1px solid var(--line);background:rgba(10,14,32,.72);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(0,0,0,.45);transition:opacity .45s ease}
+#destName{font:600 21px/1 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;white-space:nowrap}
+#destGo{border:1px solid rgba(127,224,255,.4);background:linear-gradient(100deg,var(--signal),#5A9BFF);color:#fff;font:700 13px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;padding:11px 18px;border-radius:99px;cursor:pointer}
+#toast{position:absolute;left:50%;top:16%;transform:translateX(-50%);text-align:center;opacity:0;transition:opacity 1s ease;pointer-events:none}
+#toast b{display:block;font:600 clamp(24px,3.4vw,34px)/1.1 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;color:var(--ink);text-shadow:0 2px 20px rgba(5,6,15,.95)}
+#toast span{display:block;margin-top:8px;font:600 11px/1 Manrope,system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+@media(max-width:640px){#dest{bottom:max(160px,calc(env(safe-area-inset-bottom) + 150px))}}
+#brand{position:fixed;left:max(18px,env(safe-area-inset-left));top:max(14px,env(safe-area-inset-top));z-index:4;display:block;line-height:0;transition:opacity .9s ease}
+#brand img{display:block;height:52px;width:auto}
+@media(max-width:1024px){#brand img{height:44px}}
+@media(max-width:640px){#brand img{height:38px}}
+#glowT{position:fixed;left:max(14px,env(safe-area-inset-left));top:calc(max(14px,env(safe-area-inset-top)) + 62px);z-index:4;border:1px solid rgba(127,224,255,.35);background:rgba(14,18,38,.6);color:#E9EDFF;font:600 12px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;padding:9px 13px;border-radius:99px;cursor:pointer;transition:opacity .9s ease}
+#fps{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));z-index:7;font:600 12px/1.3 Manrope,ui-monospace,monospace;color:#9FE3FF;background:rgba(7,9,20,.7);border:1px solid rgba(127,224,255,.25);padding:6px 9px;border-radius:8px;pointer-events:none;white-space:pre}
+#fps[hidden],#glowT[hidden]{display:none}
+#error{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:24px;font:italic 500 22px 'Cormorant Garamond',Georgia,serif;color:var(--mist);z-index:7}
+@media(max-width:420px){#dock{gap:18px}#dock a{font-size:11px;letter-spacing:.15em}#stick{width:106px;height:106px}#knob{left:31px;top:31px;width:42px;height:42px}}
+</style>
+<style id="bg-preview">html,body{background:#070914 no-repeat center/cover fixed!important;background-image:linear-gradient(#07091466,#07091499),url(marketplace/bg/astral-hall-soft.webp)!important}
+@media(orientation:portrait){html,body{background-image:linear-gradient(#07091466,#07091499),url(marketplace/bg/astral-hall-portrait-soft.webp)!important}}
+#scene{mix-blend-mode:screen}</style></head>
+<body>
+<canvas id="scene" aria-label="Use Superintelligence: an interactive 3D crystal brain"></canvas>
+<div id="labels"></div>
+<a id="credit" href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html" target="_blank" rel="noopener">3D anatomy: BodyParts3D © DBCLS, CC BY 4.0 (modified)</a>
+<a id="brand" href="./" aria-label="Use Super Intelligence — home"><img src="brand/logo-horizontal.webp" width="238" height="120" alt="Use Super Intelligence" draggable="false"></a>
+<nav id="dock" aria-label="Main">
+  <a href="marketplace-v5.html">Marketplace</a>
+  <a href="https://usesuperintelligence.com/marketplace.html#sell">For Creators</a>
+  <a href="https://usesuperintelligence.com/agents.html">Agent Hub</a>
+</nav>
+<button id="glowT" hidden aria-label="Toggle brain glow (test)">Glow: On</button><div id="fps" hidden></div>
+<div id="hud" hidden>
+  <div id="stick" aria-label="Move"><div id="knob"></div></div>
+  <button id="exit" aria-label="Return to the brain" title="Return to the brain">↺</button>
+  <div id="dest" class="hide"><span id="destName"></span><button id="destGo">Enter →</button></div>
+  <div id="toast" aria-live="polite"><b id="toastName"></b><span id="toastSub"></span></div>
+</div>
+<div id="veil"></div><div id="fade"></div>
+<div id="error"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script>
+(function(){'use strict';
+const $=id=>document.getElementById(id);
+function fail(m){const e=$('error');e.textContent=m;e.style.display='grid'}
+if(!window.THREE){fail('The 3D experience needs an internet connection to load. Please refresh.');return}
+
+// ================= Setup =================
+const coarse=!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches);
+const reduceMotion=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const motion=reduceMotion?.3:1;
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas:$('scene'),antialias:true,powerPreference:'high-performance'})}catch(e){fail('3D graphics are not available in this browser.');return}
+const DPR0=Math.min(devicePixelRatio||1,coarse?1.5:1.75);
+const DPR_STEPS=[DPR0,Math.min(DPR0,1.25),1].filter((v,i,a)=>i===0||v<a[i-1]);let dprStep=0;
+renderer.setPixelRatio(DPR0);renderer.setSize(innerWidth,innerHeight);
+renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;renderer.setClearColor('#070914',1);
+const camera=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,.02,2000);
+const U={uTime:{value:0},uS:{value:1},uPR:{value:DPR0}};
+function updatePointScale(){U.uPR.value=renderer.getPixelRatio();U.uS.value=innerHeight*U.uPR.value/(2*Math.tan(camera.fov*Math.PI/360))}
+const smooth=(a,b,x)=>{x=Math.min(Math.max((x-a)/(b-a),0),1);return x*x*(3-2*x)};
+const lerp=(a,b,t)=>a+(b-a)*t;
+const clamp=(v,a,b)=>Math.min(Math.max(v,a),b);
+let seed=7;const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646};
+const randn=()=>{const u=rand()||1e-6,v=rand();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2831853*v)};
+const BLUE=[.498,.878,1],GOLD=[.941,.776,.455],VIOLET=[.608,.42,1],INK=[.914,.929,1];
+
+// Simplex noise (CPU, for procedural geometry).
+const perm=new Uint8Array(512);{const p=new Uint8Array(256);for(let i=0;i<256;i++)p[i]=i;for(let i=255;i>0;i--){const j=(rand()*(i+1))|0;const t=p[i];p[i]=p[j];p[j]=t}for(let i=0;i<512;i++)perm[i]=p[i&255]}
+const G3=[1,1,0,-1,1,0,1,-1,0,-1,-1,0,1,0,1,-1,0,1,1,0,-1,-1,0,-1,0,1,1,0,-1,1,0,1,-1,0,-1,-1];
+function noise3(x,y,z){const F3=1/3,G=1/6;const s=(x+y+z)*F3,i=Math.floor(x+s),j=Math.floor(y+s),k=Math.floor(z+s),t=(i+j+k)*G,x0=x-i+t,y0=y-j+t,z0=z-k+t;let i1,j1,k1,i2,j2,k2;
+ if(x0>=y0){if(y0>=z0){i1=1;j1=0;k1=0;i2=1;j2=1;k2=0}else if(x0>=z0){i1=1;j1=0;k1=0;i2=1;j2=0;k2=1}else{i1=0;j1=0;k1=1;i2=1;j2=0;k2=1}}
+ else{if(y0<z0){i1=0;j1=0;k1=1;i2=0;j2=1;k2=1}else if(x0<z0){i1=0;j1=1;k1=0;i2=0;j2=1;k2=1}else{i1=0;j1=1;k1=0;i2=1;j2=1;k2=0}}
+ const x1=x0-i1+G,y1=y0-j1+G,z1=z0-k1+G,x2=x0-i2+2*G,y2=y0-j2+2*G,z2=z0-k2+2*G,x3=x0-1+3*G,y3=y0-1+3*G,z3=z0-1+3*G,ii=i&255,jj=j&255,kk=k&255;
+ const c=(tx,ty,tz,g)=>{let q=.6-tx*tx-ty*ty-tz*tz;if(q<0)return 0;g=(g%12)*3;q*=q;return q*q*(G3[g]*tx+G3[g+1]*ty+G3[g+2]*tz)};
+ return 32*(c(x0,y0,z0,perm[ii+perm[jj+perm[kk]]])+c(x1,y1,z1,perm[ii+i1+perm[jj+j1+perm[kk+k1]]])+c(x2,y2,z2,perm[ii+i2+perm[jj+j2+perm[kk+k2]]])+c(x3,y3,z3,perm[ii+1+perm[jj+1+perm[kk+1]]]))}
+
+// Shared GLSL noise (GPU).
+const GLSL_NOISE='float h3(vec3 p){p=fract(p*.3183099+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}'+
+'float vn(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);return mix(mix(mix(h3(i),h3(i+vec3(1.,0.,0.)),f.x),mix(h3(i+vec3(0.,1.,0.)),h3(i+vec3(1.,1.,0.)),f.x),f.y),mix(mix(h3(i+vec3(0.,0.,1.)),h3(i+vec3(1.,0.,1.)),f.x),mix(h3(i+vec3(0.,1.,1.)),h3(i+vec3(1.,1.,1.)),f.x),f.y),f.z);}'+
+'float fbm(vec3 p){float a=.5,s=0.;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+vec3(1.7,9.2,3.1);a*=.5;}return s;}';
+
+// Soft round points with per-point color and size (world-sized, or pixel-sized when att=false).
+function pointsMat(o){o=o||{};return new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:o.normal?THREE.NormalBlending:THREE.AdditiveBlending,
+ uniforms:{uS:U.uS,uPR:U.uPR,uOp:{value:o.opacity==null?1:o.opacity},uAtt:{value:o.att===false?0:1}},
+ vertexShader:'uniform float uS,uPR,uAtt;attribute vec3 color;attribute float size;varying vec3 vC;void main(){vC=color;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=uAtt>.5?clamp(size*uS/max(-mv.z,.001),1.,48.):size*uPR;gl_Position=projectionMatrix*mv;}',
+ fragmentShader:'uniform float uOp;varying vec3 vC;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.05,d);gl_FragColor=vec4(vC,a*uOp);}'})}
+function pointCloud(pos,col,size,mat){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setAttribute('size',new THREE.Float32BufferAttribute(size,1));const o=new THREE.Points(g,mat);o.frustumCulled=false;return o}
+
+// Energy pulses travelling along curves (brain pathways, neural connections).
+function pulseMat(op,sz){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+ uniforms:{uS:U.uS,uTime:U.uTime,uA:{value:op==null?1:op},uSz:{value:sz||1}},
+ vertexShader:'uniform float uS,uTime,uSz;attribute float aAlong,aSeed,aHue;varying float vP,vH;void main(){float d=fract(aAlong-uTime*(.143+.057*aSeed)-aSeed*7.);float p=exp(-d*24.);vP=p;vH=aHue;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.008+.016*p)*uSz*uS/max(-mv.z,.001),1.,40.);gl_Position=projectionMatrix*mv;}',
+ fragmentShader:'uniform float uA;varying float vP,vH;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.05,q);vec3 c=vH>1.5?vec3(.608,.42,1.):mix(vec3(.498,.878,1.),vec3(.941,.776,.455),vH);c=mix(c,vec3(1.),vP*.3);gl_FragColor=vec4(c,a*(.16+.84*vP)*uA);}'})}
+function curveCloud(curves,perCurve,hueFn){const pos=[],al=[],sd=[],hu=[];curves.forEach((pts,ci)=>{const cv=new THREE.CatmullRomCurve3(pts).getSpacedPoints(perCurve-1),s=rand(),h=hueFn(ci);cv.forEach((p,i)=>{pos.push(p.x,p.y,p.z);al.push(i/(perCurve-1));sd.push(s);hu.push(h)})});
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aAlong',new THREE.Float32BufferAttribute(al,1));g.setAttribute('aSeed',new THREE.Float32BufferAttribute(sd,1));g.setAttribute('aHue',new THREE.Float32BufferAttribute(hu,1));return g}
+
+// Radial glow texture for halos.
+const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d'),g=x.createRadialGradient(128,128,0,128,128,128);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(.3,'rgba(255,255,255,.32)');g.addColorStop(.6,'rgba(255,255,255,.08)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,256,256);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t})();
+function halo(color,scale,op){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending}));s.scale.set(scale,scale,1);return s}
+
+// ================= Cosmos: nebula sky, stars, galaxies, planets (shared by brain and hub) =================
+const cosmos=new THREE.Group();
+cosmos.add(new THREE.Mesh(new THREE.SphereGeometry(900,48,24),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,
+ vertexShader:'varying vec3 vD;void main(){vD=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+ fragmentShader:GLSL_NOISE+'varying vec3 vD;void main(){vec3 d=normalize(vD);float h=d.y;vec3 c=mix(vec3(.027,.035,.078),vec3(.020,.024,.059),smoothstep(-.2,.8,h));'+
+ 'float n=fbm(d*2.5+vec3(3.));float n2=fbm(d*5.+vec3(n*2.));float neb=smoothstep(.42,.85,n*.6+n2*.5);float band=exp(-pow(dot(d,normalize(vec3(.35,.8,-.45))),2.)*5.);'+
+ 'c+=vec3(.10,.17,.38)*neb*band*.75+vec3(.17,.10,.34)*smoothstep(.55,.9,n2)*band*.45+vec3(.30,.24,.11)*pow(neb,3.)*band*.28;gl_FragColor=vec4(c,1.);}'})));
+(()=>{const N=coarse?1600:2600,p=[],c=[],s=[];for(let i=0;i<N;i++){const y=rand()*2-1,a=rand()*6.2832,r=Math.sqrt(1-y*y),R=820;p.push(Math.cos(a)*r*R,y*R,Math.sin(a)*r*R);const k=rand(),col=k<.12?GOLD:k<.32?BLUE:INK,b=.35+rand()*.65;c.push(col[0]*b,col[1]*b,col[2]*b);s.push(1+rand()*rand()*2.2)}cosmos.add(pointCloud(p,c,s,pointsMat({att:false})))})();
+function galaxy(x,y,z,R,rx,rz,n,br){br=br||1;const p=[],c=[],s=[];for(let i=0;i<n;i++){const r=Math.pow(rand(),.65)*R,arm=(i%2)*Math.PI,a=arm+r/R*5.2+randn()*.32/(.25+r/R),th=randn()*R*.03*(1-r/R*.7);p.push(Math.cos(a)*r,th,Math.sin(a)*r);const t=r/R,col=t<.18?GOLD:t<.55?[lerp(GOLD[0],BLUE[0],(t-.18)/.37),lerp(GOLD[1],BLUE[1],(t-.18)/.37),lerp(GOLD[2],BLUE[2],(t-.18)/.37)]:[lerp(BLUE[0],VIOLET[0],(t-.55)/.45),lerp(BLUE[1],VIOLET[1],(t-.55)/.45),lerp(BLUE[2],VIOLET[2],(t-.55)/.45)],b=(.45+rand()*.6)*(1.25-t*.55)*br;c.push(col[0]*b,col[1]*b,col[2]*b);s.push(R*(.016+rand()*.024))}
+ const g=new THREE.Group();const disc=new THREE.Mesh(new THREE.PlaneGeometry(R*2.6,R*2.6),new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,uniforms:{uB:{value:.6*br}},vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:GLSL_NOISE+'uniform float uB;varying vec2 vU;void main(){vec2 p=(vU-.5)*2.6;float r=length(p),a=atan(p.y,p.x);float s=.5+.5*cos(2.*(a+5.2*r));float arms=pow(s,3.);float n=fbm(vec3(p*4.,1.7));float disk=exp(-r*2.4);float core=exp(-r*r*36.);vec3 gold=vec3(.941,.776,.455),blue=vec3(.498,.878,1.),vio=vec3(.608,.42,1.);vec3 col=mix(gold,mix(blue,vio,smoothstep(.5,1.,r)),smoothstep(.08,.5,r))*arms*disk*(.5+.8*n)+vec3(1.,.93,.8)*core*1.3+vio*disk*.12;col*=smoothstep(1.25,.75,r)*uB;gl_FragColor=vec4(col,1.);}'}));disc.rotation.x=-Math.PI/2;g.add(disc);g.add(pointCloud(p,c,s,pointsMat({opacity:.9})));g.add(halo('#F0C674',R*.5,.34*br));g.add(halo('#7FE0FF',R*1.5,.09*br));g.position.set(x,y,z);g.rotation.set(rx,0,rz);cosmos.add(g);return g}
+const galaxies=[galaxy(-150,150,-650,110,1.15,.4,coarse?2600:4200),galaxy(175,40,-640,85,1.3,-.5,coarse?2000:3200),galaxy(160,320,620,80,1.3,.2,coarse?1400:2200),galaxy(-520,260,-380,45,.9,.6,coarse?600:1000,.55),galaxy(430,200,-280,34,1.1,-.3,coarse?500:800,.5)];
+for(const [c,x,y,z,sc,op] of [['#9B6BFF',-60,260,-760,420,.07],['#3D7BFF',300,120,-700,340,.06],['#F0C674',-330,40,-640,220,.035]]){const h=halo(c,sc,op);h.position.set(x,y,z);cosmos.add(h)}
+const planetMat=(c1,c2,atm)=>new THREE.ShaderMaterial({uniforms:{uC1:{value:new THREE.Color(c1)},uC2:{value:new THREE.Color(c2)},uAtm:{value:new THREE.Color(atm)},uL:{value:new THREE.Vector3(-.6,.45,.65).normalize()}},
+ vertexShader:'varying vec3 vN,vO,vW;void main(){vO=normalize(position);vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
+ fragmentShader:GLSL_NOISE+'uniform vec3 uC1,uC2,uAtm,uL;varying vec3 vN,vO,vW;void main(){vec3 N=normalize(vN);float n=fbm(vO*3.);float b=sin(vO.y*13.+n*4.)*.5+.5;vec3 base=mix(uC1,uC2,b);float dif=smoothstep(-.12,.6,dot(N,uL));vec3 col=base*(.05+.95*dif);float fr=pow(1.-max(dot(N,normalize(cameraPosition-vW)),0.),3.);col+=uAtm*fr*(.2+.8*dif);gl_FragColor=vec4(col,1.);}'});
+function planet(x,y,z,r,c1,c2,atm,ring){const g=new THREE.Group();g.position.set(x,y,z);g.add(new THREE.Mesh(new THREE.SphereGeometry(r,48,32),planetMat(c1,c2,atm)));
+ if(ring){const rm=new THREE.Mesh(new THREE.RingGeometry(r*1.35,r*2.2,128,1),new THREE.ShaderMaterial({transparent:true,side:THREE.DoubleSide,depthWrite:false,uniforms:{uR:{value:r}},vertexShader:'varying float vR;void main(){vR=length(position.xy);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'uniform float uR;varying float vR;void main(){float t=(vR/uR-1.35)/.85;float a=(.25+.25*sin(t*55.)+.2*sin(t*17.))*smoothstep(0.,.08,t)*smoothstep(1.,.85,t);gl_FragColor=vec4(mix(vec3(.94,.78,.45),vec3(.62,.66,.82),t)*.8,a*.55);}'}));rm.rotation.set(1.25,.2,.35);g.add(rm)}
+ cosmos.add(g);return g}
+const planets=[planet(-260,70,-430,38,'#2A2F6E','#5C4FA8','#7FE0FF',true),planet(330,-25,-390,20,'#4A3420','#B8894A','#F0C674',false),planet(130,150,-560,9,'#6E8FB5','#C9DDF0','#9FE3FF',false)];
+
+// ================= Opening scene: the crystal brain =================
+const brainScene=new THREE.Scene();brainScene.add(cosmos);
+const brain=new THREE.Group();brainScene.add(brain);
+function mergeVerts(geo){const a=geo.attributes.position.array,n=a.length/3,map=new Map(),v=[],idx=new Uint32Array(n);for(let i=0;i<n;i++){const k=Math.round(a[i*3]*1e5)+'_'+Math.round(a[i*3+1]*1e5)+'_'+Math.round(a[i*3+2]*1e5);let j=map.get(k);if(j===undefined){j=v.length/3;map.set(k,j);v.push(a[i*3],a[i*3+1],a[i*3+2])}idx[i]=j}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));g.setIndex(new THREE.BufferAttribute(idx,1));return g}
+function shaped(detail,fn){const g=mergeVerts(new THREE.IcosahedronGeometry(1,detail)),p=g.attributes.position,fold=new Float32Array(p.count);for(let i=0;i<p.count;i++){const r=fn(p.getX(i),p.getY(i),p.getZ(i));p.setXYZ(i,r[0],r[1],r[2]);fold[i]=r[3]}g.setAttribute('aFold',new THREE.BufferAttribute(fold,1));g.computeVertexNormals();return g}
+// Cerebrum: proportions ~1.0 long, .80 wide, .66 high. Two hemispheres split by a deep longitudinal fissure,
+// domain-warped gyri with broad rounded crests and narrow deep sulci, lateral (Sylvian) fissure, central sulcus,
+// pronounced temporal lobes, flattened base, tapered occipital pole.
+function cortex(x,y,z){let px=x*.71,py=y*.60,pz=z*.90;const ax=Math.abs(x),fz=Math.max(0,z),bz=Math.max(0,-z);
+ if(py<-.10)py=-.10+(py+.10)*.55;px*=1-.12*fz*fz;py-=.05*fz*fz*Math.max(0,.4-y);px*=1-.10*bz*bz*bz;py*=1-.08*bz*bz;
+ const tl=Math.exp(-((y+.40)**2)/.045-((z-.14)**2)/.11)*smooth(.25,.75,ax);px+=Math.sign(x)*tl*.06;py-=tl*.10;
+ const w1=noise3(px*1.6+4,py*1.6,pz*1.6)*.35,n=noise3(px*4.2+w1,py*4.2-w1,pz*4.2+w1),n2=noise3(px*8.6+9,py*8.6+w1,pz*8.6-3);
+ const g1=smooth(0,.32,Math.abs(n)),g2=smooth(0,.30,Math.abs(n2));let fold=g1*(.78+.22*g2);
+ const fiss=Math.exp(-(x*x)/.0045)*smooth(-.55,.05,y),sylv=Math.exp(-((y-(-.10+.42*(z-.05)))**2)/.0045)*smooth(.30,.60,ax)*smooth(-.40,0,z)*smooth(.85,.45,z),cent=Math.exp(-((z-(.05-.25*y))**2)/.0018)*smooth(.10,.45,y)*smooth(.04,.25,ax);
+ fold*=1-.9*Math.max(fiss,sylv,cent*.8);const k=1-(1-fold)*.1-fiss*.28-sylv*.11-cent*.04+.015*g2;px+=Math.sign(x)*.026*smooth(-.25,.35,y);return[px*k,py*k,pz*k,fold]}
+// Cerebellum: tightly folded horizontal folia with a central vermis, tucked under the occipital lobe.
+function cerebellum(x,y,z){const n=noise3(x*2.5,y*2.5,z*2.5),f=Math.abs(Math.sin(y*30+n*1.4+z*2)),fol=smooth(0,.45,f),ver=Math.exp(-(x*x)/.006),k=1-(1-fol)*.07-ver*.10;return[x*.42*k,-.42+y*.23*k,-.55+z*.30*k,fol*(1-ver*.5)]}
+const crystalVS='attribute float aFold;varying vec3 vN,vW,vL;varying float vF;void main(){vF=aFold;vL=position;vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;vN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*viewMatrix*w;}';
+// Clear polished crystal: tint #B8E9FF, thin #7FE0FF rim, sharp reflections; mostly transparent so the pathways show through.
+const crystalFS='uniform float uTime,uBack,uInner;varying vec3 vN,vW,vL;varying float vF;'+
+'vec3 env(vec3 r){vec3 c=mix(vec3(.02,.03,.07),vec3(.06,.10,.22),smoothstep(-.3,.6,r.y));c+=vec3(.92,.98,1.)*pow(max(dot(r,normalize(vec3(-.4,.7,.5))),0.),60.)*1.6;c+=vec3(.95,.8,.5)*pow(max(dot(r,normalize(vec3(.7,.2,-.6))),0.),36.)*.7;c+=vec3(.5,.88,1.)*pow(max(dot(r,normalize(vec3(.2,-.1,1.))),0.),10.)*.25;return c;}'+
+'void main(){vec3 N=normalize(vN);if(uBack>.5)N=-N;vec3 V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.);float fr=pow(1.-ndv,3.),rim=pow(1.-ndv,5.);vec3 refl=env(reflect(-V,N));'+
+'float crest=smoothstep(.3,.9,vF),sulc=1.-smoothstep(.05,.35,vF);vec3 L=normalize(vec3(-.45,.75,.5));float dif=max(dot(N,L),0.),spec=pow(max(dot(reflect(-L,N),V),0.),48.);'+
+'float w=pow(sin(dot(vL,vec3(.3,1.,.6))*9.-uTime*1.05)*.5+.5,8.);vec3 energy=mix(vec3(.5,.88,1.),vec3(.94,.78,.45),smoothstep(-.4,.4,sin(vL.z*3.+uTime*.3)))*w*crest;'+
+'vec3 tint=vec3(.722,.914,1.);vec3 col=tint*(.03+.11*dif*(.4+.6*crest))+refl*(.14+.86*fr)+vec3(.92,.98,1.)*spec*.55+vec3(.498,.878,1.)*rim*.85+vec3(.498,.878,1.)*sulc*.05+energy*.10;'+
+'float a=clamp(.04+.10*dif*crest+fr*.48+rim*.3+spec*.4+sulc*.05,0.,.9);if(uBack>.5){a*=.35;col*=.5;}'+
+'if(uInner>.5){col=mix(vec3(.94,.78,.45),vec3(.5,.88,1.),.55)*(.18+.8*fr);a=.04+fr*.2;}gl_FragColor=vec4(col,a);}';
+const crystalMat=(back,inner)=>new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uBack:{value:back},uInner:{value:inner}},vertexShader:crystalVS,fragmentShader:crystalFS,transparent:true,depthWrite:!back&&!inner,side:back?THREE.BackSide:THREE.FrontSide});
+const crystalBack=crystalMat(1,0),crystalFront=crystalMat(0,0),crystalInner=crystalMat(0,1);
+function crystalMesh(geo,inner){const b=new THREE.Mesh(geo,crystalBack);b.renderOrder=1;const f=new THREE.Mesh(geo,crystalFront);f.renderOrder=3;brain.add(b,f);
+ if(inner){const i=new THREE.Mesh(inner===true?geo:inner,crystalInner);i.scale.setScalar(.87);i.renderOrder=1;brain.add(i)}}
+crystalMesh(shaped(6,cortex),coarse?shaped(5,cortex):true);   // a second, inner cortical layer gives the crystal depth
+crystalMesh(shaped(coarse?4:5,cerebellum));
+// Brainstem: pons and medulla profile.
+(()=>{const prof=[[.001,-.95],[.06,-.93],[.075,-.82],[.085,-.70],[.12,-.58],[.125,-.50],[.10,-.40],[.001,-.36]].map(q=>new THREE.Vector2(q[0],q[1]));const g=new THREE.LatheGeometry(prof,40);g.setAttribute('aFold',new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count).fill(.55),1));g.rotateX(.3);g.translate(0,.12,-.26);g.computeVertexNormals();crystalMesh(g)})();
+// Internal neural pathways: blue and gold filaments with travelling energy pulses.
+(()=>{const inside=p=>(p.x/.58)**2+((p.y-.04)/.45)**2+(p.z/.74)**2<1,curves=[],nodes={p:[],c:[],s:[]},NC=coarse?56:88;
+ for(let c=0;c<NC;c++){let p;do{p=new THREE.Vector3((rand()*2-1)*.58,(rand()*2-1)*.45+.04,(rand()*2-1)*.74)}while(!inside(p));let d=new THREE.Vector3(randn(),randn(),randn()).normalize();const pts=[p.clone()];
+  for(let s=0;s<7;s++){d.add(new THREE.Vector3(randn()*.6,randn()*.6,randn()*.6)).normalize();const q=p.clone().addScaledVector(d,.13);if(!inside(q)){d=p.clone().multiplyScalar(-1).normalize();continue}p=q;pts.push(p.clone())}
+  if(pts.length<3)continue;curves.push(pts);for(const e of [pts[0],pts[pts.length-1]]){const col=rand()<.4?GOLD:BLUE;nodes.p.push(e.x,e.y,e.z);nodes.c.push(col[0],col[1],col[2]);nodes.s.push(.028+rand()*.026)}}
+ const hues=curves.map(()=>rand()<.34?1:0),pm=pulseMat(2,1.3),pc=new THREE.Points(curveCloud(curves,coarse?60:80,i=>hues[i]),pm);pc.renderOrder=2;pc.frustumCulled=false;brain.add(pc);
+ const lp=[],lc=[];curves.forEach((c,i)=>{const q=new THREE.CatmullRomCurve3(c).getPoints(24),col=hues[i]?GOLD:BLUE;for(let j=0;j<q.length-1;j++){lp.push(q[j].x,q[j].y,q[j].z,q[j+1].x,q[j+1].y,q[j+1].z);lc.push(col[0],col[1],col[2],col[0],col[1],col[2])}});
+ const lgeo=new THREE.BufferGeometry();lgeo.setAttribute('position',new THREE.Float32BufferAttribute(lp,3));lgeo.setAttribute('color',new THREE.Float32BufferAttribute(lc,3));const fil=new THREE.LineSegments(lgeo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.42,depthWrite:false,blending:THREE.AdditiveBlending}));fil.renderOrder=2;brain.add(fil);
+ const nd=pointCloud(nodes.p,nodes.c,nodes.s,pointsMat({opacity:1}));nd.renderOrder=2;brain.add(nd);
+ const dp=[],dc=[],ds=[];for(let i=0;i<(coarse?300:500);i++){let p;do{p=new THREE.Vector3((rand()*2-1)*.6,(rand()*2-1)*.46+.04,(rand()*2-1)*.76)}while(!inside(p));dp.push(p.x,p.y,p.z);dc.push(BLUE[0]*.5,BLUE[1]*.5,BLUE[2]*.5);ds.push(.006+rand()*.008)}
+ const du=pointCloud(dp,dc,ds,pointsMat({opacity:.6}));du.renderOrder=2;brain.add(du)})();
+(()=>{const coreMat=c=>new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,uniforms:{uTime:U.uTime,uC:{value:new THREE.Color(c)}},
+  vertexShader:'varying vec3 vN,vW;void main(){vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
+  fragmentShader:'uniform float uTime;uniform vec3 uC;varying vec3 vN,vW;void main(){float ndv=abs(dot(normalize(vN),normalize(cameraPosition-vW)));float p=pow(.5+.5*sin(uTime*1.047),4.);gl_FragColor=vec4(uC*(.25+.55*ndv)*(.7+.6*p),.5);}'});
+ for(const [x,c] of [[-.075,'#F0C674'],[.075,'#7FE0FF']]){const m=new THREE.Mesh(new THREE.SphereGeometry(.07,24,16),coreMat(c));m.scale.set(1,.8,1.35);m.position.set(x,-.04,-.02);m.renderOrder=2;brain.add(m)}
+ const cc=[];for(let i=0;i<=24;i++){const t=i/24,z=-.36+t*.62;cc.push(new THREE.Vector3(0,.13+Math.sin(t*Math.PI)*.09,z))}
+ const arc=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cc),48,.028,8,false),coreMat('#B8E9FF'));arc.renderOrder=2;brain.add(arc);
+ const ap=[],ac=[],as=[];for(let i=0;i<70;i++){const t=rand(),z=-.36+t*.62,y=.13+Math.sin(t*Math.PI)*.09;for(const sd of [-1,1]){ap.push(sd*(.04+rand()*.3),y+(rand()-.5)*.12,z+(rand()-.5)*.06);const col=rand()<.4?GOLD:BLUE;ac.push(col[0],col[1],col[2]);as.push(.008+rand()*.01)}}
+ const fib=pointCloud(ap,ac,as,pointsMat({opacity:.8}));fib.renderOrder=2;brain.add(fib)})();
+const crystalGroup=new THREE.Group();while(brain.children.length)crystalGroup.add(brain.children[0]);brain.add(crystalGroup);
+const brainHalo=halo('#7FE0FF',3.4,.3);brainHalo.renderOrder=0;brainScene.add(brainHalo);trueColors(brainScene);
+// Anatomical neural brain (BodyParts3D atlas, CC BY 4.0, (c) DBCLS - modified). Loads in the background; the crystal brain shows
+// until it is ready, and remains the fallback if loading fails. Add ?brain=classic to compare with the crystal brain.
+const neuro={ready:false,fade:0,U:{uTime:U.uTime,uFade:{value:0},uOnly:{value:0},uS:U.uS,uPR:U.uPR,uRes:{value:new THREE.Vector2(1,1)}}};
+// Turns pathway polylines into ribbon geometry (two vertices per point, offset in screen space by the shader), plus the
+// junction points used for the gold synapses.
+// Path distance of every curve point from its tree's trunk root (trunk -> branch -> twig, using the stored order:
+// a trunk, then each branch followed by its twigs), the tree's root seed, and the junction points where children leave.
+function treeFlow(cp,cl,lv,sd){const n=cp.length/3,dist=new Float32Array(n),root=new Float32Array(n);let o=0,rs=0;const T=[0,0],B=[0,0],jp=[],jd=[],jr=[],js=[];
+ const near=(s,m,x,y,z)=>{let b=1e9,bi=s;for(let i=s;i<s+m;i++){const dx=cp[i*3]-x,dy=cp[i*3+1]-y,dz=cp[i*3+2]-z,d=dx*dx+dy*dy+dz*dz;if(d<b){b=d;bi=i}}return bi};
+ for(let c=0;c<cl.length;c++){const m=cl[c],L=lv?lv[o]:0;let d0=0;
+  if(L===0){T[0]=o;T[1]=m;rs=sd[o]/255}else{const P=L===1?T:B;if(P[1]){d0=dist[near(P[0],P[1],cp[o*3],cp[o*3+1],cp[o*3+2])];
+   const h=(sd[o]*.618034+c*.0137)%1;if(h<.55){jp.push(cp[o*3],cp[o*3+1],cp[o*3+2]);jd.push(d0);jr.push(rs);js.push(sd[o]/255)}}}
+  if(L===1){B[0]=o;B[1]=m}
+  dist[o]=d0;root[o]=rs;for(let j=1;j<m;j++){const i=o+j;dist[i]=dist[i-1]+Math.hypot(cp[i*3]-cp[i*3-3],cp[i*3+1]-cp[i*3-2],cp[i*3+2]-cp[i*3-1]);root[i]=rs}
+  o+=m}
+ return{dist,root,junc:{pos:new Float32Array(jp),dist:new Float32Array(jd),root:new Float32Array(jr),seed:new Float32Array(js)}}}
+function buildRibbons(cp,cl,al,sd,hu,lv){let n=0;for(let i=0;i<cl.length;i++)n+=cl[i];let ni=0,ng=0,o0=0;for(let i=0;i<cl.length;i++){ni+=(cl[i]-1)*6;if(!lv||lv[o0]<2)ng+=(cl[i]-1)*6;o0+=cl[i]}
+ const pos=new Float32Array(n*6),next=new Float32Array(n*6),side=new Float32Array(n*2),along=new Float32Array(n*2),seed=new Float32Array(n*2),hue=new Float32Array(n*2),lev=new Float32Array(n*2),idx=new Uint32Array(ni),glowIdx=new Uint32Array(ng),
+  ends=new Float32Array(cl.length*6),endAlong=new Float32Array(cl.length*2),endSeed=new Float32Array(cl.length*2);
+ let o=0,k=0,kg=0;for(let c=0;c<cl.length;c++){const m=cl[c],L=lv?lv[o]:1;for(let j=0;j<m;j++){const i=o+j,i3=i*3,nx=j<m-1?(i+1)*3:i3,px=j<m-1?i3:(i-1)*3;
+   for(let s=0;s<2;s++){const v=i*2+s;for(let t=0;t<3;t++){pos[v*3+t]=cp[i3+t];next[v*3+t]=j<m-1?cp[nx+t]:2*cp[i3+t]-cp[px+t]}side[v]=s?1:-1;along[v]=al[i]/255;seed[v]=sd[i]/255;hue[v]=hu?hu[i]/255:0;lev[v]=L}
+   if(j<m-1){const a=i*2,q=[a,a+1,a+2,a+1,a+3,a+2];for(const x of q)idx[k++]=x;if(L<2)for(const x of q)glowIdx[kg++]=x}}
+  for(let e=0;e<2;e++){const i=e?o+m-1:o;for(let t=0;t<3;t++)ends[(c*2+e)*3+t]=cp[i*3+t];endAlong[c*2+e]=e;endSeed[c*2+e]=sd[o]/255}o+=m}
+ return{pos,next,side,along,seed,hue,lev,idx,glowIdx,ends,endAlong,endSeed}}
+(()=>{if(/brain=classic/.test(location.search))return;
+ const url0='brain/brain-'+(coarse?'lo':'hi'),url=url0+(/[?&]look=nano\b/.test(location.search)?'-nano':'')+'.bin';
+ const get=async()=>{if(window.DecompressionStream){try{const r=await fetch(url+'.gz');if(r.ok){const b=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();if(new Uint8Array(b,0,4)[0]===85)return b}}catch(e){}}
+  let r=await fetch(url);if(!r.ok&&url!==url0+'.bin')r=await fetch(url0+'.bin');if(!r.ok)throw new Error('brain '+r.status);return r.arrayBuffer()};
+ get().then(buf=>{const dv=new DataView(buf);if(String.fromCharCode(dv.getUint8(0),dv.getUint8(1),dv.getUint8(2),dv.getUint8(3))!=='USIB')throw new Error('bad brain file');
+  const hl=dv.getUint32(4,true),h=JSON.parse(new TextDecoder().decode(new Uint8Array(buf,8,hl))),base=8+hl,TA={'<i2':Int16Array,'|i1':Int8Array,'|u1':Uint8Array,'<u4':Uint32Array,'<u2':Uint16Array};
+  const A=k=>{const [o,dt,n]=h.parts[k];return new TA[dt](buf,base+o,n)};const mn=h.bmin,mx=h.bmax;
+  const deq=q=>{const f=new Float32Array(q.length);for(let i=0;i<q.length;i++){const a=i%3;f[i]=(q[i]+32768)/65535*(mx[a]-mn[a])+mn[a]}return f};
+  // Surface: deep midnight blue, folds shaded from real curvature (crests catch light, sulci stay deep), electric-blue rim,
+  // slow energy waves sweeping across, faint gold warmth on the crests.
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(deq(A('pos')),3));
+  const nr=A('nor'),nf=new Float32Array(nr.length);for(let i=0;i<nr.length;i++)nf[i]=nr[i]/127;g.setAttribute('normal',new THREE.BufferAttribute(nf,3));
+  g.setAttribute('aFold',new THREE.BufferAttribute(new Uint8Array(A('fold')),1,true));g.setAttribute('aGrp',new THREE.BufferAttribute(new Uint8Array(A('grp')),1,false));
+  g.setIndex(new THREE.BufferAttribute(new Uint32Array(A('idx')),1));
+  // Brain look. The approved look is the default; ?look=exp loads the cinematic experiment ?look=exp2 its colour-corrected variant and ?look=nano the nano-neural fibre experiment, for side-by-side review.
+  const LOOK_NANO=/[?&]look=nano\b/.test(location.search),LOOK_EXP2=/[?&]look=exp2\b/.test(location.search),LOOK_EXP=LOOK_NANO||LOOK_EXP2||/[?&]look=exp\b/.test(location.search);
+  const [surf,glowL,lines,sp]=LOOK_EXP?(()=>{
+  // ---- EXPERIMENT (?look=exp): cinematic sapphire pass ----
+  // Surface: deeper sapphire with dark valleys; restrained light on selected ridges and a soft sapphire sheen on the crests;
+  // the inner light now leaks out mainly through the valleys near the centre, so the brain reads as lit from within.
+  // Network: energy flows. Each tree knows its path distance from the trunk root, so a pulse that starts on a trunk
+  // carries on into its branches and twigs. Trunks have a luminous core inside a softer glow. Gold synapses sit at the
+  // junctions and swell gently when a pulse reaches them; gold trees carry occasional gold pulses.
+  // ?look=exp2 = colour-corrected variant (CC). Same anatomy, network and animation; only colour handling changes:
+  // electric blue #7FE0FF cores and pulses over a deeper blue body, warm gold #F0C674, a hue-preserving soft cap on every
+  // strand so no colour channel saturates (saturated blue drifts to turquoise, saturated gold to white), the brighter-wins
+  // (max) blend for crossing strands so intersections cannot stack into overexposure, and gold synapses laid over the blue
+  // instead of added to it.
+  const CC=LOOK_EXP2||LOOK_NANO,KNEE=(v,k,h)=>'{float m=max('+v+'.r,max('+v+'.g,'+v+'.b));'+v+'*=m>'+k+'?('+k+'+'+h+'*(1.-exp(-(m-'+k+')/'+h+')))/m:1.;}';
+  const MAXB=CC&&typeof renderer!=='undefined'&&(renderer.capabilities.isWebGL2||!!renderer.extensions.get('EXT_blend_minmax'));
+  g.setAttribute('aGrp',new THREE.BufferAttribute(new Float32Array(A('grp')),1));
+  const CEN='vec3(0.,.02,-.05)';
+  const RAD='float rad(vec3 wp,vec3 cw){vec3 rd=normalize(wp-cameraPosition),oc=cw-cameraPosition;float tc=dot(oc,rd);float dr=length(oc-rd*tc);return step(0.,tc)*exp(-dr*dr*7.);}';
+  const surf=new THREE.Mesh(g,new THREE.ShaderMaterial({uniforms:neuro.U,
+   vertexShader:'attribute float aFold,aGrp;varying vec3 vN,vW,vL,vC;varying float vF,vG;void main(){vF=aFold;vG=aGrp;vL=position;vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;vC=(modelMatrix*vec4('+CEN+',1.)).xyz;vN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*viewMatrix*w;}',
+   fragmentShader:GLSL_NOISE+'uniform float uTime,uFade,uOnly;varying vec3 vN,vW,vL,vC;varying float vF,vG;'+RAD+'void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,3.);vec3 L=normalize(vec3(-.45,.75,.5));float dif=max(dot(N,L),0.);float spec=pow(max(dot(N,normalize(L+V)),0.),40.);'+
+   'float crest=smoothstep(.25,.95,vF),groove=smoothstep(.6,.1,vF);float act=smoothstep(.35,.85,vn(vL*3.2+vec3(0.,uTime*.07,uTime*.045)));'+
+   'float ridge=smoothstep(.52,.8,vn(vL*2.4+vec3(3.1,uTime*.02,0.)))*smoothstep(.5,.95,vF);'+
+   'vec3 q=vL*11.+vec3(vn(vL*5.)*1.5);float vein=pow(1.-abs(vn(q)*2.-1.),7.)*.7+pow(1.-abs(vn(q*2.1+3.7)*2.-1.),9.)*.5;'+
+   'vec3 col=vec3(.030,.072,.235)*(.22+.78*crest)*(.50+.50*dif);'+
+   'col+=vec3(.04,.12,.40)*groove*(.05+.05*act);'+
+   'col+=vec3(.15,.40,1.)*vein*(.025+.04*act)*crest;'+
+   'col+=vec3(.10,.32,.95)*ridge*(.10+.10*act)*(.45+.55*dif);'+
+   'col+=vec3(.35,.62,1.)*spec*crest*.12;'+
+   'col+=vec3(.22,.55,1.)*step(.5,vG)*step(vG,1.5)*(.05+.08*crest+.05*act);'+
+   'float r=rad(vW,vC)*(.88+.12*sin(uTime*.7));float leak=r*(.35+.9*groove);vec3 rc=mix(vec3(.12,.40,1.),'+(CC?'vec3(.94,.78,.46)':'vec3(1.,.72,.36)')+',smoothstep(.78,1.,r)*smoothstep(.2,.7,groove));col+=rc*leak*.75;'+
+   (CC?'col+=vec3(.28,.58,1.)*fr*.36;'+KNEE('col','.62','.24'):'col+=vec3(.30,.66,1.)*fr*.40;')+'if(uOnly>.5)col=rc*leak*.6;gl_FragColor=vec4(col*uFade,1.);}'}));
+  // ---- NANO-NEURAL FREQUENCIES (?look=nano) ----
+  // Instead of ribbons, thousands of hair-thin filaments grown on the brain's own surface mesh at load time: each walks
+  // along a fold contour (so the network follows the anatomy), and about half start from a point on an existing
+  // filament, so they branch and connect. All filaments are one LineSegments draw (native 1-device-pixel GPU lines), with
+  // tiny pulses that travel outwards through the connected network; a few filaments carry rare warm-gold pulses.
+  if(LOOK_NANO){
+   const P=g.getAttribute('position').array,NM=g.getAttribute('normal').array,FD=A('fold'),GR=A('grp'),IX=A('idx'),NV=P.length/3;
+   const deg=new Uint32Array(NV+1);for(let i=0;i<IX.length;i++)deg[IX[i]+1]+=2;for(let i=0;i<NV;i++)deg[i+1]+=deg[i];
+   const adj=new Uint32Array(deg[NV]),fil=deg.slice(0,NV);for(let t=0;t<IX.length;t+=3){const a=IX[t],b=IX[t+1],c=IX[t+2];adj[fil[a]++]=b;adj[fil[a]++]=c;adj[fil[b]++]=c;adj[fil[b]++]=a;adj[fil[c]++]=a;adj[fil[c]++]=b}
+   let rs=0x9e3779b9;const rnd=()=>{rs|=0;rs=rs+0x6D2B79F5|0;let t=Math.imul(rs^rs>>>15,1|rs);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+   const NF=Math.round(Math.min(4200,NV/14)),paths=[],pts=[];// pts: [pathIndex,pointIndex] pool for branching
+   for(let f=0;f<NF;f++){let v,d,d0=0,root,bx;
+    if(pts.length&&rnd()<.62){const [pi,k]=pts[(rnd()*pts.length)|0],pp=paths[pi];v=pp.v[k];const k2=Math.min(k+1,pp.v.length-1),k1=Math.max(k-1,0);
+     const tx=P[pp.v[k2]*3]-P[pp.v[k1]*3],ty=P[pp.v[k2]*3+1]-P[pp.v[k1]*3+1],tz=P[pp.v[k2]*3+2]-P[pp.v[k1]*3+2],nx=NM[v*3],ny=NM[v*3+1],nz=NM[v*3+2],s=rnd()<.5?-1:1;
+     d=[(ny*tz-nz*ty)*s+tx*.8,(nz*tx-nx*tz)*s+ty*.8,(nx*ty-ny*tx)*s+tz*.8];d0=pp.d[k];root=pp.root;bx=1}
+    else{do v=(rnd()*NV)|0;while((GR[v]===2&&rnd()<.8)||(GR[v]===1&&rnd()<.7));d=[rnd()-.5,rnd()-.5,rnd()-.5];root=rnd();bx=0}
+    let l=Math.hypot(d[0],d[1],d[2])||1;d=d.map(x=>x/l);const f0=FD[v],path=[v],seen=new Set([v]),L=bx?8+((rnd()*18)|0):22+((rnd()*30)|0);
+    for(let s=0;s<L;s++){let best=-1e9,bc=-1,bd=null;for(let j=deg[v];j<deg[v+1];j++){const c=adj[j];if(seen.has(c))continue;
+      let ex=P[c*3]-P[v*3],ey=P[c*3+1]-P[v*3+1],ez=P[c*3+2]-P[v*3+2];const el=Math.hypot(ex,ey,ez)||1;ex/=el;ey/=el;ez/=el;const al=ex*d[0]+ey*d[1]+ez*d[2];if(al<.05)continue;
+      const sc=al*1.6-Math.abs(FD[c]-f0)/255*9+rnd()*.3;if(sc>best){best=sc;bc=c;bd=[ex,ey,ez]}}
+     if(bc<0)break;d=[.55*d[0]+.45*bd[0],.55*d[1]+.45*bd[1],.55*d[2]+.45*bd[2]];l=Math.hypot(d[0],d[1],d[2])||1;d=d.map(x=>x/l);path.push(bc);seen.add(bc);v=bc}
+    if(path.length<6)continue;
+    // smooth the walk, lift it just off the surface, and accumulate the path distance from the network root
+    const n=path.length,X=new Float32Array(n*3),Nn=new Float32Array(n*3);for(let i=0;i<n;i++)for(let a=0;a<3;a++){X[i*3+a]=P[path[i]*3+a];Nn[i*3+a]=NM[path[i]*3+a]}
+    for(let it=0;it<3;it++){const Y=X.slice();for(let i=1;i<n-1;i++)for(let a=0;a<3;a++)X[i*3+a]=.25*Y[i*3-3+a]+.5*Y[i*3+a]+.25*Y[i*3+3+a]}
+    for(let i=0;i<n*3;i++)X[i]+=Nn[i]*.006;
+    const dd=new Float32Array(n);dd[0]=d0;for(let i=1;i<n;i++)dd[i]=dd[i-1]+Math.hypot(X[i*3]-X[i*3-3],X[i*3+1]-X[i*3-2],X[i*3+2]-X[i*3-1]);
+    const pi=paths.length;paths.push({v:path,d:dd,root,X,N:Nn,seed:rnd(),bx});for(let k=2;k<n-2;k+=3)pts.push([pi,k])}
+   let ns=0;for(const p of paths)ns+=p.v.length-1;
+   const lp=new Float32Array(ns*6),ln=new Float32Array(ns*6),lD=new Float32Array(ns*2),lR=new Float32Array(ns*2),lS=new Float32Array(ns*2),lA=new Float32Array(ns*2),jp=[],jd=[],jr=[],js=[];let o=0;
+   for(const p of paths){const n=p.v.length;if(p.bx&&p.seed<.35){jp.push(p.X[0],p.X[1],p.X[2]);jd.push(p.d[0]);jr.push(p.root);js.push(p.seed)}
+    for(let i=0;i<n-1;i++)for(const k of [i,i+1]){for(let a=0;a<3;a++){lp[o*3+a]=p.X[k*3+a];ln[o*3+a]=p.N[k*3+a]}lD[o]=p.d[k];lR[o]=p.root;lS[o]=p.seed;lA[o]=k/(n-1);o++}}
+   const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.BufferAttribute(lp,3));lg.setAttribute('aNrm',new THREE.BufferAttribute(ln,3));lg.setAttribute('aDist',new THREE.BufferAttribute(lD,1));lg.setAttribute('aRoot',new THREE.BufferAttribute(lR,1));lg.setAttribute('aSeed',new THREE.BufferAttribute(lS,1));lg.setAttribute('aAl',new THREE.BufferAttribute(lA,1));
+   // micro-signal: short (~.05 units) and fast enough to read as a frequency, not a comet; ~1 in 4 cycles per network
+   const NFLOW='float flow(float d,float rs){float x=uTime*.42+rs*29.-d;float k=floor(x/1.1),f=x-k*1.1;float on=step(.74,fract(sin(k*12.9898+rs*78.233)*43758.5453));return on*smoothstep(0.,.006,f)*exp(-f*38.);}';
+   const lines=new THREE.LineSegments(lg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+    vertexShader:'uniform float uTime,uOnly;'+NFLOW+'attribute vec3 aNrm;attribute float aDist,aRoot,aSeed,aAl;varying vec3 vC;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vec3 n=normalize(mat3(modelViewMatrix)*aNrm);'+
+     'float face=smoothstep(.04,.35,abs(dot(n,normalize(-mv.xyz))));float tp=pow(sin(3.14159*aAl),.5);float seam=1.-.5*exp(-position.x*position.x/.0016);float p=flow(aDist,aRoot);float gold=step(.965,fract(aSeed*53.17));'+
+     'vC=(vec3(.20,.44,1.)*(.42+.2*fract(aSeed*7.31))*tp*(1.-.85*uOnly)+mix(vec3(.50,.88,1.),vec3(.94,.78,.46),gold)*p*2.2*pow(tp,.3)*(1.-.45*uOnly))*face*seam;gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'uniform float uFade;varying vec3 vC;void main(){vec3 c=vC;'+KNEE('c','.5','.35')+'gl_FragColor=vec4(c*uFade,1.);}'}));
+   const J={pos:new Float32Array(jp),dist:new Float32Array(jd),root:new Float32Array(jr),seed:new Float32Array(js)},sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(J.pos,3));sg.setAttribute('aDist',new THREE.BufferAttribute(J.dist,1));sg.setAttribute('aRoot',new THREE.BufferAttribute(J.root,1));sg.setAttribute('aSeed',new THREE.BufferAttribute(J.seed,1));
+   // synaptic points where a filament branches off: almost invisible at rest, a brief warm-gold flicker when a signal passes
+   const sp=new THREE.Points(sg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.NormalBlending,
+    vertexShader:'uniform float uTime,uS,uOnly;'+NFLOW+'attribute float aDist,aRoot,aSeed;varying float vI;void main(){float p=flow(aDist-.01,aRoot);vI=(.05+1.2*p)*(1.-.5*uOnly);vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.006+.006*p)*uS/max(-mv.z,.001),1.5,7.);gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);gl_FragColor=vec4(vec3(.94,.78,.46),clamp(a*vI,0.,1.)*uFade);}'}));
+   const glowL=new THREE.Object3D();sp.frustumCulled=lines.frustumCulled=false;surf.renderOrder=1;lines.renderOrder=3;sp.renderOrder=4;
+   neuro.nanoStats={filaments:paths.length,segments:ns,synapses:jd.length};
+   return[surf,glowL,lines,sp]}
+  const cp=deq(A('cpos')),cl=A('clen'),cs=A('cseed'),ch=A('chue'),cv=A('clev');
+  const R=buildRibbons(cp,cl,A('calong'),cs,ch,cv),F=treeFlow(cp,cl,cv,cs),nv=R.pos.length/3,aD=new Float32Array(nv),aRt=new Float32Array(nv);
+  for(let v=0;v<nv;v++){aD[v]=F.dist[v>>1];aRt[v]=F.root[v>>1]}
+  const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.BufferAttribute(R.pos,3));rg.setAttribute('aNext',new THREE.BufferAttribute(R.next,3));
+  rg.setAttribute('aSide',new THREE.BufferAttribute(R.side,1));rg.setAttribute('aAlong',new THREE.BufferAttribute(R.along,1));rg.setAttribute('aSeed',new THREE.BufferAttribute(R.seed,1));rg.setAttribute('aHue',new THREE.BufferAttribute(R.hue,1));rg.setAttribute('aLev',new THREE.BufferAttribute(R.lev,1));
+  rg.setAttribute('aDist',new THREE.BufferAttribute(aD,1));rg.setAttribute('aRoot',new THREE.BufferAttribute(aRt,1));rg.setIndex(new THREE.BufferAttribute(R.idx,1));
+  const gg=new THREE.BufferGeometry();for(const k of ['position','aNext','aSide','aAlong','aSeed','aHue','aLev','aDist','aRoot'])gg.setAttribute(k,rg.getAttribute(k));gg.setIndex(new THREE.BufferAttribute(R.glowIdx,1));
+  // flow(): a calm comet-like pulse that moves outwards from the trunk root at .3 units/s and continues into every branch.
+  // Each tree fires on roughly 3 of 10 cycles (one cycle is about 6 s), so only a few pulses travel at once.
+  const FLOW='float flow(float d,float rs,float tail,float rise){float x=uTime*.30+rs*13.-d;float k=floor(x/1.7),f=x-k*1.7;float on=step(.62,fract(sin(k*12.9898+rs*78.233)*43758.5453));return on*smoothstep(0.,rise,f)*exp(-f*tail);}';
+  const strandVS=glow=>'uniform float uTime,uPR;uniform vec2 uRes;'+GLSL_NOISE+FLOW+RAD+'attribute vec3 aNext;attribute float aSide,aAlong,aSeed,aHue,aLev,aDist,aRoot;varying float vI,vP,vS,vH,vL;void main(){'+
+   'vec4 a=projectionMatrix*modelViewMatrix*vec4(position,1.),b=projectionMatrix*modelViewMatrix*vec4(aNext,1.);vH=aHue;vL=aLev;vec2 sa=a.xy/a.w,sb=b.xy/b.w;vec2 dir=(sb-sa)*uRes;float dl=length(dir);dir=dl>1e-5?dir/dl:vec2(1.,0.);vec2 nrm=vec2(-dir.y,dir.x);'+
+   'float w='+(glow?'(aLev<.5?9.:5.)':'(aLev<.5?2.8:aLev<1.5?1.3:.8)')+';a.xy+=nrm*aSide*w*uPR/uRes*2.*a.w;gl_Position=a;vS=aSide;'+
+   'float act=smoothstep(.35,.85,vn(position*3.2+vec3(0.,uTime*.07,uTime*.045)));float wave=pow(.5+.5*sin(dot(position,vec3(.3,.22,1.))*3.2-uTime*.42),6.);'+
+   'vec3 wp=(modelMatrix*vec4(position,1.)).xyz,cw=(modelMatrix*vec4('+CEN+',1.)).xyz;float r=rad(wp,cw);'+
+   'float taper=aLev<.5?pow(sin(3.14159*clamp(aAlong*.9+.05,0.,1.)),.35):pow(clamp((1.-aAlong)*1.6,0.,1.),.7);float lw=aLev<.5?1.:aLev<1.5?.62:.42;float vary=.75+.25*fract(aSeed*7.31);'+
+   'float seam=1.-.45*exp(-position.x*position.x/.0016);float gd=1.-.12*aHue;'+
+   'vI=taper*lw*vary*gd*(.58+.34*act+.15*wave)*(1.+1.3*r)*seam;vP=flow(aDist,aRoot,7.,.015)*pow(taper,.3)*(aLev<.5?1.:aLev<1.5?.8:.6)*seam;'+(glow?'vI*=.18;vP*=.22;':'')+'}';
+  const strandFS=glow=>'uniform float uFade;varying float vI,vP,vS,vH,vL;void main(){'+
+   (CC?(glow?'float a=exp(-vS*vS*3.2);vec3 c=mix(vec3(.14,.36,1.),vec3(.94,.62,.28),vH)*vI*a*1.3+mix(vec3(.50,.88,1.),vec3(.94,.78,.46),vH)*vP*a;'+KNEE('c','.2','.18')
+        :'float e=1.-abs(vS);float body=e*e*(3.-2.*e),core=pow(e,6.)*(vL<.5?1.3:vL<1.5?.5:0.);'+
+         'vec3 c=(mix(vec3(.26,.60,1.),vec3(.94,.64,.30),vH)*body+mix(vec3(.50,.88,1.),vec3(.94,.78,.46),vH)*core)*vI*1.6+mix(vec3(.50,.88,1.),vec3(.94,.78,.46),vH)*(body*.8+core*1.2)*vP*2.6;'+KNEE('c','.5','.42'))
+   :(glow?'float a=exp(-vS*vS*3.2);vec3 c=mix(vec3(.08,.36,1.),vec3(1.,.66,.26),vH)*vI*a+mix(vec3(.20,.62,1.),vec3(1.,.72,.34),vH)*vP*a;'
+        :'float e=1.-abs(vS);float body=e*e*(3.-2.*e),core=pow(e,6.)*(vL<.5?1.3:vL<1.5?.5:0.);'+
+         'vec3 c=(mix(vec3(.10,.42,1.),vec3(1.,.66,.26)*1.1,vH)*body+mix(vec3(.42,.80,1.),vec3(1.,.84,.52),vH)*core*.9)*vI+mix(vec3(.25,.70,1.),vec3(1.,.74,.36),vH)*(body*.8+core*1.2)*vP*2.2;'))+
+   'gl_FragColor=vec4(c*uFade,1.);}';
+  const strandMat=glow=>{const m=new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,vertexShader:strandVS(glow),fragmentShader:strandFS(glow)});if(MAXB&&!glow){m.blending=THREE.CustomBlending;m.blendEquation=THREE.MaxEquation;m.blendSrc=m.blendDst=THREE.OneFactor}return m};
+  const glowL=new THREE.Mesh(gg,strandMat(true)),lines=new THREE.Mesh(rg,strandMat(false));
+  // Gold synapses only at junctions (where a branch or twig leaves its parent), about 55% of them: barely lit at rest,
+  // swelling softly for under a second when that tree's pulse arrives - so the gold is tied to the blue network.
+  const J=F.junc,sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(J.pos,3));sg.setAttribute('aDist',new THREE.BufferAttribute(J.dist,1));sg.setAttribute('aRoot',new THREE.BufferAttribute(J.root,1));sg.setAttribute('aSeed',new THREE.BufferAttribute(J.seed,1));
+  const sp=new THREE.Points(sg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:CC?THREE.NormalBlending:THREE.AdditiveBlending,
+   vertexShader:'uniform float uTime,uS;'+FLOW+'attribute float aDist,aRoot,aSeed;varying float vI;void main(){float p=flow(aDist,aRoot,4.,.08);vI=.22+.06*sin(uTime*.6+aSeed*40.)+1.1*p;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.016+.016*p)*uS/max(-mv.z,.001),2.,16.);gl_Position=projectionMatrix*mv;}',
+   fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;'+(CC?'gl_FragColor=vec4(vec3(.94,.78,.46),clamp(a*vI*1.4,0.,1.)*uFade);}':'gl_FragColor=vec4(vec3(1.,.70,.30)*a*vI*uFade,1.);}')}));
+  sp.frustumCulled=lines.frustumCulled=glowL.frustumCulled=false;surf.renderOrder=1;glowL.renderOrder=2;lines.renderOrder=3;sp.renderOrder=4;
+  return[surf,glowL,lines,sp]})():(()=>{
+  // ---- Living Superintelligence look (illuminated neural organism) ----
+  // Surface: deep midnight blue, never black; soft blue light inside the folds; a faint organic capillary texture so it
+  // reads as living tissue rather than plastic; a drifting activity field and slow waves; and an inner radiance - blue with
+  // a warm gold heart - that seems to shine through the tissue from the energy centre deep inside (no separate glowing ball).
+  g.setAttribute('aGrp',new THREE.BufferAttribute(new Float32Array(A('grp')),1));
+  const CEN='vec3(0.,.02,-.05)';
+  const RAD='float rad(vec3 wp,vec3 cw){vec3 rd=normalize(wp-cameraPosition),oc=cw-cameraPosition;float tc=dot(oc,rd);float dr=length(oc-rd*tc);return step(0.,tc)*exp(-dr*dr*7.);}';
+  const surf=new THREE.Mesh(g,new THREE.ShaderMaterial({uniforms:neuro.U,
+   vertexShader:'attribute float aFold,aGrp;varying vec3 vN,vW,vL,vC;varying float vF,vG;void main(){vF=aFold;vG=aGrp;vL=position;vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;vC=(modelMatrix*vec4('+CEN+',1.)).xyz;vN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*viewMatrix*w;}',
+   fragmentShader:GLSL_NOISE+'uniform float uTime,uFade,uOnly;varying vec3 vN,vW,vL,vC;varying float vF,vG;'+RAD+'void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.8);vec3 L=normalize(vec3(-.45,.75,.5));float dif=max(dot(N,L),0.);'+
+   'float crest=smoothstep(.25,.95,vF),groove=smoothstep(.6,.1,vF);float act=smoothstep(.35,.85,vn(vL*3.2+vec3(0.,uTime*.07,uTime*.045)));'+
+   'float wave=pow(.5+.5*sin(dot(vL,vec3(.3,.22,1.))*3.2-uTime*.42),6.);float cd=length(vL-'+CEN+'),fw=pow(.5+.5*sin(cd*9.-uTime*1.1),14.);'+
+   'vec3 q=vL*11.+vec3(vn(vL*5.)*1.5);float vein=pow(1.-abs(vn(q)*2.-1.),7.)*.7+pow(1.-abs(vn(q*2.1+3.7)*2.-1.),9.)*.5;'+
+   'vec3 col=vec3(.042,.10,.29)*(.38+.62*crest)*(.58+.42*dif);'+
+   'col+=vec3(.08,.25,.75)*groove*(.20+.16*act+.08*wave);col+=vec3(.06,.18,.55)*(.05+.06*act);'+
+   'col+=vec3(.18,.45,1.)*vein*(.035+.05*act)*(.5+.5*crest);'+
+   'col+=vec3(.20,.48,1.)*fw*.06+vec3(.22,.55,1.)*step(.5,vG)*step(vG,1.5)*(.06+.10*crest+.06*act);'+
+   'float r=rad(vW,vC)*(.55+.65*groove)*(.88+.12*sin(uTime*.7));col+=mix(vec3(.18,.45,1.),vec3(1.,.72,.34),smoothstep(.55,1.,r))*r*.62;'+
+   'col+=vec3(.498,.878,1.)*fr*.5;if(uOnly>.5)col=mix(vec3(.18,.45,1.),vec3(1.,.72,.34),smoothstep(.55,1.,r))*r*.55;gl_FragColor=vec4(col*uFade,1.);}'}));
+  // Neural trees: trunks along the crests (widest, brightest), branches, then fine twigs - with a soft glow underlay under
+  // trunks and branches that lights the surface around them, so the brain looks lit by its own network.
+  const R=buildRibbons(deq(A('cpos')),A('clen'),A('calong'),A('cseed'),A('chue'),A('clev'));
+  const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.BufferAttribute(R.pos,3));rg.setAttribute('aNext',new THREE.BufferAttribute(R.next,3));
+  rg.setAttribute('aSide',new THREE.BufferAttribute(R.side,1));rg.setAttribute('aAlong',new THREE.BufferAttribute(R.along,1));rg.setAttribute('aSeed',new THREE.BufferAttribute(R.seed,1));rg.setAttribute('aHue',new THREE.BufferAttribute(R.hue,1));rg.setAttribute('aLev',new THREE.BufferAttribute(R.lev,1));rg.setIndex(new THREE.BufferAttribute(R.idx,1));
+  const gg=new THREE.BufferGeometry();for(const k of ['position','aNext','aSide','aAlong','aSeed','aHue','aLev'])gg.setAttribute(k,rg.getAttribute(k));gg.setIndex(new THREE.BufferAttribute(R.glowIdx,1));
+  const SIG='float front(vec3 p){return pow(.5+.5*sin(length(p-'+CEN+')*9.-uTime*1.1),14.);}float sig(float al,float sd){float cyc=uTime*.2+sd*17.;float on=step(.74,fract(sin(floor(cyc)*12.9898+sd*78.233)*43758.5453));float d=fract(cyc)*3.5-al;return on*step(0.,d)*exp(-d*12.);}';
+  const strandVS=glow=>'uniform float uTime,uPR;uniform vec2 uRes;'+GLSL_NOISE+SIG+RAD+'attribute vec3 aNext;attribute float aSide,aAlong,aSeed,aHue,aLev;varying float vI,vP,vS,vH;void main(){'+
+   'vec4 a=projectionMatrix*modelViewMatrix*vec4(position,1.),b=projectionMatrix*modelViewMatrix*vec4(aNext,1.);vH=aHue;vec2 sa=a.xy/a.w,sb=b.xy/b.w;vec2 dir=(sb-sa)*uRes;float dl=length(dir);dir=dl>1e-5?dir/dl:vec2(1.,0.);vec2 nrm=vec2(-dir.y,dir.x);'+
+   'float w='+(glow?'(aLev<.5?7.5:4.5)':'(aLev<.5?1.9:aLev<1.5?1.2:.8)')+';a.xy+=nrm*aSide*w*uPR/uRes*2.*a.w;gl_Position=a;vS=aSide;'+
+   'float act=smoothstep(.35,.85,vn(position*3.2+vec3(0.,uTime*.07,uTime*.045)));float wave=pow(.5+.5*sin(dot(position,vec3(.3,.22,1.))*3.2-uTime*.42),6.);'+
+   'vec3 wp=(modelMatrix*vec4(position,1.)).xyz,cw=(modelMatrix*vec4('+CEN+',1.)).xyz;float r=rad(wp,cw);'+
+   'float taper=aLev<.5?pow(sin(3.14159*clamp(aAlong*.9+.05,0.,1.)),.35):pow(clamp((1.-aAlong)*1.6,0.,1.),.7);float lw=aLev<.5?1.:aLev<1.5?.72:.5;float vary=.75+.25*fract(aSeed*7.31);float p=sig(aAlong,aSeed);vP=p;'+
+   'float seam=1.-.45*exp(-position.x*position.x/.0016);vI=(taper*lw*vary*(.5+.42*act+.22*wave+.6*front(position))*(1.+1.3*r)*(1.+.55*aHue)+1.4*p*lw)*seam;'+(glow?'vI*=.16;':'')+'}';
+  const strandFS=glow=>'uniform float uFade;varying float vI,vP,vS,vH;void main(){'+(glow?'float a=exp(-vS*vS*3.2);':'float e=1.-abs(vS);float a=e*e*(3.-2.*e);')+
+   'vec3 c=mix(vec3(.26,.62,1.),vec3(1.,.68,.26)*1.2,step(.5,vH));c=mix(c,vec3(.85,.96,1.),clamp(vP*.6,0.,.8));gl_FragColor=vec4(c*vI*a*uFade,1.);}';
+  const strandMat=glow=>new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,vertexShader:strandVS(glow),fragmentShader:strandFS(glow)});
+  const glowL=new THREE.Mesh(gg,strandMat(true)),lines=new THREE.Mesh(rg,strandMat(false));
+  // Gold synapses where branches and twigs meet: small, warm, brightening briefly as a signal passes.
+  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(R.ends,3));sg.setAttribute('aAlong',new THREE.BufferAttribute(R.endAlong,1));sg.setAttribute('aSeed',new THREE.BufferAttribute(R.endSeed,1));
+  const sp=new THREE.Points(sg,new THREE.ShaderMaterial({uniforms:neuro.U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+   vertexShader:'uniform float uTime,uS;'+SIG+'attribute float aAlong,aSeed;varying float vI;void main(){float p=sig(aAlong,aSeed);vI=.36+.16*sin(uTime*.9+aSeed*40.)+1.25*p;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp((.017+.016*p)*uS/max(-mv.z,.001),2.,20.);gl_Position=projectionMatrix*mv;}',
+   fragmentShader:'uniform float uFade;varying float vI;void main(){float q=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,q);a*=a;gl_FragColor=vec4(vec3(1.,.70,.30)*a*vI*uFade,1.);}'}));
+  sp.frustumCulled=lines.frustumCulled=glowL.frustumCulled=false;surf.renderOrder=1;glowL.renderOrder=2;lines.renderOrder=3;sp.renderOrder=4;
+  return[surf,glowL,lines,sp]})();
+  const ng=new THREE.Group();ng.add(surf,glowL,lines,sp);brain.add(ng);neuro.group=ng;neuro.glowL=glowL;neuro.ready=true;if(brainBloom.ok&&state==='brain')$('glowT').hidden=false;
+  try{renderer.compile(brainScene,camera)}catch(e){}
+ }).catch(e=>{console.warn('Neural brain unavailable, keeping the crystal brain.',e)})})();
+function updateNeuro(dt){if(!neuro.ready)return;renderer.getDrawingBufferSize(neuro.U.uRes.value);if(neuro.fade<1){neuro.fade=Math.min(1,neuro.fade+dt/1.4);neuro.U.uFade.value=neuro.fade*neuro.fade*(3-2*neuro.fade);if(neuro.fade>.35)crystalGroup.visible=false}}
+const brainQ0=new THREE.Quaternion().setFromEuler(new THREE.Euler(.18,-1.05,0,'YXZ'));brain.quaternion.copy(brainQ0);
+
+// Fit the brain to ~70% of the shorter screen side.
+let fitD=3;function fitBrain(){const t2=2*Math.tan(20*Math.PI/180),dW=1.69/(.70*t2*camera.aspect),dH=1.30/(.84*t2);fitD=Math.max(dW,dH)}
+
+// ================= Neural tunnel =================
+const tunnelScene=new THREE.Scene();
+const TL=140,tc=(s,o)=>o.set(Math.sin(s*6)*3,Math.cos(s*4.5)*1.8-1.8,-s*TL);
+(()=>{const N=coarse?7000:13000,pos=new Float32Array(N*3),aS=[],aA=[],aR=[],aD=[];for(let i=0;i<N;i++){aS.push(rand()*1.12-.04);aA.push(rand()*6.2832);aR.push(rand()<.82?2.3+rand()*1.4:1.2+rand()*.6);aD.push(rand())}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('aS',new THREE.Float32BufferAttribute(aS,1));g.setAttribute('aA',new THREE.Float32BufferAttribute(aA,1));g.setAttribute('aR',new THREE.Float32BufferAttribute(aR,1));g.setAttribute('aD',new THREE.Float32BufferAttribute(aD,1));
+ const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,uniforms:{uTime:U.uTime,uS:U.uS},
+  vertexShader:'uniform float uTime,uS;attribute float aS,aA,aR,aD;varying vec3 vC;varying float vA;vec3 tcen(float s){return vec3(sin(s*6.)*3.,cos(s*4.5)*1.8-1.8,-s*140.);}'+
+  'void main(){float ang=aA+uTime*(aD>.5?.55:-.35)+aS*22.;vec3 p=tcen(aS)+vec3(cos(ang)*aR,sin(ang)*aR,0.);float band=fract(ang*.4775+aS*5.);vC=band<.34?vec3(.941,.776,.455):vec3(.498,.878,1.);'+
+  'float wave=pow(.5+.5*sin(aS*70.-uTime*5.+aA),6.);vec4 mv=modelViewMatrix*vec4(p,1.);float dz=-mv.z;vA=smoothstep(.4,2.5,dz)*(1.-smoothstep(30.,60.,dz))*(.35+.65*wave);gl_PointSize=clamp((.05+.05*wave)*uS/max(dz,.01),1.,36.);gl_Position=projectionMatrix*mv;}',
+  fragmentShader:'varying vec3 vC;varying float vA;void main(){float q=length(gl_PointCoord-.5);gl_FragColor=vec4(vC,smoothstep(.5,.05,q)*vA*.8);}'});
+ const o=new THREE.Points(g,m);o.frustumCulled=false;tunnelScene.add(o)})();
+
+// ================= Hub (first landing) =================
+const hubScene=new THREE.Scene();
+const EYE=1.7,ENTRY={x:0,z:38};
+const DEST=[
+ {id:'market',name:'Marketplace',c:'#F0C674',c2:'#FFF1C9',x:-22,y:16,z:-16,r:10,pal:{base:'#30251B',hi:'#FFE6A0',spec:.82},url:'marketplace-v5.html'},
+ {id:'creators',name:'For Creators',c:'#9B6BFF',c2:'#D9B8FF',x:0,y:25,z:-31,r:10.5,pal:{base:'#201532',hi:'#C8A8FF',pink:'#E6A0FF'},url:'https://usesuperintelligence.com/marketplace.html#sell'},
+ {id:'agents',name:'Agent Hub',c:'#7FE0FF',c2:'#3D7BFF',x:22,y:16,z:-16,r:10,pal:{base:'#10283F',hi:'#B8F3FF',spec:.82},url:'https://usesuperintelligence.com/agents.html'}];
+const CORE={x:0,y:3.3,z:0,r:2.2};
+const sphereU=[];
+function energyMat(c,c2,dim,side){const u={uTime:U.uTime,uC:{value:new THREE.Color(c)},uC2:{value:new THREE.Color(c2)},uHover:{value:0},uDim:{value:dim==null?1:dim}};sphereU.push(u);return new THREE.ShaderMaterial({uniforms:u,side:side||THREE.FrontSide,
+ vertexShader:'varying vec3 vN,vW,vO;void main(){vO=position;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
+ fragmentShader:GLSL_NOISE+'uniform float uTime,uHover,uDim;uniform vec3 uC,uC2;varying vec3 vN,vW,vO;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.2);vec3 o=normalize(vO);'+
+ 'float n=fbm(o*2.2+vec3(0.,uTime*.06,uTime*.03));float sw=fbm(o*4.+n*2.-uTime*.05);float b=smoothstep(.45,.75,sw);vec3 col=mix(uC*.10,uC*.72,b*(.6+.4*n));col+=uC2*pow(b,3.)*.25;col*=.55+.45*ndv;col+=mix(uC,vec3(1.),.35)*fr*(.5+.5*uHover);col*=(.78+.42*uHover)*uDim;gl_FragColor=vec4(col,1.);}'})}
+function shellMat(c,op,inner){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uC:{value:new THREE.Color(c)},uHover:{value:0},uOp:{value:op||1},uIn:{value:inner||0},uBk:{value:0}},
+ vertexShader:'varying vec3 vN,vW;void main(){vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
+ fragmentShader:'uniform vec3 uC;uniform float uHover,uOp,uIn,uBk;varying vec3 vN,vW;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);if(uBk>.5)N=-N;float ndv=clamp(dot(N,V),0.,1.),fr=pow(1.-ndv,2.4),rim=pow(1.-ndv,6.);vec3 L=normalize(vec3(-.4,.8,.45));float sp=pow(max(dot(reflect(-L,N),V),0.),60.);float low=smoothstep(.1,-.9,N.y)*uIn;float sh=pow(max(dot(reflect(-L,N),V),0.),8.)*uIn;vec3 R=reflect(-V,N);float bandR=smoothstep(.14,0.,abs(R.y-.22))*uIn*(.4+.6*fr);float win=pow(max(dot(R,normalize(vec3(-.5,.55,.65))),0.),24.)*uIn;vec3 col=uC*(.06+fr*.8)+mix(uC,vec3(1.),.5)*rim*.9+vec3(1.)*sp*.6+uC*low*.35+vec3(1.)*sh*.12+vec3(.94,.78,.45)*bandR*.35+vec3(1.)*win*.5;float a=(.08+fr*.5+rim*.3+sp*.5+low*.06+sh*.06+bandR*.12+win*.3)*(.85+.3*uHover)*uOp;gl_FragColor=vec4(col,min(a,.95));}'})}
+// ================= Destination interiors (rebuilt to the approved reference) =================
+// Each destination is a complete miniature world suspended in glass: a floating island with a jagged, faceted
+// rock underside and glowing mineral veins, light falls spilling from its rim, curved lathe-turned spires,
+// hovering saucer platforms, thin bridges and orbital pathways. Built in units for a radius-10 sphere, then scaled.
+const INTERIORS={};
+const latheN=(pr,seg)=>new THREE.LatheGeometry(pr.map(q=>new THREE.Vector2(q[0],q[1])),seg);
+const flat=g=>{const q=g.toNonIndexed();q.computeVertexNormals();return q};
+const SEG=coarse?10:16;
+const UNIT={box:new THREE.BoxGeometry(1,1,1).translate(0,.5,0),disc:new THREE.CylinderGeometry(1,1,1,64).translate(0,.5,0),
+ needle:latheN([[.001,0],[.5,0],[.46,.08],[.3,.3],[.27,.55],[.17,.78],[.06,.94],[.003,1]],SEG),
+ flare:latheN([[.001,0],[.45,0],[.28,.2],[.24,.5],[.4,.7],[.42,.74],[.2,.8],[.12,.92],[.003,1]],SEG),
+ spindle:latheN([[.001,0],[.3,0],[.4,.15],[.5,.4],[.35,.62],[.18,.8],[.08,.93],[.003,1]],SEG),
+ tiered:latheN([[.001,0],[.5,0],[.5,.05],[.38,.06],[.36,.3],[.46,.32],[.46,.35],[.3,.36],[.28,.62],[.36,.64],[.36,.66],[.2,.67],[.16,.9],[.003,1]],SEG),
+ crystal:flat(latheN([[.001,0],[.32,.06],[.5,.2],[.5,.72],[.003,1]],6)),
+ terrace:latheN([[.001,-.12],[.85,-.1],[1,0],[.97,.05],[.001,.06]],48),
+ saucer:latheN([[.001,-.28],[.5,-.2],[1,0],[.96,.07],[.4,.12],[.001,.14]],24),
+ dome:new THREE.SphereGeometry(.42,14,8,0,Math.PI*2,0,Math.PI/2),
+ stem:new THREE.CylinderGeometry(.05,.05,1,6).translate(0,-.5,0),
+ rimT:new THREE.TorusGeometry(1,.035,5,40),
+ rock:(()=>{const g=latheN([[.001,0],[1,0],[1,-.05],[.9,-.14],[.74,-.28],[.56,-.46],[.38,-.64],[.2,-.82],[.06,-.96],[.003,-1]],32),p=g.attributes.position;
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i);if(y<-.03){const n=noise3(x*2.2+3,y*3,z*2.2),k=1+n*.18;p.setXYZ(i,x*k,y+noise3(x*4,y*4+7,z*4)*.05,z*k)}}return flat(g)})()};
+// Architecture: dark metallic base rising into the destination color, glowing floor bands, lit roofs, rim light.
+function archMat(base,c,hi,hov,o){o=o||{};return new THREE.ShaderMaterial({side:THREE.DoubleSide,uniforms:{uBase:{value:new THREE.Color(base)},uC:{value:new THREE.Color(c)},uHi:{value:new THREE.Color(hi)},uHover:hov,uLvl:{value:o.lvl||1},uBand:{value:o.band==null?2.4:o.band},uSp:{value:o.spec==null?1:o.spec}},
+ vertexShader:'varying vec3 vN,vW;varying float vH,vY;void main(){vec4 lp=vec4(position,1.);vec3 n=normal;\n#ifdef USE_INSTANCING\nlp=instanceMatrix*lp;n=mat3(instanceMatrix)*n;\n#endif\nvH=position.y;vY=lp.y;vec4 w=modelMatrix*lp;vW=w.xyz;vN=normalize(mat3(modelMatrix)*n);gl_Position=projectionMatrix*viewMatrix*w;}',
+ fragmentShader:'uniform vec3 uBase,uC,uHi;uniform float uHover,uLvl,uBand,uSp;varying vec3 vN,vW;varying float vH,vY;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float ndv=abs(dot(N,V)),fr=pow(1.-ndv,2.),side=1.-abs(N.y);float fl=uBand>0.?smoothstep(.80,.88,fract(vY*uBand))*side:0.;float top=smoothstep(.55,.95,N.y);vec3 L=normalize(vec3(-.4,.8,.5));float dif=.55+.45*max(dot(N,L),0.);vec3 col=mix(uBase,uC*.5,clamp(vH*.8+.1,0.,1.))*dif;col+=uC*fl*(.6+.6*vH);col+=uHi*top*(.4+.6*vH)*.9*uSp;col+=uHi*fr*.45*(.3+.7*vH)*uSp;col*=uLvl*1.5*(1.+.3*uHover);gl_FragColor=vec4(col,1.);}'})}
+// Floating-island rock: faceted dark stone, colored rim light, glowing mineral veins, bright lip at the top edge.
+function rockMat(base,c,hi,hov){return new THREE.ShaderMaterial({side:THREE.DoubleSide,uniforms:{uBase:{value:new THREE.Color(base)},uC:{value:new THREE.Color(c)},uHi:{value:new THREE.Color(hi)},uHover:hov},
+ vertexShader:'varying vec3 vN,vW,vP;void main(){vec4 lp=vec4(position,1.);vec3 n=normal;\n#ifdef USE_INSTANCING\nlp=instanceMatrix*lp;n=mat3(instanceMatrix)*n;\n#endif\nvP=position;vec4 w=modelMatrix*lp;vW=w.xyz;vN=normalize(mat3(modelMatrix)*n);gl_Position=projectionMatrix*viewMatrix*w;}',
+ fragmentShader:'uniform vec3 uBase,uC,uHi;uniform float uHover;varying vec3 vN,vW,vP;void main(){vec3 N=normalize(vN),V=normalize(cameraPosition-vW);float fr=pow(1.-abs(dot(N,V)),2.2);float y=vP.y;vec3 L=normalize(vec3(-.4,.6,.6));float dif=.35+.65*max(dot(N,L),0.);'+
+ 'float vein=smoothstep(.9,1.,abs(sin(vP.x*9.+vP.y*14.)*sin(vP.z*8.-vP.y*11.)));vec3 col=uBase*(.9+.6*(1.+y))*dif+uC*fr*.55+uC*vein*.5*(1.+y)+uHi*smoothstep(-.07,0.,y)*.7+uC*.12*(1.+y);col*=1.25*(1.+.3*uHover);gl_FragColor=vec4(col,1.);}'})}
+// Light falls spilling from island rims (additive, scrolling).
+function fallMat(c,hi){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,uniforms:{uTime:U.uTime,uC:{value:new THREE.Color(c)},uHi:{value:new THREE.Color(hi)}},
+ vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+ fragmentShader:'uniform float uTime;uniform vec3 uC,uHi;varying vec2 vU;void main(){float edge=smoothstep(0.,.3,vU.x)*smoothstep(1.,.7,vU.x);float s=.55+.45*sin(vU.y*26.+uTime*4.+sin(vU.x*9.)*2.);float a=pow(vU.y,1.3)*edge*s;gl_FragColor=vec4(mix(uC,uHi,vU.y*.6),a*.85);}'})}
+const _o=new THREE.Object3D();
+// q = [x,y,z, sx,sy,sz, rx,ry,rz]
+function inst(geo,mat,list,parent){const m=new THREE.InstancedMesh(geo,mat,list.length);list.forEach((q,i)=>{_o.position.set(q[0],q[1],q[2]);_o.rotation.set(q[6]||0,q[7]||0,q[8]||0);_o.scale.set(q[3],q[4],q[5]);_o.updateMatrix();m.setMatrixAt(i,_o.matrix)});parent.add(m);return m}
+const glowMat=(c,op)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op==null?.9:op,depthWrite:false,blending:THREE.AdditiveBlending});
+function glowRing(parent,r,t,c,op,y,x,z){const m=new THREE.Mesh(new THREE.TorusGeometry(r,t,6,Math.max(48,Math.round(r*24))),glowMat(c,op));m.rotation.x=Math.PI/2;m.position.set(x||0,y,z||0);parent.add(m);return m}
+function glowTube(parent,pts,r,c,op){const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),48,r,5,false),glowMat(c,op));parent.add(m);return m}
+// Island: faceted rock body + thin metallic plaza on top + glowing rim; list of [x,y,z,r,depth].
+function islands(parent,ctx,list){inst(UNIT.rock,ctx.rock,list.map(([x,y,z,r,dp])=>[x,y,z,r,dp,r,0,(x+z)*3.1,0]),parent);inst(UNIT.disc,ctx.mat({band:0,lvl:.7}),list.map(([x,y,z,r])=>[x,y,z,r*.97,.08,r*.97]),parent);for(const [x,y,z,r] of list)glowRing(parent,r*.97,.03,ctx.pal.hi,.8,y+.09,x,z)}
+// Light falls: [x,z,yTop,len,width]
+function falls(parent,ctx,list){const m=fallMat(ctx.d.c,ctx.pal.hi);for(const [x,z,y,len,w] of list){const p=new THREE.Mesh(new THREE.PlaneGeometry(w,len),m);p.position.set(x,y-len/2,z);p.rotation.y=Math.atan2(x,z);parent.add(p)}}
+// Saucer platforms: [x,y,z,r,stem]
+function saucers(parent,ctx,list,dome){const M=ctx.mat({band:0});inst(UNIT.saucer,M,list.map(q=>[q[0],q[1],q[2],q[3],q[3],q[3]]),parent);if(dome)inst(UNIT.dome,M,list.map(q=>[q[0],q[1]+q[3]*.12,q[2],q[3],q[3]*.8,q[3]]),parent);
+ inst(UNIT.rimT,glowMat(ctx.pal.hi,.9),list.map(q=>[q[0],q[1]+.01,q[2],q[3]*.97,q[3]*.97,q[3]*.97,Math.PI/2]),parent);const st=list.filter(q=>q[4]>0);if(st.length)inst(UNIT.stem,M,st.map(q=>[q[0],q[1]-q[3]*.28,q[2],1,q[4],1]),parent)}
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+function buildInterior(d,hov){const city=new THREE.Group(),pal=d.pal,ctx={d,pal,hov,anim:[],mat:o=>archMat(pal.base,d.c,pal.hi,hov,Object.assign({spec:pal.spec==null?1:pal.spec},o)),rock:rockMat(pal.base,d.c,pal.hi,hov)};
+ if(INTERIORS[d.id])INTERIORS[d.id](city,ctx);city.userData.anim=ctx.anim;city.scale.setScalar(d.r/10);return city}
+
+// Marketplace: a luxurious golden skyline - a tall central needle landmark, flared towers, tiered towers and fine
+// outer spires on a floating island; satellite islands, saucer platforms, bridges, orbital pathways, light falls.
+INTERIORS.market=(city,ctx)=>{const G='#F0C674',HI='#FFE6A0',y0=-2.4,M=ctx.mat(),MB=ctx.mat({band:3.4});
+ islands(city,ctx,[[0,y0,0,6.8,4.6],[5.9,y0+1.5,-2.4,1.5,1.9],[-5.6,y0+2.2,2.6,1.2,1.5]]);
+ inst(UNIT.disc,ctx.mat({band:0,lvl:.8}),[[0,y0+.08,0,3.7,.16,3.7],[0,y0+.24,0,2.3,.16,2.3]],city);glowRing(city,3.7,.03,HI,.85,y0+.25);glowRing(city,2.3,.03,HI,.85,y0+.41);
+ const b=y0+.4;inst(UNIT.needle,MB,[[0,b,0,1.7,8.4,1.7]],city);
+ const fl=[],ti=[],nd=[];for(let i=0;i<4;i++){const a=i/4*Math.PI*2+.4;fl.push([Math.cos(a)*1.35,b,Math.sin(a)*1.35,1.1,6+i*.4,1.1])}
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2;ti.push([Math.cos(a)*2.7,y0+.24,Math.sin(a)*2.7,.95,3.6+rand()*1.6,.95])}
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2+.26,r=4+rand()*1.9;nd.push([Math.cos(a)*r,y0+.08,Math.sin(a)*r,.55+rand()*.2,1.5+rand()*1.8,.55+rand()*.2])}
+ inst(UNIT.flare,MB,fl,city);inst(UNIT.tiered,M,ti,city);inst(UNIT.needle,M,nd,city);
+ inst(UNIT.needle,M,[[5.9,y0+1.6,-2.4,.6,2.6,.6],[6.3,y0+1.6,-1.9,.45,1.7,.45],[-5.6,y0+2.3,2.6,.5,2.1,.5]],city);
+ saucers(city,ctx,[[3.6,y0+3.8,3.2,1.15,2.6],[-3.9,y0+4.6,-2.8,1.0,3.4],[-4.6,y0+3.2,.4,.8,2.2],[2.2,y0+5.6,-4.4,.9,0],[4.8,y0+5.2,.6,.7,0]],true);
+ for(const q of [[3.6,y0+3.8,3.2],[-3.9,y0+4.6,-2.8],[2.2,y0+5.6,-4.4]])glowTube(city,[V3(0,q[1]+.6,0),V3(q[0]*.5,q[1]+1.1,q[2]*.5),V3(q[0],q[1]+.1,q[2])],.03,HI,.8);
+ glowTube(city,[V3(1.8,y0+3.2,-.8),V3(4.2,y0+2.9,-1.9),V3(5.9,y0+1.6,-2.4)],.03,G,.75);
+ const orb=glowRing(city,4.9,.025,HI,.75,y0+2.7);const orb2=glowRing(city,3.2,.02,G,.7,y0+5.2);orb2.rotation.y=.2;
+ falls(city,ctx,[[6.5*Math.cos(2.2),6.5*Math.sin(2.2),y0-.05,3.4,.9],[6.5*Math.cos(3.9),6.5*Math.sin(3.9),y0-.05,3,.7],[6.5*Math.cos(5.4),6.5*Math.sin(5.4),y0-.05,3.6,1]]);
+ const crown=glowRing(city,1.2,.03,HI,.85,b+9.3);
+ ctx.anim.push(t=>{orb.rotation.z=t*.12*motion;orb2.rotation.z=-t*.08*motion;crown.rotation.z=t*.2*motion})};
+
+// For Creators: a tall sculptural crystal centerpiece opening like a flower, layered floating terraces with their own
+// rock undersides, sweeping arches, smaller landmarks, suspended crystals, pink-violet energy ribbons and light falls.
+INTERIORS.creators=(city,ctx)=>{const VI='#9B6BFF',LA='#C8A8FF',PK='#E6A0FF',y0=-2.6,M=ctx.mat({band:3.2}),F=ctx.mat({band:0,lvl:1.15});
+ islands(city,ctx,[[0,y0,0,6.6,4.8],[3.3,y0+1.3,-1.6,2.4,1.6],[-3.4,y0+2.3,1.8,1.8,1.4],[1.2,y0+3.5,3.4,1.2,1.1]]);
+ const b=y0+.1,petals=[[0,b,0,1.5,9,1.5]];
+ for(let i=0;i<8;i++){const a=i/8*Math.PI*2,t=.28+.12*(i%2);petals.push([Math.cos(a)*.7,b,Math.sin(a)*.7,1.0,4.2+(i%3)*1.1,1.0,Math.sin(a)*t,0,-Math.cos(a)*t])}
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2+.5,t=.6;petals.push([Math.cos(a)*1.8,b,Math.sin(a)*1.8,.75,2.4+rand(),.75,Math.sin(a)*t,0,-Math.cos(a)*t])}
+ inst(UNIT.crystal,F,petals,city);
+ inst(UNIT.spindle,M,[[3.3,y0+1.4,-1.6,1,3.6,1],[-3.4,y0+2.4,1.8,.85,2.8,.85],[1.2,y0+3.6,3.4,.6,1.8,.6],[-2.2,y0+.1,-3.6,.8,2.6,.8],[4.6,y0+.1,2.2,.7,2.2,.7]],city);
+ inst(UNIT.crystal,F,[[3.9,y0+1.4,-.9,.5,1.8,.5],[-4,y0+2.4,2.4,.4,1.3,.4],[-4.6,y0+.1,-.8,.5,1.6,.5]],city);
+ // Sweeping arches around the centerpiece.
+ for(let k=0;k<3;k++){const a=k/3*Math.PI*2+.3,pts=[];for(let i=0;i<=12;i++){const t=i/12,an=a+t*1.6;pts.push(V3(Math.cos(an)*(2.6+Math.sin(t*Math.PI)*.8),b+.2+Math.sin(t*Math.PI)*5.2,Math.sin(an)*(2.6+Math.sin(t*Math.PI)*.8)))}glowTube(city,pts,.06,k===1?PK:LA,.75)}
+ // Bridges between terraces.
+ glowTube(city,[V3(1.2,y0+.2,-.6),V3(2.4,y0+1.2,-1.2),V3(3.3,y0+1.4,-1.6)],.035,LA,.8);glowTube(city,[V3(-1.2,y0+.2,.6),V3(-2.4,y0+1.7,1.3),V3(-3.4,y0+2.4,1.8)],.035,PK,.8);glowTube(city,[V3(-2.6,y0+2.5,2.4),V3(-.6,y0+3.6,3.1),V3(1.2,y0+3.6,3.4)],.03,VI,.8);
+ // Pink ribbon spiralling up the centerpiece.
+ const hp=[];for(let i=0;i<=44;i++){const t=i/44,a=t*Math.PI*6;hp.push(V3(Math.cos(a)*(1.7-.9*t),b+.6+t*8,Math.sin(a)*(1.7-.9*t)))}glowTube(city,hp,.035,PK,.8);
+ // Suspended crystals.
+ const cr=new THREE.Group();city.add(cr);const cl=[];for(let i=0;i<10;i++){const a=i/10*Math.PI*2,r=4.6+rand()*1.6;cl.push([Math.cos(a)*r,y0+4.2+rand()*3,Math.sin(a)*r,.3,.9+rand()*.6,.3,rand()*.4,rand()*3,rand()*.4])}
+ inst(new THREE.OctahedronGeometry(1,0),glowMat(LA,.75),cl,cr);inst(new THREE.OctahedronGeometry(1,0),glowMat(PK,.6),cl.slice(0,4).map(q=>[q[0]*.75,q[1]+1.1,q[2]*.75,.17,.5,.17]),cr);
+ saucers(city,ctx,[[-4.4,y0+4.6,-1.6,.8,2],[4.2,y0+5.3,1.4,.7,0]],true);
+ // Energy currents.
+ const cur=[];for(let k=0;k<(coarse?5:8);k++){const pts=[],ph=rand()*6.28,rr=2.6+rand()*2.4;for(let i=0;i<=8;i++){const t=i/8,a=ph+t*Math.PI*2.4;pts.push(V3(Math.cos(a)*rr,y0+1.5+t*5.5+Math.sin(t*6+ph)*.6,Math.sin(a)*rr))}cur.push(pts)}
+ const en=new THREE.Points(curveCloud(cur,coarse?30:44,i=>i%3===0?0:2),pulseMat(1.6,3));en.frustumCulled=true;city.add(en);
+ falls(city,ctx,[[6.3*Math.cos(1.9),6.3*Math.sin(1.9),y0-.05,3.6,.9],[6.3*Math.cos(4.4),6.3*Math.sin(4.4),y0-.05,3.2,.8]]);
+ ctx.anim.push(t=>{cr.rotation.y=-t*.07*motion;cr.position.y=Math.sin(t*.5)*.2*motion})};
+
+// Agent Hub: an elegant central AI tower with a luminous ringed intelligence core, slender technological spires,
+// suspended saucer platforms, bridges, floating holographic panels, cyan energy channels and data streams.
+INTERIORS.agents=(city,ctx)=>{const BL='#7FE0FF',CY='#B8F3FF',y0=-2.4,M=ctx.mat({band:3.6}),M2=ctx.mat({band:5});
+ islands(city,ctx,[[0,y0,0,6.8,4.4],[-5.8,y0+1.8,-2.2,1.4,1.7],[5.4,y0+2.5,2.8,1.1,1.4]]);
+ inst(UNIT.disc,ctx.mat({band:0,lvl:.8}),[[0,y0+.08,0,3.6,.16,3.6]],city);
+ {const h=new THREE.Mesh(new THREE.TorusGeometry(3.6,.035,4,6),glowMat(CY,.9));h.rotation.x=Math.PI/2;h.rotation.z=Math.PI/6;h.position.y=y0+.25;city.add(h)}
+ inst(UNIT.box,glowMat(BL,.6),[0,1,2,3,4,5].map(i=>{const a=i/6*Math.PI*2;return[Math.cos(a)*5,y0+.1,Math.sin(a)*5,2.2,.02,.05,0,-a,0]}),city);
+ const b=y0+.24;inst(UNIT.needle,M2,[[0,b,0,1.5,9.2,1.5]],city);
+ const ring=[],outer=[];for(let i=0;i<8;i++){const a=i/8*Math.PI*2+Math.PI/8,r=2.9+(i%2)*.5;ring.push([Math.cos(a)*r,b,Math.sin(a)*r,.75,3.8+(i%3)*1.1+rand()*.6,.75])}
+ for(let i=0;i<8;i++){const a=i/8*Math.PI*2,r=4.9+rand()*.9;outer.push([Math.cos(a)*r,y0+.08,Math.sin(a)*r,.55,1.4+rand()*1.6,.55])}
+ inst(UNIT.needle,M,ring.filter((q,i)=>i%2===0),city);inst(UNIT.tiered,M,ring.filter((q,i)=>i%2===1),city);inst(UNIT.spindle,M,outer,city);
+ inst(UNIT.needle,M,[[-5.8,y0+1.9,-2.2,.55,2.4,.55],[5.4,y0+2.6,2.8,.45,1.9,.45]],city);
+ // Ringed intelligence core on the central tower.
+ const core=new THREE.Group();core.position.y=b+5.4;city.add(core);
+ const r1=new THREE.Mesh(new THREE.TorusGeometry(1.5,.09,8,64),glowMat(CY,.95));r1.rotation.x=Math.PI/2;core.add(r1);const r2=new THREE.Mesh(new THREE.TorusGeometry(1.15,.05,8,64),glowMat(BL,.85));r2.rotation.x=1.2;core.add(r2);
+ core.add(new THREE.Mesh(new THREE.IcosahedronGeometry(.5,2),new THREE.MeshBasicMaterial({color:CY})));const ch=halo(BL,4.6,.4);core.add(ch);
+ core.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(.95,1)),new THREE.LineBasicMaterial({color:CY,transparent:true,opacity:.7,depthWrite:false,blending:THREE.AdditiveBlending})));
+ ring.forEach((q,i)=>{const h=b+q[4]*.62;glowTube(city,[V3(q[0]*.15,h+.3,q[2]*.15),V3(q[0]*.55,h+.15,q[2]*.55),V3(q[0],h,q[2])],.025,i%2?BL:CY,.75)});
+ saucers(city,ctx,[[3.9,y0+4.4,-3,1.05,2.8],[-4.1,y0+5,2.4,.95,3.2],[-1.6,y0+6.4,-4.4,.7,0],[4.6,y0+6,1.2,.6,0]],false);
+ const tex=[holoTexture(1),holoTexture(2)],holo=new THREE.Group();city.add(holo);
+ for(let i=0;i<4;i++){const a=i/4*Math.PI*2+.4,m=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.95),new THREE.MeshBasicMaterial({map:tex[i%2],transparent:true,opacity:.8,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));m.position.set(Math.cos(a)*5.6,y0+2.8+(i%2)*.9,Math.sin(a)*5.6);m.rotation.y=-a+Math.PI/2;holo.add(m)}
+ const ds=ring.map(q=>{const t=V3(q[0],q[1]+q[4]+.1,q[2]),c=V3(0,b+5.4,0);return[t,V3(q[0]*.4,(t.y+c.y)/2+.8,q[2]*.4),c]});const st=new THREE.Points(curveCloud(ds,coarse?26:38,()=>0),pulseMat(1.7,3));st.frustumCulled=true;city.add(st);
+ falls(city,ctx,[[6.5*Math.cos(1.2),6.5*Math.sin(1.2),y0-.05,3.4,.8],[6.5*Math.cos(3.4),6.5*Math.sin(3.4),y0-.05,3,.7]]);
+ ctx.anim.push(t=>{r1.rotation.z=t*.3*motion;r2.rotation.y=t*.4*motion;core.position.y=b+5.4+Math.sin(t*.8)*.12*motion;holo.rotation.y=t*.05*motion;ch.material.opacity=.34+.1*Math.sin(t*1.05)})};
+let hubBuilt=false;const hub={spheres:[],labels:[]};
+function buildHub(){if(hubBuilt)return;hubBuilt=true;
+ hubScene.add(new THREE.HemisphereLight('#6276C4','#141C34',1.35));const k=new THREE.DirectionalLight('#E4ECFF',1.15);k.position.set(-30,50,40);hubScene.add(k);const fill=new THREE.DirectionalLight('#7FE0FF',.35);fill.position.set(25,14,60);hubScene.add(fill);
+ // Environment reflections from the cosmos.
+ const pm=new THREE.PMREMGenerator(renderer),tmp=new THREE.Scene(),prev=cosmos.parent;tmp.add(cosmos);hub.env=pm.fromScene(tmp,0,.1,2000).texture;pm.dispose();if(prev)prev.add(cosmos);
+ const floorTex=(()=>{const N=1024,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d'),C=N/2,k=C/46;x.fillStyle='#fff';x.fillRect(0,0,N,N);
+  for(let i=0;i<2600;i++){const a=rand()*6.283,r=rand()*C,w=4+rand()*26;x.fillStyle='rgba(150,165,200,'+(.03+rand()*.05)+')';x.beginPath();x.ellipse(C+Math.cos(a)*r,C+Math.sin(a)*r,w,w*.35,a,0,6.283);x.fill()}
+  x.strokeStyle='rgba(60,70,100,.55)';x.lineWidth=1.4;for(let r=6;r<46;r+=5){x.beginPath();x.arc(C,C,r*k,0,6.283);x.stroke()}
+  for(let r=6;r<46;r+=5){const n=Math.max(8,Math.round(r*1.1));for(let i=0;i<n;i++){const a=(i+(r/5)%2*.5)/n*6.283;x.beginPath();x.moveTo(C+Math.cos(a)*r*k,C+Math.sin(a)*r*k);x.lineTo(C+Math.cos(a)*(r+5)*k,C+Math.sin(a)*(r+5)*k);x.stroke()}}
+  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t})();
+ hub.floorMat=new THREE.MeshStandardMaterial({map:floorTex,color:'#11182B',metalness:.5,roughness:.22,envMap:hub.env,envMapIntensity:1.6,transparent:true,opacity:.62});
+ const floor=new THREE.Mesh(new THREE.CircleGeometry(46,128),hub.floorMat);floor.rotation.x=-Math.PI/2;floor.renderOrder=-1;hubScene.add(floor);
+ const lab=$('labels');
+ for(const d of DEST){const g=new THREE.Group();g.position.set(d.x,d.y,d.z);hubScene.add(g);
+  const hov={value:0},s=buildInterior(d,hov);g.add(s);
+  const shell=new THREE.Mesh(new THREE.SphereGeometry(d.r,64,48),shellMat(d.c,.55,1));shell.renderOrder=2;g.add(shell);
+  const inner=new THREE.Mesh(shell.geometry,shellMat(d.c,.45,1));inner.material.side=THREE.BackSide;inner.material.uniforms.uBk.value=1;inner.renderOrder=1;g.add(inner);
+  const mp=[],mc=[],ms=[],c1=new THREE.Color(d.c),c2=new THREE.Color(d.c2);for(let i=0;i<(coarse?80:130);i++){const v=new THREE.Vector3(randn(),randn(),randn()).normalize().multiplyScalar(d.r*(.84+rand()*.12)),k=rand()<.3?c2:c1;mp.push(v.x,v.y,v.z);mc.push(k.r,k.g,k.b);ms.push(.1+rand()*.22)}const motes=pointCloud(mp,mc,ms,pointsMat({opacity:.7}));g.add(motes);
+  const rk=d.id==='creators'?.88:1;const rings=[[1.32*rk,.05,'#F0C674',.75,[Math.PI/2-.22,0,.06]],[1.46*rk,.03,d.pal.hi,.3,[Math.PI/2-.16,0,-.08]]].map(([k,t,c,op,r])=>{const m=new THREE.Mesh(new THREE.TorusGeometry(d.r*k,t,8,200),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));m.rotation.set(r[0],r[1],r[2]);g.add(m);return m});const ring=rings[0];
+  const h=halo(d.c,d.r*2.6,.12);g.add(h);
+  const L=new THREE.PointLight(d.c,2.4,90,2);g.add(L);
+  // Soft pool of the destination's color on the floor beneath it (fake indirect light).
+  const pool=new THREE.Mesh(new THREE.PlaneGeometry(d.r*3.4,d.r*3.4),new THREE.MeshBasicMaterial({map:glowTex,color:d.c,transparent:true,opacity:.45,depthWrite:false,blending:THREE.AdditiveBlending}));pool.rotation.x=-Math.PI/2;pool.position.set(d.x,.05,d.z+d.r*.35);hubScene.add(pool);
+  const land=new THREE.Mesh(new THREE.RingGeometry(7.5,7.8,128),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.5,depthWrite:false}));land.rotation.x=-Math.PI/2;land.position.set(d.x,.03,d.z);hubScene.add(land);
+  const el=document.createElement('div');el.className='lbl';el.textContent=d.name;lab.appendChild(el);
+  const mirror=s.clone(true);{const drop=[];mirror.traverse(o=>{if(o.isPoints||o.isLine||o.isLineSegments||o.isSprite||(o.material&&o.material.blending===THREE.AdditiveBlending))drop.push(o)});drop.forEach(o=>o.parent&&o.parent.remove(o))}mirror.scale.y=-1;mirror.position.set(d.x,-d.y,d.z);hubScene.add(mirror);
+  hub.spheres.push({d,g,s,shell,ring,rings,h,L,el,mirror,u:{uHover:hov},su:shell.material.uniforms,hover:0,ph:rand()*6.28})}
+ const cg=new THREE.Group();cg.position.set(CORE.x,CORE.y,CORE.z);hubScene.add(cg);
+ const coreIn=new THREE.Mesh(new THREE.SphereGeometry(CORE.r*.36,48,32),energyMat('#7FE0FF','#F0C674'));cg.add(coreIn);
+ const coreShell=new THREE.Mesh(new THREE.SphereGeometry(CORE.r,64,48),shellMat('#7FE0FF',.85));coreShell.renderOrder=2;cg.add(coreShell);
+ (()=>{const cs=[];for(let i=0;i<(coarse?26:40);i++){const pts=[];let v=new THREE.Vector3(randn(),randn(),randn()).normalize().multiplyScalar(CORE.r*.4);pts.push(v.clone());for(let k=0;k<3;k++){v=v.clone().add(new THREE.Vector3(randn(),randn(),randn()).multiplyScalar(CORE.r*.28));if(v.length()>CORE.r*.88)v.setLength(CORE.r*.88);pts.push(v)}cs.push(pts)}
+  const pc=new THREE.Points(curveCloud(cs,coarse?20:28,()=>1),pulseMat(1.75,4.6));pc.frustumCulled=true;pc.renderOrder=1;cg.add(pc);
+  const lp=[];for(const c of cs){const q=new THREE.CatmullRomCurve3(c).getPoints(12);for(let j=0;j<q.length-1;j++)lp.push(q[j],q[j+1])}const lw=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lp),new THREE.LineBasicMaterial({color:'#F0C674',transparent:true,opacity:.45,depthWrite:false,blending:THREE.AdditiveBlending}));lw.renderOrder=1;cg.add(lw)})();
+ (()=>{const R=CORE.r,np=[],nc=[],ns=[],seg=[],lay=[];for(const [k,n] of [[.52,coarse?24:36],[.78,coarse?36:54]]){const L=[];for(let i=0;i<n;i++){const y=1-2*(i+.5)/n,r=Math.sqrt(1-y*y),a=i*2.39996+k*3,v=new THREE.Vector3(Math.cos(a)*r,y,Math.sin(a)*r).multiplyScalar(R*k);L.push(v);np.push(v.x,v.y,v.z);const col=rand()<.55?GOLD:BLUE;nc.push(col[0],col[1],col[2]);ns.push(R*(.035+rand()*.03))}lay.push(L)}
+  const nearest=(v,list,skip)=>{let b=null,bd=1e9;for(const u of list){if(u===skip)continue;const d=u.distanceTo(v);if(d<bd){bd=d;b=u}}return b};
+  for(const v of lay[0])seg.push(v.clone().setLength(R*.36),v);for(const v of lay[1])seg.push(nearest(v,lay[0]),v,v,nearest(v,lay[1],v));
+  const web=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg),new THREE.LineBasicMaterial({color:'#F0C674',transparent:true,opacity:.42,depthWrite:false,blending:THREE.AdditiveBlending}));web.renderOrder=1;cg.add(web);
+  const nodes=pointCloud(np,nc,ns,pointsMat({opacity:.95}));nodes.renderOrder=1;cg.add(nodes)})();
+ const coreHalo=halo('#7FE0FF',CORE.r*4.2,.3);cg.add(coreHalo);const coreLight=new THREE.PointLight('#9FE3FF',1.1,34,2);cg.add(coreLight);hub.core=cg;hub.coreFx={shell:coreShell.material.uniforms,halo:coreHalo,light:coreLight};
+ const beam=new THREE.Mesh(new THREE.CylinderGeometry(.28,.5,CORE.y-CORE.r-.56,24,1,true),new THREE.MeshBasicMaterial({color:'#7FE0FF',transparent:true,opacity:.14,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));beam.position.set(CORE.x,.56+(CORE.y-CORE.r-.56)/2,CORE.z);hubScene.add(beam);
+ const cm=new THREE.Mesh(coreIn.geometry,energyMat('#7FE0FF','#F0C674',.55,THREE.DoubleSide));cm.scale.y=-1;cm.position.set(CORE.x,-CORE.y,CORE.z);hubScene.add(cm);hub.coreMirror=cm;
+ const ped=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.8,.55,64),new THREE.MeshStandardMaterial({color:'#232A4A',metalness:.5,roughness:.36,envMap:hub.env}));ped.position.y=.275;hubScene.add(ped);
+ const rim=new THREE.Mesh(new THREE.TorusGeometry(4.22,.04,8,128),new THREE.MeshBasicMaterial({color:'#F0C674'}));rim.rotation.x=Math.PI/2;rim.position.y=.57;hubScene.add(rim);
+ buildArchitecture();
+ buildHidden();
+ trueColors(hubScene);
+}
+function trueColors(root){root.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];for(const m of ms){if(m.userData.lin||!(m.isMeshBasicMaterial||m.isLineBasicMaterial||m.isSpriteMaterial))continue;if(m.color&&!m.vertexColors)m.color.convertSRGBToLinear();m.userData.lin=1}})}
+
+// ================= Hub architecture: colonnade, rings, floor inlays, pathways, holograms, neural links =================
+const HUB_R=44,GAP_ANGLES=[Math.atan2(34,-62),Math.atan2(34,62),Math.atan2(-80,0)]; // openings toward the hidden neural areas
+function ribbon(curve,w,n,y){const pos=[],idx=[];for(let i=0;i<=n;i++){const u=i/n,p=curve.getPointAt(u),t=curve.getTangentAt(u),l=Math.hypot(t.x,t.z)||1,sx=-t.z/l*w/2,sz=t.x/l*w/2;pos.push(p.x+sx,y,p.z+sz,p.x-sx,y,p.z-sz);if(i<n){const a=i*2;idx.push(a,a+2,a+1,a+1,a+2,a+3)}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return g}
+function edgeGlow(curve,w,y,parent,op){const gw=1.45,mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,uniforms:{uOp:{value:op||.3}},vertexShader:'attribute float aSide;varying float vS;void main(){vS=aSide;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'uniform float uOp;varying float vS;void main(){float a=pow(1.-abs(vS),2.);gl_FragColor=vec4(.941,.776,.455,a*uOp);}'});
+ for(const sd of [-1,1]){const pos=[],side=[],idx=[],n=80;for(let i=0;i<=n;i++){const u=i/n,p=curve.getPointAt(u),t=curve.getTangentAt(u),l=Math.hypot(t.x,t.z)||1,nx=-t.z/l,nz=t.x/l,ex=p.x-nx*w/2*sd,ez=p.z-nz*w/2*sd;pos.push(ex+nx*gw/2,y,ez+nz*gw/2,ex-nx*gw/2,y,ez-nz*gw/2);side.push(1,-1);if(i<n){const a=i*2;idx.push(a,a+2,a+1,a+1,a+2,a+3)}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aSide',new THREE.Float32BufferAttribute(side,1));g.setIndex(idx);parent.add(new THREE.Mesh(g,mat))}}
+function edgeTubes(curve,w,y,mat,parent){for(const sd of [-1,1]){const pts=[];for(let i=0;i<=48;i++){const u=i/48,p=curve.getPointAt(u),t=curve.getTangentAt(u),l=Math.hypot(t.x,t.z)||1;pts.push(new THREE.Vector3(p.x-t.z/l*w/2*sd,y,p.z+t.x/l*w/2*sd))}parent.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),140,.042,5,false),mat))}}
+function flatRing(r,w,color,op,y){const m=new THREE.Mesh(new THREE.RingGeometry(r,r+w,200,1),new THREE.MeshBasicMaterial({color,transparent:true,opacity:op,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=y||.02;return m}
+function holoTexture(variant){const c=document.createElement('canvas');c.width=512;c.height=320;const x=c.getContext('2d'),B='rgba(127,224,255,',G='rgba(240,198,116,';
+ x.strokeStyle=B+'.55)';x.lineWidth=2;x.beginPath();x.moveTo(24,8);x.lineTo(488,8);x.lineTo(504,24);x.lineTo(504,296);x.lineTo(488,312);x.lineTo(24,312);x.lineTo(8,296);x.lineTo(8,24);x.closePath();x.stroke();
+ x.strokeStyle=B+'.12)';x.lineWidth=1;for(let i=40;i<512;i+=32){x.beginPath();x.moveTo(i,20);x.lineTo(i,300);x.stroke()}for(let j=40;j<320;j+=32){x.beginPath();x.moveTo(20,j);x.lineTo(492,j);x.stroke()}
+ if(variant===0){x.lineWidth=3;for(let k=0;k<3;k++){x.strokeStyle=(k===1?G:B)+(.75-k*.15)+')';x.beginPath();x.arc(150,160,90-k*22,-.6+k*.8,2.4+k*.9);x.stroke()}x.fillStyle=G+'.8)';x.beginPath();x.arc(150,160,6,0,6.283);x.fill();
+  for(let i=0;i<9;i++){const h=30+((i*37)%110);x.fillStyle=(i%3===0?G:B)+'.55)';x.fillRect(300+i*20,250-h,10,h)}}
+ else if(variant===1){const pts=[];for(let i=0;i<14;i++)pts.push([60+((i*97)%400),50+((i*61)%220)]);x.lineWidth=1.2;for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const d=Math.hypot(pts[i][0]-pts[j][0],pts[i][1]-pts[j][1]);if(d<130){x.strokeStyle=B+(.5-d/300)+')';x.beginPath();x.moveTo(pts[i][0],pts[i][1]);x.lineTo(pts[j][0],pts[j][1]);x.stroke()}}
+  pts.forEach((q,i)=>{x.fillStyle=(i%4===0?G:B)+'.9)';x.beginPath();x.arc(q[0],q[1],i%4===0?6:4,0,6.283);x.fill()})}
+ else{x.lineWidth=2.5;x.strokeStyle=B+'.7)';x.beginPath();for(let i=0;i<=440;i++){const y=160+Math.sin(i*.045)*50*Math.sin(i*.011)+Math.sin(i*.19)*8;i?x.lineTo(36+i,y):x.moveTo(36,y)}x.stroke();
+  x.strokeStyle=G+'.7)';x.beginPath();for(let i=0;i<=440;i++){const y=220+Math.sin(i*.03+1)*28;i?x.lineTo(36+i,y):x.moveTo(36,y)}x.stroke();x.fillStyle=G+'.75)';for(let i=0;i<5;i++)x.fillRect(40+i*28,40,18,6)}
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t}
+function buildArchitecture(){
+ const A=hub.arch={holos:[],rings:[]};
+ const obsidian=new THREE.MeshStandardMaterial({color:'#232A4A',metalness:.5,roughness:.38,envMap:hub.env});
+ const goldLine=new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.85});
+ // Outer rim of the floor.
+ const rimFloor=new THREE.Mesh(new THREE.RingGeometry(46,49,160,1),obsidian);rimFloor.rotation.x=-Math.PI/2;rimFloor.position.y=.01;hubScene.add(rimFloor);
+ hubScene.add(flatRing(45.9,.1,'#F0C674',.7,.03));
+ // Colonnade framing the open sky, with openings toward the hidden areas.
+ const angles=[];for(let i=0;i<24;i++){const a=(i+.5)/24*Math.PI*2;if(GAP_ANGLES.some(g=>Math.abs(Math.atan2(Math.sin(a-g),Math.cos(a-g)))<.25))continue;angles.push(a)}
+ const H=26,pil=new THREE.InstancedMesh(new THREE.CylinderGeometry(.55,.75,H,12),obsidian,angles.length),strip=new THREE.InstancedMesh(new THREE.BoxGeometry(.07,H-5,.07),goldLine,angles.length),base=new THREE.InstancedMesh(new THREE.BoxGeometry(1.6,.8,1.6),obsidian,angles.length),d=new THREE.Object3D();
+ angles.forEach((a,i)=>{const cx=Math.cos(a)*HUB_R,cz=Math.sin(a)*HUB_R;d.position.set(cx,H/2,cz);d.rotation.set(0,-a,0);d.updateMatrix();pil.setMatrixAt(i,d.matrix);d.position.set(Math.cos(a)*(HUB_R-.5),H/2,Math.sin(a)*(HUB_R-.5));d.updateMatrix();strip.setMatrixAt(i,d.matrix);d.position.set(cx,.5,cz);d.updateMatrix();base.setMatrixAt(i,d.matrix)});
+ const strip2=new THREE.InstancedMesh(new THREE.BoxGeometry(.07,H-5,.07),goldLine,angles.length);angles.forEach((a,i)=>{const t=.5;d.position.set(Math.cos(a)*(HUB_R-.55)-Math.sin(a)*t,H/2,Math.sin(a)*(HUB_R-.55)+Math.cos(a)*t);d.rotation.set(0,-a,0);d.updateMatrix();strip2.setMatrixAt(i,d.matrix);d.position.set(Math.cos(a)*(HUB_R-.55)+Math.sin(a)*t,H/2,Math.sin(a)*(HUB_R-.55)-Math.cos(a)*t);d.updateMatrix();strip.setMatrixAt(i,d.matrix)});
+ hubScene.add(pil,strip,strip2,base);hub.pillars=angles.map(a=>({x:Math.cos(a)*HUB_R,z:Math.sin(a)*HUB_R,r:1.1}));
+ const cap=new THREE.InstancedMesh(new THREE.TorusGeometry(.5,.035,6,32),goldLine,angles.length);angles.forEach((a,i)=>{d.position.set(Math.cos(a)*HUB_R,H-.3,Math.sin(a)*HUB_R);d.rotation.set(Math.PI/2,0,0);d.updateMatrix();cap.setMatrixAt(i,d.matrix)});hubScene.add(cap);
+ // Monumental lintel ring and floating halo rings overhead.
+ // Layered circular bands overhead (broad dark metal with several gold trim lines), as in the reference.
+ const bandMat=obsidian.clone();bandMat.side=THREE.DoubleSide;
+ const band=(r,y,h,lines)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,240,1,true),bandMat);m.position.y=y;hubScene.add(m);for(const f of lines){const l=new THREE.Mesh(new THREE.TorusGeometry(r-.06,f[1],6,280),goldLine);l.rotation.x=Math.PI/2;l.position.y=y+f[0]*h/2;hubScene.add(l)}
+  const g=new THREE.Mesh(new THREE.TorusGeometry(r-.3,h*.28,8,220),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.1,depthWrite:false,blending:THREE.AdditiveBlending}));g.rotation.x=Math.PI/2;g.position.y=y;hubScene.add(g)};
+ band(HUB_R-.2,H+.8,3.6,[[-1,.07],[-.45,.035],[.35,.035],[1,.07]]);
+ band(38.5,35.2,2.4,[[-1,.06],[0,.03],[1,.06]]);
+ // Coherent observatory structure: arches spring between neighbouring pillars under the lintel, a gold-edged
+ // ring beam ties them together, and slender ribs sweep up to an open oculus ring that frames the sky.
+ const mergeGeos=list=>{let n=0;const nl=list.map(g=>{const q=g.index?g.toNonIndexed():g;n+=q.attributes.position.count;return q}),pos=new Float32Array(n*3),nor=new Float32Array(n*3);let o=0;for(const q of nl){pos.set(q.attributes.position.array,o*3);nor.set(q.attributes.normal.array,o*3);o+=q.attributes.position.count}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('normal',new THREE.BufferAttribute(nor,3));return g};
+ const arch=[],archGold=[],AV=(a,r,y)=>new THREE.Vector3(Math.cos(a)*r,y,Math.sin(a)*r);
+ for(let i=0;i<angles.length;i++){const a=angles[i];let db=angles[(i+1)%angles.length]-a;if(db<=0)db+=Math.PI*2;const pts=[],gp=[];for(let k=0;k<=14;k++){const t=k/14,an=a+db*t,y=H-6.5+Math.sin(t*Math.PI)*5.2;pts.push(AV(an,HUB_R,y));gp.push(AV(an,HUB_R-.34,y-.12))}
+  arch.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),28,.3,6,false));archGold.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(gp),28,.045,4,false))}
+ const RIBS=[-8,30,65,90,115,150,188].map(d=>d*Math.PI/180);
+ for(const a of RIBS){const pts=[],gp=[];for(let k=0;k<=16;k++){const t=k/16,r=(1-t)*(1-t)*HUB_R+2*(1-t)*t*40+t*t*26,y=(1-t)*(1-t)*(H+2.6)+2*(1-t)*t*44+t*t*52;pts.push(AV(a,r,y));gp.push(AV(a,r-.1,y+.42))}
+  arch.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),32,.4,6,false));archGold.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(gp),32,.05,4,false))}
+ hubScene.add(new THREE.Mesh(mergeGeos(arch),obsidian),new THREE.Mesh(mergeGeos(archGold),goldLine));
+ const beam=new THREE.Mesh(new THREE.TorusGeometry(HUB_R,.22,8,240),obsidian);beam.rotation.x=Math.PI/2;beam.position.y=9;hubScene.add(beam);
+ const beamG=new THREE.Mesh(new THREE.TorusGeometry(HUB_R-.24,.04,6,260),goldLine);beamG.rotation.x=Math.PI/2;beamG.position.y=9;hubScene.add(beamG);
+ band(26,52,1.6,[[-1,.06],[1,.06]]);
+ 
+
+ const skyAt=(h,el,dist)=>{const H=h*Math.PI/180,L=el*Math.PI/180;return new THREE.Vector3(Math.sin(H)*Math.cos(L)*dist,EYE+Math.sin(L)*dist,ENTRY.z-Math.cos(H)*Math.cos(L)*dist)},eyeV=new THREE.Vector3(0,EYE,ENTRY.z);
+ hub.sky=[];for(const [h,el,R,rz] of [[-18,31.5,64,.4],[17,31,60,-.5]]){const p=skyAt(h,el,640),g=galaxy(p.x,p.y,p.z,R,0,0,coarse?2000:3200,.9);g.lookAt(eyeV);g.rotateX(Math.PI/2-.5);g.rotateY(rz);hubScene.add(g);hub.sky.push(g);
+  const n=halo(h<0?'#9B6BFF':'#3D7BFF',R*4.4,.12);n.position.copy(skyAt(h+(h<0?-3:3),el+1,700));hubScene.add(n)}
+ for(const [h,el,r,c1,c2,atm,ring] of [[29,33,16,'#2A2F6E','#8C86C8','#7FE0FF',true],[8,28.5,7,'#3A3F7E','#7C7FB8','#9FE3FF',false],[-9,28,5,'#3B2F5E','#8E6FC0','#C8A8FF',false]]){const p=skyAt(h,el,600),pl=planet(p.x,p.y,p.z,r,c1,c2,atm,ring);hubScene.add(pl);hub.sky.push(pl)}
+ hubScene.add(flatRing(5.6,.07,'#F0C674',.8),flatRing(6.8,.05,'#FFE6A0',.6),flatRing(8.4,.06,'#F0C674',.65));
+ {const dp=[],dc=[],ds=[];for(let i=0;i<48;i++){const a=i/48*Math.PI*2;dp.push(Math.cos(a)*9.6,.08,Math.sin(a)*9.6);dc.push(GOLD[0],GOLD[1],GOLD[2]);ds.push(.28)}hubScene.add(pointCloud(dp,dc,ds,pointsMat({opacity:.9})))}
+ // Floor inlays: thin gold and blue rings.
+ hubScene.add(flatRing(12,.09,'#F0C674',.7),flatRing(40,.11,'#F0C674',.6));
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2,m=new THREE.Mesh(new THREE.BoxGeometry(.05,.01,4.5),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.3,depthWrite:false}));m.position.set(Math.cos(a)*8.6,.02,Math.sin(a)*8.6);m.rotation.y=-a+Math.PI/2;hubScene.add(m)}
+ // Elegant curved pathways with illuminated gold edges.
+ const pathMat=new THREE.MeshStandardMaterial({color:'#161D40',metalness:.55,roughness:.3,envMap:hub.env});
+ const V=(x,z)=>new THREE.Vector3(x,0,z),paths=[[V(0,40),V(2.4,30),V(-2.4,20),V(0,12.3)]].concat(DEST.map(d=>{const l=Math.hypot(d.x,d.z),ux=d.x/l,uz=d.z/l,a=12.3,b=l-8.1,px=-uz,pz=ux;return[V(ux*a,uz*a),V(ux*lerp(a,b,.33)+px*1.6,uz*lerp(a,b,.33)+pz*1.6),V(ux*lerp(a,b,.66)-px*1.4,uz*lerp(a,b,.66)-pz*1.4),V(ux*b,uz*b)]}));
+ {const posts=[],lp=[],lc=[],ls=[];for(const pts of paths){const c=new THREE.CatmullRomCurve3(pts),L=c.getLength();for(let t=2.5;t<L-1;t+=5){const u=t/L,q=c.getPointAt(u),tg=c.getTangentAt(u),l=Math.hypot(tg.x,tg.z)||1;for(const sd of [-1,1]){const x=q.x-tg.z/l*2.4*sd,z=q.z+tg.x/l*2.4*sd;posts.push([x,0,z,.09,.95,.09]);lp.push(x,1.05,z);lc.push(GOLD[0],GOLD[1],GOLD[2]);ls.push(.5)}}}
+  if(posts.length){inst(UNIT.box,obsidian,posts,hubScene);hubScene.add(pointCloud(lp,lc,ls,pointsMat({opacity:.95})))}}
+ for(const pts of paths){const c=new THREE.CatmullRomCurve3(pts);hubScene.add(new THREE.Mesh(ribbon(c,3.2,80,.015),pathMat));edgeTubes(c,3.2,.045,goldLine,hubScene);edgeGlow(c,3.2,.03,hubScene,.42)}
+ // A few holographic interfaces.
+ const holoSpots=[[-31,3.6,4,1],[31,3.6,4,2],[-13,3.4,29,0],[13,3.4,29,1]];
+ holoSpots.forEach(([x,y,z,v],i)=>{const g=new THREE.Group();g.position.set(x,y,z);g.rotation.y=Math.atan2(0-x,20-z);
+  g.add(new THREE.Mesh(new THREE.PlaneGeometry(4.2,2.6),new THREE.MeshBasicMaterial({color:'#0A1640',transparent:true,opacity:.4,depthWrite:false,side:THREE.DoubleSide})));
+  const m=new THREE.MeshBasicMaterial({map:holoTexture(v),transparent:true,opacity:.6,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});const face=new THREE.Mesh(new THREE.PlaneGeometry(4.2,2.6),m);face.position.z=.01;g.add(face);
+  const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(4.24,2.64)),new THREE.LineBasicMaterial({color:'#7FE0FF',transparent:true,opacity:.75,depthWrite:false}));edge.position.z=.02;g.add(edge);
+  const gauge=new THREE.Mesh(new THREE.RingGeometry(.62,.66,64,1,0,4.2),new THREE.MeshBasicMaterial({color:i%2?'#F0C674':'#7FE0FF',transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide}));gauge.position.set(1.3,.55,.05);g.add(gauge);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,y-1.3,6),goldLine);stem.position.y=-(y-1.3)/2-1.3;g.add(stem);hubScene.add(g);A.holos.push({g,m,gauge,y,ph:i*1.7})});
+ // Delicate neural connections from the central intelligence to each destination.
+ const curves=[];for(const d of DEST)for(const k of [0,1]){const a=new THREE.Vector3(CORE.x,CORE.y,CORE.z),b=new THREE.Vector3(d.x,d.y,d.z),m=a.clone().lerp(b,.5);m.y+=5+k*3;m.x+=(k?-1:1)*2;const dir=b.clone().sub(a).normalize();curves.push([a.clone().addScaledVector(dir,CORE.r*.9),m,b.clone().addScaledVector(dir,-d.r*.92)])}
+ const links=new THREE.Points(curveCloud(curves,coarse?90:140,i=>i%2?1:0),pulseMat(.9,10));links.frustumCulled=true;hubScene.add(links);
+ const lineMat=new THREE.LineBasicMaterial({color:'#7FE0FF',transparent:true,opacity:.22,depthWrite:false});for(const c of curves)hubScene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(c).getPoints(80)),lineMat));
+}
+// ================= Hidden neural areas beyond the colonnade =================
+const AREAS=[{id:'grove',name:'Dendrite Grove',x:-66,z:36,r:13},{id:'synapse',name:'Synapse Field',x:66,z:36,r:13},{id:'spire',name:'Memory Spire',x:0,z:-84,r:12,col:3.6}];
+for(const a of AREAS){const l=Math.hypot(a.x,a.z),dx=a.x/l,dz=a.z/l;a.ang=Math.atan2(a.z,a.x);a.gx=dx*44.5;a.gz=dz*44.5;a.bridge={ax:dx*40.5,az:dz*40.5,bx:a.x-dx*(a.r-1.2),bz:a.z-dz*(a.r-1.2)};a.wake=.12;a.found=false;a.set=[]}
+function buildHidden(){
+ const obsidian=new THREE.MeshStandardMaterial({color:'#0B1022',metalness:.65,roughness:.3,envMap:hub.env}),pathMat=new THREE.MeshStandardMaterial({color:'#121936',metalness:.55,roughness:.3,envMap:hub.env});;const goldLine=new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.85});
+ const V3=(x,y,z)=>new THREE.Vector3(x,y,z),jit=(v,k)=>v.clone().add(V3(randn()*k,randn()*k,randn()*k));
+ for(const a of AREAS){const b=a.bridge,g=new THREE.Group();hubScene.add(g);
+  // Bridge with dim gold edges and faint blue guide lights.
+  const bc=new THREE.CatmullRomCurve3([V3(b.ax,0,b.az),V3(b.bx,0,b.bz)]);g.add(new THREE.Mesh(ribbon(bc,6.4,30,.02),pathMat));
+  edgeTubes(bc,6.4,.06,new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.85}),g);edgeGlow(bc,6.4,.03,g,.45);
+  const gp=[],gc=[],gs=[],L=Math.hypot(b.bx-b.ax,b.bz-b.az);const gcol=a.id==='grove'?BLUE:a.id==='synapse'?GOLD:VIOLET,nx=-(b.bz-b.az)/L,nz=(b.bx-b.ax)/L;for(let t=0;t<=L;t+=2.2){const u=t/L;for(const sd of [-1,1]){gp.push(lerp(b.ax,b.bx,u)+nx*2.3*sd,.12,lerp(b.az,b.bz,u)+nz*2.3*sd);gc.push(gcol[0],gcol[1],gcol[2]);gs.push(.34)}}const guide=pointCloud(gp,gc,gs,pointsMat({opacity:.55}));g.add(guide);
+  // Floating platform.
+  const plat=new THREE.Mesh(new THREE.CylinderGeometry(a.r,a.r*.86,1.4,96),obsidian);plat.position.set(a.x,-.7,a.z);g.add(plat);
+  const ring=flatRing(a.r-.6,.08,a.id==='spire'?'#9B6BFF':'#F0C674',.45,.02);ring.position.x=a.x;ring.position.z=a.z;g.add(ring);
+  const glowUnder=halo(a.id==='spire'?'#9B6BFF':'#7FE0FF',a.r*2.6,.12);glowUnder.position.set(a.x,-2.5,a.z);g.add(glowUnder);
+  // Neural structures (only here, never in the open hub).
+  const curves=[],nodes={p:[],c:[],s:[]},extra=[],extraP=[];let hue=()=>0;const C=V3(a.x,0,a.z);
+  const AC=a.id==='grove'?'#7FE0FF':a.id==='synapse'?'#F0C674':'#9B6BFF',l0=Math.hypot(a.x,a.z),ux=a.x/l0,uz=a.z/l0;
+  // Gateway at the colonnade gap: two gold-edged posts, an arch and a softly pulsing marker orb in the area's color (no text).
+  {const gx=ux*43.3,gz=uz*43.3,px=-uz*4.4,pz=ux*4.4;for(const sd of [-1,1]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.32,.42,10,12),obsidian);post.position.set(gx+px*sd,5,gz+pz*sd);g.add(post);const gl=new THREE.Mesh(new THREE.BoxGeometry(.08,9.4,.08),goldLine);gl.position.set(gx+px*sd*.93,5,gz+pz*sd*.93);g.add(gl);const gb=new THREE.Mesh(new THREE.BoxGeometry(1.2,.5,1.2),obsidian);gb.position.set(gx+px*sd,.25,gz+pz*sd);g.add(gb)}
+   const ap=[];for(let i=0;i<=16;i++){const t=i/16,an=Math.PI*t;ap.push(V3(gx+px*Math.cos(an),10+Math.sin(an)*4.4,gz+pz*Math.cos(an)))}g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ap),40,.11,6,false),goldLine));
+   const orb=new THREE.Mesh(new THREE.SphereGeometry(.38,20,14),new THREE.MeshBasicMaterial({color:AC}));orb.scale.setScalar(1.6);orb.position.set(gx,16.2,gz);g.add(orb);const oh=halo(AC,7,.45);oh.position.copy(orb.position);g.add(oh);a.marker={orb,oh,y:16.2};
+   const pool=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.MeshBasicMaterial({map:glowTex,color:AC,transparent:true,opacity:.5,depthWrite:false,blending:THREE.AdditiveBlending}));pool.rotation.x=-Math.PI/2;pool.position.set(gx,.06,gz);g.add(pool);
+   {const r0=a.id==='spire'?23:12.4,ex=[];for(let i=0;i<=6;i++){const t=i/6,r=r0+(42-r0)*t,w=Math.sin(t*Math.PI)*(a.id==='spire'?0:1.8);ex.push(V3(ux*r-uz*w,0,uz*r+ux*w))}const ec=new THREE.CatmullRomCurve3(ex);g.add(new THREE.Mesh(ribbon(ec,3.6,60,.016),pathMat));edgeTubes(ec,3.6,.045,goldLine,g);edgeGlow(ec,3.6,.03,g,.42)}
+   // Floor lights in the area's color leading from the hub out through the gateway.
+   const fp=[],fc=[],fs=[],cc=new THREE.Color(AC);for(let r=(a.id==='spire'?24:13.5);r<42;r+=2.2){fp.push(ux*r,.08,uz*r);fc.push(cc.r,cc.g,cc.b);fs.push(.32)}const fl=pointCloud(fp,fc,fs,pointsMat({opacity:.75}));g.add(fl)}
+  if(a.id==='grove'){ // grove atmosphere: low blue mist and drifting fireflies
+   for(let i=0;i<4;i++){const an=i/4*6.283+.4,m=halo(i%2?'#3D7BFF':'#7FE0FF',16,.1);m.position.set(a.x+Math.cos(an)*5,1.6,a.z+Math.sin(an)*5);g.add(m);extra.push(m.material)}
+   const fp=[],fc=[],fs=[];for(let i=0;i<(coarse?90:150);i++){const an=rand()*6.283,rr=Math.sqrt(rand())*(a.r-1.5),col=rand()<.25?GOLD:BLUE;fp.push(a.x+Math.cos(an)*rr,.6+rand()*8,a.z+Math.sin(an)*rr);fc.push(col[0],col[1],col[2]);fs.push(.09+rand()*.1)}const ff=pointsMat({opacity:.9});const fly=pointCloud(fp,fc,fs,ff);g.add(fly);extraP.push(ff);a.fly=fly}
+  else if(a.id==='synapse'){ // illuminated winding path and vertical energy beams
+   const wp=[];for(let i=0;i<=10;i++){const t=i/10;wp.push(V3(a.x-uz*(t-.5)*2*(a.r-2)+ux*Math.sin(t*6.283)*3.2,.07,a.z+ux*(t-.5)*2*(a.r-2)+uz*Math.sin(t*6.283)*3.2))}const path=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(wp),80,.06,5,false),new THREE.MeshBasicMaterial({color:'#F0C674',transparent:true,opacity:.85,depthWrite:false}));g.add(path);extra.push(path.material);
+   for(let i=0;i<5;i++){const an=i/5*6.283+.3,rr=3+rand()*(a.r-6),h=5+rand()*5,bm=new THREE.Mesh(new THREE.CylinderGeometry(.06,.12,h,8,1,true),new THREE.MeshBasicMaterial({color:i%2?'#7FE0FF':'#F0C674',transparent:true,opacity:.5,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));bm.position.set(a.x+Math.cos(an)*rr,h/2,a.z+Math.sin(an)*rr);g.add(bm);extra.push(bm.material)}}
+  else{ // Memory Spire: a real vertical landmark - stepped plinth, tall tapered tower, crystal crown
+   const sm=archMat('#201532','#9B6BFF','#C8A8FF',{value:0},{band:2.2});inst(UNIT.disc,archMat('#201532','#9B6BFF','#C8A8FF',{value:0},{band:0,lvl:.8}),[[a.x,0,a.z,3.2,.3,3.2],[a.x,.3,a.z,2.4,.3,2.4]],g);
+   inst(UNIT.needle,sm,[[a.x,.6,a.z,2.6,23,2.6]],g);inst(UNIT.crystal,archMat('#201532','#9B6BFF','#E6A0FF',{value:0},{band:0,lvl:1.2}),[[a.x,22.5,a.z,1.3,3.4,1.3]],g)}
+  if(a.id==='grove'){hue=()=>rand()<.2?1:0;const depthMax=coarse?2:3;
+   const branch=(st,dir,len,dep)=>{const en=st.clone().addScaledVector(dir,len);curves.push([st,jit(st.clone().lerp(en,.5),len*.12),en]);if(dep<depthMax)for(let k=0;k<3;k++)branch(en,dir.clone().add(V3(randn()*.7,.25+rand()*.4,randn()*.7)).normalize(),len*.64,dep+1);else{nodes.p.push(en.x,en.y,en.z);nodes.c.push(BLUE[0],BLUE[1],BLUE[2]);nodes.s.push(.16)}};
+   for(let n=0;n<6;n++){const an=n/6*6.283+rand(),rr=2.5+rand()*7,so=V3(a.x+Math.cos(an)*rr,3+rand()*2.2,a.z+Math.sin(an)*rr);
+    for(let k=0;k<4;k++)branch(so,V3(randn()*.6,.8+rand()*.4,randn()*.6).normalize(),2.2+rand(),1);
+    const foot=V3(so.x+randn()*.8,0.08,so.z+randn()*.8);curves.push([so,jit(so.clone().lerp(foot,.5),.3),foot]);for(let k=0;k<3;k++){const ra=rand()*6.283;curves.push([foot,V3(foot.x+Math.cos(ra)*1.5,.06,foot.z+Math.sin(ra)*1.5),V3(foot.x+Math.cos(ra)*3.4,.05,foot.z+Math.sin(ra)*3.4)])}
+    const soma=new THREE.Mesh(new THREE.SphereGeometry(.42,24,16),new THREE.MeshBasicMaterial({color:'#9FE3FF',transparent:true,opacity:.9}));soma.position.copy(so);g.add(soma);const sh=halo('#7FE0FF',3.2,.35);sh.position.copy(so);g.add(sh);extra.push(soma.material,sh.material)}}
+  else if(a.id==='synapse'){hue=()=>rand()<.45?1:0;const N=coarse?40:64,pts=[];for(let i=0;i<N;i++){const an=rand()*6.283,rr=Math.sqrt(rand())*(a.r-2.5);pts.push(V3(a.x+Math.cos(an)*rr,1.4+rand()*8,a.z+Math.sin(an)*rr))}
+   pts.forEach((q,i)=>{const near=pts.map((o,j)=>[o.distanceTo(q),j]).filter(e=>e[1]!==i).sort((x,y)=>x[0]-y[0]).slice(0,2);for(const [,j] of near)if(j>i){const m=q.clone().lerp(pts[j],.5);m.y-=.4;curves.push([q,m,pts[j]])}const col=i%3?BLUE:GOLD;nodes.p.push(q.x,q.y,q.z);nodes.c.push(col[0],col[1],col[2]);nodes.s.push(.22+rand()*.18)})}
+  else{hue=i=>i%3===2?1:2;const H=22,seg=6;for(let st=0;st<2;st++)for(let k=0;k<seg;k++){const pts=[];for(let i=0;i<=10;i++){const t=(k+i/10)/seg,an=t*6.283*3+st*Math.PI;pts.push(V3(a.x+Math.cos(an)*3,.5+t*H,a.z+Math.sin(an)*3))}curves.push(pts)}
+   for(let y=1.5;y<H;y+=1.6){const t=(y-.5)/H,an=t*6.283*3;curves.push([V3(a.x+Math.cos(an)*3,y,a.z+Math.sin(an)*3),V3(a.x,y,a.z),V3(a.x-Math.cos(an)*3,y,a.z-Math.sin(an)*3)])}
+   for(const y of [4,9,14,19]){const m=new THREE.Mesh(new THREE.TorusGeometry(4.6,.05,6,160),new THREE.MeshBasicMaterial({color:'#9B6BFF',transparent:true,opacity:.6,depthWrite:false}));m.rotation.x=Math.PI/2;m.position.set(a.x,y,a.z);g.add(m);extra.push(m.material)}
+   const crown=halo('#9B6BFF',9,.35);crown.position.set(a.x,H+1,a.z);g.add(crown);extra.push(crown.material)}
+  const pm=pulseMat(1,10),pc=new THREE.Points(curveCloud(curves,coarse?18:26,hue),pm);pc.frustumCulled=true;g.add(pc);
+  const lm=new THREE.LineBasicMaterial({color:a.id==='spire'?'#9B6BFF':'#7FE0FF',transparent:true,opacity:.3,depthWrite:false}),lp=[];for(const c of curves){const q=new THREE.CatmullRomCurve3(c).getPoints(10);for(let i=0;i<q.length-1;i++)lp.push(q[i],q[i+1])}g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lp),lm));
+  let nm=null;if(nodes.p.length){nm=pointsMat({opacity:1});g.add(pointCloud(nodes.p,nodes.c,nodes.s,nm))}
+  const base=extra.map(m=>m.opacity);a.apply=w=>{pm.uniforms.uA.value=w;lm.opacity=.3*w;if(nm)nm.uniforms.uOp.value=w;extra.forEach((m,i)=>m.opacity=base[i]*w);extraP.forEach(m=>m.uniforms.uOp.value=w);guide.material.uniforms.uOp.value=.35+.4*w};a.apply(a.wake)}}
+let toastTimer=0;function toast(name,sub){$('toastName').textContent=name;$('toastSub').textContent=sub;$('toast').style.opacity=1;toastTimer=4}
+function animateHidden(dt){for(const a of AREAS){if(!a.apply)continue;if(a.marker){const p=.5+.5*Math.sin(time*1.2+a.x);a.marker.orb.position.y=a.marker.y+Math.sin(time*.8+a.z)*.25*motion;a.marker.oh.position.y=a.marker.orb.position.y;a.marker.oh.material.opacity=.25+.25*p}if(a.fly)a.fly.position.y=Math.sin(time*.4)*.3*motion;const d=Math.hypot(P.x-a.x,P.z-a.z),tgt=.12+.88*smooth(a.r+24,a.r+3,d);a.wake+=(tgt-a.wake)*Math.min(1,dt*1.5);a.apply(a.wake);
+  if(!a.found&&d<a.r-1&&state==='hub'){a.found=true;const n=AREAS.filter(x=>x.found).length;toast(a.name,'Hidden neural area · '+n+' of '+AREAS.length)}}
+ if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('toast').style.opacity=0}}
+function animateArchitecture(dt){const A=hub.arch;if(!A)return;A.rings.forEach((m,i)=>{m.rotation.z+=dt*(i%2?-.01:.014)*motion});
+ for(const h of A.holos){h.g.position.y=h.y+Math.sin(time*.6+h.ph)*.08*motion;h.m.opacity=.55+.06*Math.sin(time*1.3+h.ph);h.gauge.rotation.z-=dt*.5*motion}}
+// Walkable area and obstacles.
+const COLLIDE=[{x:0,z:0,r:5.4}].concat(DEST.filter(d=>d.y-d.r<9).map(d=>({x:d.x,z:d.z,r:8.2})));
+function segDist(x,z,b){const vx=b.bx-b.ax,vz=b.bz-b.az,t=clamp(((x-b.ax)*vx+(z-b.az)*vz)/(vx*vx+vz*vz),0,1);return Math.hypot(x-(b.ax+vx*t),z-(b.az+vz*t))}
+function walkable(x,z){const rr=Math.hypot(x,z),an=Math.atan2(z,x);let ok=rr<42||(rr<47&&AREAS.some(a=>Math.abs(Math.atan2(Math.sin(an-a.ang),Math.cos(an-a.ang)))<.16));if(!ok)for(const a of AREAS)if(Math.hypot(x-a.x,z-a.z)<a.r-1||segDist(x,z,a.bridge)<3.2||Math.hypot(x-a.gx,z-a.gz)<7.5){ok=true;break}if(!ok)return false;
+ for(const c of COLLIDE)if(Math.hypot(x-c.x,z-c.z)<c.r)return false;if(hub.pillars)for(const c of hub.pillars)if(Math.hypot(x-c.x,z-c.z)<c.r)return false;for(const a of AREAS)if(a.col&&Math.hypot(x-a.x,z-a.z)<a.col)return false;return true}
+
+// ================= State, input, loop =================
+let state='brain',current=brainScene,E=0,skipT=-1,idle=0;
+const rotVel={x:0,y:0},zoom={v:0,t:0};
+const P={x:ENTRY.x,z:ENTRY.z,yaw:0,pitch:.06,yawT:0,pitchT:.06,phase:0};
+const walk={x:0,y:0},keys={};
+const veil=$('veil'),fadeEl=$('fade'),dock=$('dock'),brand=$('brand'),hud=$('hud');
+const _qa=new THREE.Quaternion(),_qb=new THREE.Quaternion(),AX=new THREE.Vector3(1,0,0),AY=new THREE.Vector3(0,1,0);
+function rotateBrain(dx,dy){_qa.setFromAxisAngle(AY,dx);_qb.setFromAxisAngle(AX,dy);brain.quaternion.premultiply(_qa).premultiply(_qb)}
+function hubFov(){const a=camera.aspect;return clamp(2*Math.atan(Math.tan(32.5*Math.PI/180)/a)*180/Math.PI,46,80)}
+
+function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');brand.classList.add('hide');$('credit').classList.add('hide');$('glowT').classList.add('hide');buildHub()}
+function toHub(){renderer.toneMappingExposure=1.2;cosmos.rotation.x=.33;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.2;resetQuality()}
+function arriveHub(){state='hub';hud.hidden=false;hud.classList.remove('hide');veil.style.opacity=0;fadeEl.style.opacity=0}
+function requestSkip(){if(state==='enter'&&skipT<0)skipT=0}
+function exitHub(){if(state!=='hub')return;state='leave';E=0}
+function toBrain(){$('credit').classList.remove('hide');$('glowT').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');brand.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
+
+// Pointers: brain = 1-finger rotate + pinch zoom; hub = swipe to look.
+const cv=renderer.domElement,ptrs=new Map();let pinch0=0;
+const pinchDist=()=>{const a=[...ptrs.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};
+cv.addEventListener('pointerdown',e=>{try{cv.setPointerCapture(e.pointerId)}catch(_){}ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()});if(ptrs.size===2)pinch0=pinchDist();idle=0;rotVel.x=rotVel.y=0;requestSkip()});
+cv.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
+ if(state==='brain'){if(ptrs.size===1){const k=.0055;rotateBrain(dx*k,dy*k);rotVel.x=dx*k;rotVel.y=dy*k;idle=0}else if(ptrs.size===2){const d=pinchDist();zoom.t=clamp(zoom.t+(d-pinch0)*.0032,-.3,1);pinch0=d}}
+ else if(state==='hub'&&e.pointerId===ptrs.keys().next().value){const lk=camera.fov*Math.PI/180/innerHeight*1.05;P.yawT-=dx*lk;P.pitchT=clamp(P.pitchT-dy*lk,-.6,.65)}});
+let lastTap={t:-1e9,x:0,y:0};
+const endPtr=e=>{const p=ptrs.get(e.pointerId);if(e.type==='pointerup'&&p&&state==='brain'&&ptrs.size===1&&Math.hypot(e.clientX-p.sx,e.clientY-p.sy)<12&&performance.now()-p.t<300){const now=performance.now();if(now-lastTap.t<340&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<40){lastTap.t=-1e9;zoom.t=1;startEntrance()}else lastTap={t:now,x:e.clientX,y:e.clientY}}if(e.type==='pointerup'&&p&&state==='hub'&&Math.hypot(e.clientX-p.sx,e.clientY-p.sy)<10&&performance.now()-p.t<350)tapHub(e.clientX,e.clientY);ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0};
+cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
+cv.addEventListener('wheel',e=>{e.preventDefault();if(state==='brain')zoom.t=clamp(zoom.t-e.deltaY*.0011,-.3,1)},{passive:false});
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if(state==='brain'){if(k==='+'||k==='='||k==='e')zoom.t=clamp(zoom.t+.12,-.3,1);if(k==='-'||k==='q')zoom.t=clamp(zoom.t-.12,-.3,1);if(k==='enter')zoom.t=1}else if(state==='enter')requestSkip();else if(state==='hub'&&k==='escape')exitHub();else if(state==='hub'&&k==='enter'&&curDest)flyTo(curDest)});
+addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
+// Joystick.
+const stick=$('stick'),knob=$('knob');let stickId=null;
+function moveStick(e){const r=stick.getBoundingClientRect();let x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);const d=Math.hypot(x,y),max=36;if(d>max){x*=max/d;y*=max/d}knob.style.transform='translate('+x+'px,'+y+'px)';walk.x=x/max;walk.y=-y/max}
+stick.addEventListener('pointerdown',e=>{e.stopPropagation();stickId=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});
+stick.addEventListener('pointermove',e=>{if(e.pointerId===stickId)moveStick(e)});
+const stopStick=e=>{if(e.pointerId===stickId){stickId=null;walk.x=walk.y=0;knob.style.transform=''}};stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);
+$('exit').addEventListener('click',exitHub);$('destGo').addEventListener('click',()=>flyTo(curDest));
+
+function resize(){camera.aspect=innerWidth/innerHeight;if(current===hubScene)camera.fov=hubFov();camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);sizeBloom();fitBrain()}
+addEventListener('resize',resize);fitBrain();
+
+// Adaptive quality: lower resolution if the frame rate drops.
+let qT=-1.5,qF=0;function resetQuality(){qT=-1.5;qF=0}
+// Bloom: only bright emissive parts glow (high threshold). Rendered into an sRGB target so the custom shaders keep
+// their exact colors. Turned off automatically on slow devices, or with ?bloom=0 in the address.
+// Brain-only glow (bloom experiment, test site only). A separate half-resolution render contains ONLY the brain's bright
+// elements - neural strands, gold synapses, passing signals and the inner radiance - with the surface drawn black so it still
+// hides strands behind it. Stars, space, surface shading and the soft glow underlay are excluded, so the anatomy stays sharp.
+// That image is thresholded and blurred (tight half-res glow + wide quarter-res glow) and only the glow is added on top of the
+// normal, sharp frame. Brain screen only. Glow button toggles it; ?brainbloom=0 starts off; it switches itself off if the
+// frame rate drops.
+const brainBloom={want:!/brainbloom=0/.test(location.search)&&!/bloom=1/.test(location.search),on:false,ok:false,auto:false};
+function setupBrainBloom(){try{const bb=brainBloom,mk=()=>new THREE.WebGLRenderTarget(2,2,{type:THREE.HalfFloatType});
+ bb.src=mk();bb.h1=mk();bb.h2=mk();bb.q1=mk();bb.q2=mk();
+ bb.qs=new THREE.Scene();bb.oc=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+ const VS='varying vec2 vU;void main(){vU=uv;gl_Position=vec4(position.xy,0.,1.);}';
+ bb.blur=new THREE.ShaderMaterial({uniforms:{tS:{value:null},uD:{value:new THREE.Vector2()},uT:{value:0}},depthTest:false,depthWrite:false,vertexShader:VS,
+  fragmentShader:'uniform sampler2D tS;uniform vec2 uD;uniform float uT;varying vec2 vU;vec3 s(vec2 o){vec3 c=texture2D(tS,vU+o).rgb;if(uT>0.){float l=max(c.r,max(c.g,c.b));c*=smoothstep(uT,uT+.35,l);}return c;}'+
+  'void main(){vec3 c=s(vec2(0.))*.2270;c+=(s(uD*1.3846)+s(-uD*1.3846))*.3162;c+=(s(uD*3.2308)+s(-uD*3.2308))*.0703;gl_FragColor=vec4(c,1.);}'});
+ bb.comp=new THREE.ShaderMaterial({uniforms:{tA:{value:null},tB:{value:null},uK:{value:1}},transparent:true,depthTest:false,depthWrite:false,blending:THREE.CustomBlending,blendEquation:THREE.AddEquation,blendSrc:THREE.OneMinusDstColorFactor,blendDst:THREE.OneFactor,vertexShader:VS,
+  fragmentShader:'uniform sampler2D tA,tB;uniform float uK;varying vec2 vU;void main(){vec3 c=texture2D(tA,vU).rgb*1.98+texture2D(tB,vU).rgb*2.77;c=c/(1.+.33*max(c.r,max(c.g,c.b)));gl_FragColor=vec4(c*uK,1.);}'});
+ bb.quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),bb.blur);bb.quad.frustumCulled=false;bb.qs.add(bb.quad);
+ sizeBrainBloom();bb.ok=true;setGlow(bb.want)}catch(e){console.warn('Brain glow unavailable',e);brainBloom.ok=false}}
+function sizeBrainBloom(){const bb=brainBloom;if(!bb.src)return;const sz=renderer.getDrawingBufferSize(new THREE.Vector2()),w=Math.max(2,sz.x>>1),h=Math.max(2,sz.y>>1),qw=Math.max(2,w>>1),qh=Math.max(2,h>>1);
+ bb.src.setSize(w,h);bb.h1.setSize(w,h);bb.h2.setSize(w,h);bb.q1.setSize(qw,qh);bb.q2.setSize(qw,qh);bb.w=w;bb.h=h;bb.qw=qw;bb.qh=qh}
+function bbPass(mat,target){const bb=brainBloom;bb.quad.material=mat;renderer.setRenderTarget(target);renderer.render(bb.qs,bb.oc)}
+function setGlow(on,auto){brainBloom.on=!!on&&brainBloom.ok;brainBloom.auto=!!auto;$('glowT').textContent='Glow: '+(brainBloom.on?'On':auto?'Off (auto)':'Off')}
+function renderBrainBloom(){const bb=brainBloom,ng=neuro.group;if(!bb.on||!bb.ok||!neuro.ready||current!==brainScene||!ng)return false;
+ const hidden=[cosmos,brainHalo,crystalGroup,neuro.glowL],was=hidden.map(o=>o.visible);hidden.forEach(o=>o.visible=false);
+ neuro.U.uOnly.value=1;renderer.setClearColor(0x000000,1);renderer.setRenderTarget(bb.src);renderer.clear();renderer.render(brainScene,camera);
+ neuro.U.uOnly.value=0;renderer.setClearColor('#070914',1);hidden.forEach((o,i)=>o.visible=was[i]);
+ const B=bb.blur.uniforms;B.tS.value=bb.src.texture;B.uD.value.set(1/bb.w,0);B.uT.value=.34;bbPass(bb.blur,bb.h1);
+ B.tS.value=bb.h1.texture;B.uD.value.set(0,1/bb.h);B.uT.value=0;bbPass(bb.blur,bb.h2);
+ B.tS.value=bb.h2.texture;B.uD.value.set(2/bb.qw,0);bbPass(bb.blur,bb.q1);
+ B.tS.value=bb.q1.texture;B.uD.value.set(0,2/bb.qh);bbPass(bb.blur,bb.q2);
+ renderer.setRenderTarget(null);renderer.render(current,camera);
+ const C=bb.comp.uniforms;C.tA.value=bb.h2.texture;C.tB.value=bb.q2.texture;C.uK.value=neuro.U.uFade.value;bb.quad.material=bb.comp;
+ const ac=renderer.autoClear;renderer.autoClear=false;renderer.render(bb.qs,bb.oc);renderer.autoClear=ac;return true}
+let fpsT=0,fpsN=0;function fpsMeter(dt){if($('fps').hidden)return;fpsT+=dt;fpsN++;if(fpsT>=.5){$('fps').textContent=(fpsN/fpsT).toFixed(0)+' fps\nglow '+(brainBloom.on&&current===brainScene?'on':'off')+(brainBloom.auto?' (auto)':'');fpsT=0;fpsN=0}}
+let composer=null,renderPass=null,bloom=null;
+function setupBloom(){try{if(!THREE.EffectComposer||!THREE.UnrealBloomPass||!THREE.RenderPass||!/bloom=1/.test(location.search))return;
+ const sz=renderer.getDrawingBufferSize(new THREE.Vector2()),MS=renderer.capabilities.isWebGL2&&THREE.WebGLMultisampleRenderTarget,rt=MS?new THREE.WebGLMultisampleRenderTarget(sz.x,sz.y):new THREE.WebGLRenderTarget(sz.x,sz.y);if(MS)rt.samples=4;rt.texture.encoding=THREE.sRGBEncoding;
+ composer=new THREE.EffectComposer(renderer,rt);renderPass=new THREE.RenderPass(current,camera);bloom=new THREE.UnrealBloomPass(new THREE.Vector2(sz.x,sz.y),.55,.45,.72);composer.addPass(renderPass);composer.addPass(bloom);composer.setSize(sz.x,sz.y)}catch(e){console.warn(e);composer=null}}
+function sizeBloom(){sizeBrainBloom();if(!composer)return;const sz=renderer.getDrawingBufferSize(new THREE.Vector2());composer.setSize(sz.x,sz.y)}
+function bloomFor(){if(!bloom)return;if(current===hubScene){bloom.threshold=.7;bloom.strength=.6;bloom.radius=.45}else if(current===tunnelScene){bloom.threshold=.5;bloom.strength=.75;bloom.radius=.5}else{bloom.threshold=.78;bloom.strength=.42;bloom.radius=.4}}
+function quality(dt){fpsMeter(dt);const bbActive=brainBloom.on&&current===brainScene&&neuro.ready;if(!bbActive&&composer===null&&dprStep>=DPR_STEPS.length-1)return;qT+=dt;if(qT<0)return;qF++;if(qT>=2.5){const fps=qF/qT;qT=0;qF=0;if(fps<40&&bbActive){setGlow(false,true);return}if(fps<42&&composer){composer=null;return}if(fps<42&&dprStep<DPR_STEPS.length-1){dprStep++;renderer.setPixelRatio(DPR_STEPS[dprStep]);renderer.setSize(innerWidth,innerHeight)}}}
+
+const _v=new THREE.Vector3(),_w=new THREE.Vector3(),clock=new THREE.Clock();let time=0;
+function updateBrain(dt){
+ if(!ptrs.size){idle+=dt;rotateBrain(rotVel.x,rotVel.y);const f=Math.pow(.9,dt*60);rotVel.x*=f;rotVel.y*=f}
+ const auto=smooth(2.5,5,idle);_qa.setFromAxisAngle(AY,auto*.06*dt*motion);brain.quaternion.premultiply(_qa);
+ zoom.v+=(zoom.t-zoom.v)*Math.min(1,dt*6);
+ camera.position.set(0,0,fitD*(1-zoom.v*.62));camera.lookAt(0,0,0);
+ brainHalo.material.opacity=(neuro.ready?.36:.28)+.04*Math.sin(time*.8);if(neuro.ready)brainHalo.scale.setScalar(3.4+.4*neuro.U.uFade.value);updateNeuro(dt);
+ if(zoom.v>.86)startEntrance()}
+function updateHub(dt){
+ const mx=walk.x+(keys.d?1:0)-(keys.a?1:0),my=walk.y+(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0);
+ P.yawT+=((keys.arrowleft?1:0)-(keys.arrowright?1:0))*dt*1.6;
+ const sp=dt*7.5,fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),rx=Math.cos(P.yaw),rz=-Math.sin(P.yaw);
+ const nx=P.x+(fx*my+rx*mx)*sp,nz=P.z+(fz*my+rz*mx)*sp;
+ if(walkable(nx,nz)){P.x=nx;P.z=nz}else if(walkable(nx,P.z))P.x=nx;else if(walkable(P.x,nz))P.z=nz;else{const vx=nx-P.x,vz=nz-P.z;for(const [an,k] of [[.7,.75],[-.7,.75],[1.3,.5],[-1.3,.5]]){const c=Math.cos(an),si=Math.sin(an),tx=P.x+(vx*c-vz*si)*k,tz=P.z+(vx*si+vz*c)*k;if(walkable(tx,tz)){P.x=tx;P.z=tz;break}}} // glide along diagonal edges instead of sticking
+ let bob=0;const mag=Math.min(1,Math.hypot(mx,my));if(mag>.08&&!reduceMotion){P.phase+=dt*8*mag;bob=Math.sin(P.phase)*.03*mag}
+ const k=1-Math.exp(-dt/.035);P.yaw+=(P.yawT-P.yaw)*k;P.pitch+=(P.pitchT-P.pitch)*k;
+ camera.position.set(P.x,EYE+bob,P.z);camera.rotation.set(P.pitch,P.yaw,0)}
+function animateHub(dt){if(!hubBuilt)return;
+ for(const s of hub.spheres){s.s.rotation.y+=dt*.03*motion;for(const f of s.s.userData.anim)f(time,dt);s.rings.forEach((m,i)=>{m.rotation.z+=dt*(.05+.03*i)*(i%2?-1:1)*motion});s.g.position.y=s.d.y+Math.sin(time*.898+s.ph)*.3*motion}
+ hub.core.rotation.y+=dt*.1*motion;hub.core.position.y=CORE.y+Math.sin(time*.9)*.15*motion;
+ {const pz=Math.pow(.5+.5*Math.sin(time*1.047),6),fx=hub.coreFx;fx.shell.uHover.value=.2+.8*pz;fx.halo.material.opacity=.26+.16*pz;fx.light.intensity=1.1+.7*pz}
+ for(const s of hub.spheres){s.mirror.position.y=-s.g.position.y;s.mirror.rotation.y=s.s.rotation.y}if(hub.coreMirror)hub.coreMirror.rotation.y=hub.core.rotation.y;
+ animateArchitecture(dt);animateHidden(dt);
+ let near=null,nd=1e9;for(const s of hub.spheres){const dd=Math.hypot(P.x-s.d.x,P.z-s.d.z),tg=(state==='hub'||state==='fly')&&dd<24?1:0;if(tg&&dd<nd){near=s;nd=dd}s.hover+=(tg-s.hover)*Math.min(1,dt*3);s.u.uHover.value=s.hover;s.su.uHover.value=s.hover;s.h.material.opacity=.12+.12*s.hover;s.L.intensity=2.4+.9*s.hover;s.rings.forEach(m=>m.scale.setScalar(1+.07*s.hover));s.ring.rotation.z+=dt*.25*s.hover*motion;s.s.rotation.y+=dt*.12*s.hover*motion}
+ setDest(state==='hub'?near:null);
+ // Labels follow their destination spheres.
+ camera.updateMatrixWorld();
+ for(const s of hub.spheres){_v.set(s.d.x,s.g.position.y-s.d.r-1.6,s.d.z).project(camera);const dist=Math.hypot(P.x-s.d.x,P.z-s.d.z);const vis=_v.z<1&&current===hubScene&&state!=='leave'?smooth(95,40,dist):0;
+  const op=vis.toFixed(2);if(s.lo!==op){s.el.style.opacity=op;s.lo=op}if(vis>0){const tr='translate3d('+((_v.x*.5+.5)*innerWidth).toFixed(0)+'px,'+((-_v.y*.5+.5)*innerHeight).toFixed(0)+'px,0) translate(-50%,0) scale('+(1+.12*s.hover).toFixed(2)+')';if(s.lt!==tr){s.el.style.transform=tr;s.lt=tr}}}}
+let curDest=null;function setDest(s){if(s===curDest)return;curDest=s;const el=$('dest');if(s){$('destName').textContent=s.d.name;$('destGo').textContent='Enter '+s.d.name+' →';el.classList.remove('hide')}else el.classList.add('hide')}
+const lerpAngle=(a,b,t)=>a+Math.atan2(Math.sin(b-a),Math.cos(b-a))*t;
+let fly=null;
+function flyTo(s){if(state!=='hub'||!s)return;state='fly';setDest(null);hud.classList.add('hide');const d=s.d,dx=P.x-d.x,dz=P.z-d.z,l=Math.hypot(dx,dz)||1;
+ fly={s,T:0,done:false,x0:P.x,z0:P.z,yaw0:P.yaw,pitch0:P.pitch,x1:d.x+dx/l*(d.r+2.4),z1:d.z+dz/l*(d.r+2.4)};
+ veil.style.background='radial-gradient(circle at 50% 50%,#FFFFFF 0%,'+d.c+' 36%,#070914 100%)'}
+function placeNear(id){const d=DEST.find(x=>x.id===id)||DEST[0],vx=ENTRY.x-d.x,vz=ENTRY.z-d.z,l=Math.hypot(vx,vz)||1;P.x=d.x+vx/l*22;P.z=d.z+vz/l*22;P.yaw=P.yawT=Math.atan2(-(d.x-P.x),-(d.z-P.z));P.pitch=P.pitchT=Math.atan2(d.y-EYE,22)*.75}
+function updateFly(dt){const f=fly,d=f.s.d;f.T+=dt;const T=f.T,D=reduceMotion?1:2.7;
+ if(!reduceMotion){const u=smooth(0,2.3,T),x=lerp(f.x0,f.x1,u),z=lerp(f.z0,f.z1,u),y=lerp(EYE,d.y,smooth(.3,2.3,T)),h=Math.hypot(d.x-x,d.z-z)||1,k=smooth(0,1.1,T);
+  P.x=x;P.z=z;P.yaw=P.yawT=lerpAngle(f.yaw0,Math.atan2(-(d.x-x),-(d.z-z)),k);P.pitch=P.pitchT=lerp(f.pitch0,Math.atan2(d.y-y,h),k);camera.position.set(x,y,z);camera.rotation.set(P.pitch,P.yaw,0)}
+ veil.style.opacity=smooth(D-.9,D,T);
+ if(T>=D&&!f.done){f.done=true;try{sessionStorage.setItem('usi-return',d.id)}catch(e){}location.href=d.url}
+ if(T>D+8)restoreFromFly()}
+function restoreFromFly(){if(!fly)return;try{sessionStorage.removeItem('usi-return')}catch(e){}placeNear(fly.s.d.id);fly=null;state='arrive';E=0;veil.style.opacity=0;fadeEl.style.opacity=1}
+function updateArrive(dt){E+=dt;updateHub(dt);fadeEl.style.opacity=1-smooth(0,1.1,E);if(E>=1.1)arriveHub()}
+const ray=new THREE.Raycaster(),_ndc=new THREE.Vector2();
+function tapHub(cx,cy){_ndc.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(_ndc,camera);const hits=ray.intersectObjects(hub.spheres.map(s=>s.shell),false);if(hits.length){flyTo(hub.spheres.find(s=>s.shell===hits[0].object))}}
+function updateEnter(dt){E+=dt;
+ if(skipT>=0){skipT+=dt;fadeEl.style.opacity=Math.min(1,skipT/.3);if(skipT>=.3&&current!==hubScene){toHub();veil.style.opacity=0}if(current===hubScene){updateHub(0);const o=1-smooth(.3,1.1,skipT);fadeEl.style.opacity=o;if(o<=0){skipT=-1;arriveHub()}}return}
+ if(reduceMotion){fadeEl.style.opacity=Math.min(1,E/.7);if(E>=.7&&current!==hubScene)toHub();if(current===hubScene){updateHub(0);fadeEl.style.opacity=1-smooth(.7,1.6,E);if(E>=1.6)arriveHub()}return}
+ if(E<1.5){updateBrain(dt);const u=smooth(0,1.5,E);camera.position.set(0,0,lerp(fitD*(1-zoom.v*.62),.12,u*u*u));camera.lookAt(0,0,0);veil.style.opacity=smooth(1,1.5,E)}
+ else if(E<5.5){if(current!==tunnelScene){current=tunnelScene;camera.fov=55}const u=smooth(1.5,5.5,E),s=u*.95;tc(s,_v);tc(s+.03,_w);camera.position.copy(_v);camera.up.set(0,1,0);camera.lookAt(_w);camera.rotateZ(Math.sin(u*Math.PI)*.25*motion);camera.fov=55+17*Math.sin(u*Math.PI);camera.updateProjectionMatrix();veil.style.opacity=(1-smooth(1.5,2.1,E))+smooth(5.1,5.5,E)}
+ else{if(current!==hubScene)toHub();updateHub(0);veil.style.opacity=1-smooth(5.5,6.6,E);if(E>=6.6)arriveHub()}}
+function updateLeave(dt){E+=dt;fadeEl.style.opacity=Math.min(1,E/.5);if(E>=.5&&current!==brainScene)toBrain();if(current===brainScene){updateBrain(dt);fadeEl.style.opacity=1-smooth(.5,1.3,E);if(E>=1.3){fadeEl.style.opacity=0;state='brain'}}}
+
+function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);time+=dt;U.uTime.value=time*motion;
+ for(const g of galaxies)g.rotation.y+=dt*.004*motion;if(hub.sky)for(const g of hub.sky)g.rotateY(dt*.004*motion);cosmos.rotation.y+=dt*.0015*motion;
+ if(state==='brain')updateBrain(dt);else if(state==='enter')updateEnter(dt);else if(state==='hub')updateHub(dt);else if(state==='leave')updateLeave(dt);else if(state==='fly')updateFly(dt);else if(state==='arrive')updateArrive(dt);
+ if(current===hubScene)animateHub(dt);
+ updatePointScale();if(composer){renderPass.scene=current;bloomFor();composer.render(dt)}else if(!renderBrainBloom())renderer.render(current,camera);quality(dt)}
+let ret=null;try{ret=sessionStorage.getItem('usi-return');if(ret)sessionStorage.removeItem('usi-return')}catch(e){}
+if(ret&&DEST.some(d=>d.id===ret)){buildHub();toHub();placeNear(ret);dock.classList.add('hide');brand.classList.add('hide');state='arrive';E=0;fadeEl.style.opacity=1}
+addEventListener('pageshow',e=>{if(e.persisted&&state==='fly')restoreFromFly()});
+// Prebuild the hub and warm up shaders after the brain is showing, so the entrance has no hitch.
+setTimeout(()=>{try{buildHub();renderer.compile(tunnelScene,camera);const prev=cosmos.parent;hubScene.add(cosmos);renderer.compile(hubScene,camera);if(prev)prev.add(cosmos)}catch(e){console.warn(e)}},1200);
+setupBloom();setupBrainBloom();if(/fps=1/.test(location.search))$('fps').hidden=false;
+$('glowT').addEventListener('click',()=>{setGlow(!brainBloom.on);qT=-1.5;qF=0});
+frame();
+})();
+</script>
+</body>
+</html>
