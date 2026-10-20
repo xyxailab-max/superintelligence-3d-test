@@ -36,7 +36,7 @@ const ART=['brain-guide','ai-coach','resume-helper','business-idea-lab','study-t
 </script><style>
 /* V7-BG: approved Astral Orbit image behind the carousel */
 .bgimg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#070914 url(marketplace/bg/astral-orbit.webp) no-repeat;background-size:cover;background-position:50% 70%}
-@media(orientation:portrait){.bgimg{background-image:none}.bgimg:before{content:"";position:absolute;left:50%;top:50%;width:var(--bw,max(100vw,111vh));aspect-ratio:1536/1024;translate:-50% -50%;background:url(marketplace/bg/astral-orbit.webp) center/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 9%,#000 91%,transparent 100%)}}
+@media(orientation:portrait){.bgimg{background-image:url(marketplace/bg/astral-orbit-portrait.webp);background-position:50% 50%}}
 .bgimg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#070914b3 0,#07091400 90px),linear-gradient(0deg,#070914a6 0,#07091400 120px)}
 /* V7 Astral Orbit: cosmic showroom + floating circular carousel (CSS transforms + small JS, no libraries) */
 html,body{height:100%;overflow:hidden}
@@ -109,8 +109,8 @@ nav.addEventListener('click',e=>{const b=e.target.closest('.arr');if(b)step(Numb
 g.addEventListener('click',e=>{if(justDragged){e.preventDefault();e.stopImmediatePropagation();return}const c=e.target.closest('.product');if(c&&!c.classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();go(cs.indexOf(c))}},true);
 addEventListener('keydown',e=>{if(document.querySelector('dialog[open]')||e.target===search)return;if(e.key==='ArrowRight')step(1);if(e.key==='ArrowLeft')step(-1)});
 // Find where the image's gold platform lands on screen (image 1536x1024, platform top ~y700, cover + 50% 70%) and seat the cards on it
-const fit=()=>{const W=innerWidth,H=innerHeight,port=H>=W,bw=Math.max(W,H*1.11),sc=port?bw/1536:Math.max(W/1536,H/1024),oy=port?(H-1024*sc)/2:(H-1024*sc)*.7,plat=oy+712*sc,gr=g.getBoundingClientRect(),c=g.querySelector('.product .info'),ih=c?c.offsetHeight:140,base=Math.min(gr.height-6,plat-gr.top),room=base-12;
-cw=Math.max(150,Math.min(330,W*.5,(room-ih)*360/464));const ch=cw*464/360+ih;if(port)bg.style.setProperty('--bw',bw+'px');g.style.setProperty('--cw',cw+'px');g.style.setProperty('--cy',Math.max(ch/2+6,base-ch/2-4)+'px');lay()};
+const fit=()=>{const W=innerWidth,H=innerHeight,port=H>=W,sc=port?Math.max(W/1086,H/1448):Math.max(W/1536,H/1024),oy=port?(H-1448*sc)*.5:(H-1024*sc)*.7,plat=oy+(port?1022:712)*sc,gr=g.getBoundingClientRect(),c=g.querySelector('.product .info'),ih=c?c.offsetHeight:140,base=Math.min(gr.height-6,plat-gr.top),room=base-12;
+cw=Math.max(150,Math.min(330,W*.5,(room-ih)*360/464));const ch=cw*464/360+ih;g.style.setProperty('--cw',cw+'px');g.style.setProperty('--cy',Math.max(ch/2+6,base-ch/2-4)+'px');lay()};
 const refresh=()=>{cs=cards();n=cs.length;cs.forEach((c,i)=>c.style.setProperty('--k',i));pos=target=0;vel=0;dots.innerHTML=cs.map(()=>'<i></i>').join('');requestAnimationFrame(fit)};
 new MutationObserver(refresh).observe(g,{childList:true});addEventListener('resize',()=>requestAnimationFrame(fit));refresh()})();
 </script>
