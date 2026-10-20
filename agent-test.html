@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resume Helper — Free AI Agent | Use Superintelligence</title>
+<meta name="description" content="Turns your experience into a strong, results-focused resume. Free, no sign-up. Try: &quot;Make this stronger: I helped customers&quot;">
+<meta name="theme-color" content="#070914">
+<link rel="canonical" href="https://usesuperintelligence.com/agents/resume">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Use Superintelligence">
+<meta property="og:title" content="Resume Helper — Free AI Agent | Use Superintelligence">
+<meta property="og:description" content="Turns your experience into a strong, results-focused resume. Free, no sign-up. Try: &quot;Make this stronger: I helped customers&quot;">
+<meta property="og:url" content="https://usesuperintelligence.com/agents/resume">
+<meta property="og:image" content="https://usesuperintelligence.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Resume Helper — Free AI Agent | Use Superintelligence">
+<meta name="twitter:description" content="Turns your experience into a strong, results-focused resume. Free, no sign-up. Try: &quot;Make this stronger: I helped customers&quot;">
+<meta name="twitter:image" content="https://usesuperintelligence.com/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Resume Helper","applicationCategory":"AI assistant","operatingSystem":"Web","description":"Turns your experience into a strong, results-focused resume.","url":"https://usesuperintelligence.com/agents/resume","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root { --void:#070914; --panel:#0e1226; --line:#232a4a; --ink:#e9edff; --mist:#9aa3c7; --aether:#7fe0ff; --gold:#f0c674;
+    --serif:"Cormorant Garamond","Iowan Old Style",Georgia,serif; --sans:"Manrope","Segoe UI",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace; color-scheme:dark; }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:radial-gradient(ellipse 80% 60% at 30% 0%, #141a3d 0%, var(--void) 60%) fixed, var(--void); color:var(--ink); font:15px/1.6 var(--sans); padding-inline:16px; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .wrap { max-width:1180px; margin:0 auto; padding-block:28px 40px; }
+  header.top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 24px; margin-bottom:22px; }
+  nav.crumbs { display:flex; flex-wrap:wrap; gap:6px 16px; font:500 .72rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; }
+  nav.crumbs a { color:var(--aether); text-decoration:none; }
+  nav.crumbs a:hover { text-decoration:underline; }
+  h1 { font:400 clamp(2.3rem,6vw,3.5rem)/1.02 var(--serif); margin:0 0 8px; text-wrap:balance; }
+  h1 em { color:var(--gold); font-style:italic; }
+  .lede { margin:0; color:var(--mist); max-width:62ch; font-size:1rem; }
+  .eyebrow { font:500 .7rem/1 var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin:0 0 12px; }
+  .count { color:var(--aether); }
+
+  /* Hub: search + category chips */
+  .tools { display:grid; gap:12px; margin:26px 0 18px; }
+  .search { position:relative; max-width:560px; }
+  .search input { width:100%; font:1rem/1.2 var(--sans); color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:13px 14px 13px 42px; }
+  .search input:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .search svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--mist); }
+  .chips { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
+  .chips::-webkit-scrollbar { display:none; }
+  .chips button { flex:none; font:500 .8rem/1 var(--sans); color:var(--ink); background:transparent; border:1px solid var(--line); border-radius:999px; padding:9px 14px; cursor:pointer; }
+  .chips button[aria-pressed="true"] { background:var(--aether); color:var(--void); border-color:var(--aether); }
+  .chips button:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .empty { color:var(--mist); padding:20px 0; }
+
+  .cat-block { margin-top:26px; }
+  .cat-block h2 { font:400 1.7rem/1.1 var(--serif); margin:0 0 12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px; }
+  .agent { text-decoration:none; color:inherit; border:1px solid var(--line); border-radius:14px; padding:16px; display:grid; gap:6px; align-content:start; transition:border-color .2s, background .2s; }
+  .agent:hover { border-color:color-mix(in srgb, var(--aether) 55%, var(--line)); background:color-mix(in srgb, var(--panel) 70%, transparent); }
+  .agent:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+  .agent .row { display:flex; align-items:center; gap:12px; }
+  .glyph { width:36px; height:36px; border-radius:50%; display:grid; place-items:center; border:1px solid var(--line); font:500 1.05rem/1 var(--serif); color:var(--aether); flex:none; }
+  .agent h3 { margin:0; font:600 .98rem/1.25 var(--sans); }
+  .agent .cat { font:.62rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--mist); }
+  .agent p { margin:0; color:var(--mist); font-size:.88rem; }
+
+  /* Agent page: intro + chat */
+  .agent-layout { display:grid; grid-template-columns:minmax(0,1fr) 440px; grid-template-rows:auto 1fr; gap:24px 28px; align-items:start; }
+  .intro { grid-column:1; grid-row:1; } .chat { grid-column:2; grid-row:1 / 3; } .more { grid-column:1; grid-row:2; }
+  .intro { display:grid; gap:18px; }
+  .try { border:1px solid var(--line); border-radius:14px; padding:16px 18px; }
+  .try h2 { font:600 .8rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--mist); margin:0 0 10px; }
+  .try ul { margin:0; padding-left:18px; color:#cfd5f2; }
+  .try li { margin:4px 0; }
+  .more h2 { font:400 1.6rem/1.1 var(--serif); margin:26px 0 12px; }
+  .all-link { display:inline-block; margin-top:14px; color:var(--aether); text-decoration:none; font:500 .78rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; }
+
+  .chat { position:sticky; top:calc(16px + env(safe-area-inset-top,0px)); background:var(--panel); border:1px solid var(--line); border-radius:18px; display:flex; flex-direction:column; height:min(720px, calc(100vh - 48px)); min-width:0; }
+  .chat-head { padding:16px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; }
+  .chat-head .glyph { border-color:var(--aether); }
+  .chat-head b { display:block; font:600 1rem/1.2 var(--sans); }
+  .chat-head small { color:var(--mist); font-size:.78rem; }
+  .log { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; gap:12px; min-height:0; }
+  .msg { max-width:88%; padding:10px 14px; border-radius:14px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:.93rem; }
+  .msg.you { align-self:flex-end; background:color-mix(in srgb, var(--aether) 16%, var(--panel)); border:1px solid color-mix(in srgb, var(--aether) 35%, var(--line)); }
+  .msg.bot { align-self:flex-start; background:var(--void); border:1px solid var(--line); }
+  .msg.bot.wait { color:var(--mist); font-style:italic; }
+  .msg.note { align-self:center; max-width:100%; color:var(--mist); font-size:.82rem; text-align:center; background:none; padding:4px; }
+  .starters { display:flex; flex-wrap:wrap; gap:8px; padding:0 18px 12px; }
+  .starters button { font:.82rem/1.3 var(--sans); color:var(--ink); background:transparent; border:1px solid var(--line); border-radius:999px; padding:7px 12px; cursor:pointer; text-align:left; }
+  .starters button:hover { border-color:var(--aether); }
+  .starters button:focus-visible, .ask button:focus-visible, .ask textarea:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .ask { display:flex; gap:8px; padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px)); border-top:1px solid var(--line); }
+  .ask textarea { flex:1; min-width:0; resize:none; font:.95rem/1.4 var(--sans); color:var(--ink); background:var(--void); border:1px solid var(--line); border-radius:12px; padding:10px 12px; max-height:140px; }
+  .ask button { font:600 .78rem/1 var(--mono); letter-spacing:.12em; color:var(--void); background:var(--aether); border:0; border-radius:12px; padding:0 16px; cursor:pointer; }
+  .ask button:disabled { opacity:.5; cursor:progress; }
+  .tools-row { display:flex; justify-content:flex-end; padding:0 18px 10px; }
+  .tools-row button { font:.72rem/1 var(--mono); letter-spacing:.1em; color:var(--mist); background:none; border:0; cursor:pointer; padding:4px; }
+  .fine { color:var(--mist); font-size:.78rem; margin:28px 0 0; text-align:center; }
+  .fine a { color:inherit; }
+
+
+  /* Newsletter signup with free guide */
+  .nl { border:1px solid color-mix(in srgb, var(--gold) 45%, var(--line)); background:linear-gradient(135deg, rgba(240,198,116,.08), rgba(127,224,255,.05)); border-radius:16px; padding:18px; display:grid; gap:10px; }
+  .nl .tag { font:600 .66rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--gold); }
+  .nl b { font:600 1.05rem/1.3 var(--sans); }
+  .nl p { margin:0; color:var(--mist); font-size:.86rem; }
+  .nl form { display:flex; gap:8px; flex-wrap:wrap; }
+  .nl input { flex:1 1 180px; min-width:0; font:.95rem/1.2 var(--sans); color:var(--ink); background:var(--void); border:1px solid var(--line); border-radius:10px; padding:11px 12px; }
+  .nl button { font:600 .8rem/1 var(--sans); color:var(--void); background:var(--gold); border:0; border-radius:10px; padding:11px 16px; cursor:pointer; }
+  .nl input:focus-visible, .nl button:focus-visible { outline:2px solid var(--aether); outline-offset:2px; }
+  .nl .done { color:var(--ink); font-size:.9rem; }
+  .nl .done a { color:var(--aether); font-weight:600; }
+  .nl small { color:var(--mist); font-size:.72rem; }
+  .nl small a { color:inherit; }
+  .hub-nl { margin:30px 0 0; max-width:640px; }
+
+  @media (max-width:900px) {
+    .agent-layout { grid-template-columns:minmax(0,1fr); grid-template-rows:none; }
+    .intro, .chat, .more { grid-column:auto; grid-row:auto; }
+    .chat { position:static; height:560px; }
+    .more { order:3; }
+  }
+  @media (prefers-reduced-motion:reduce) { .agent { transition:none; } }
+  .si-logo { display:inline-flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; line-height:1; }
+  .si-star { width:21px; height:21px; flex:none; display:block; }
+  .si-w { display:grid; justify-items:center; gap:3px; }
+  .si-use { font:500 .38rem/1 var(--mono); letter-spacing:.9em; padding-left:.9em; color:#9fe3ff; }
+  .si-name { font:600 .64rem/1 "Poppins","Manrope",system-ui,sans-serif; letter-spacing:.22em; padding-left:.22em; white-space:nowrap; background:linear-gradient(92deg,#eef2ff 0%,#9fe3ff 42%,#f0c674 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  /* Cosmic theme: matches the Marketplace and For Creators pages (Astral Hall background, sapphire glass) */
+  body { background:#070914; }
+  body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:linear-gradient(180deg,#070914d9 0,#070914a6 35%,#070914cc 100%), #070914 url(marketplace/bg/astral-hall-soft.webp) no-repeat 50% 70% / cover; }
+  @media (orientation:portrait) { body::before { background:linear-gradient(180deg,#070914d9 0,#070914a6 35%,#070914cc 100%), #070914 url(marketplace/bg/astral-hall-portrait-soft.webp) no-repeat 50% 50% / cover; } }
+  nav.crumbs { gap:6px; padding:5px; border-radius:24px; background:#07142bcc; border:1px solid #41689b99; font:500 .74rem/1 var(--sans); letter-spacing:.02em; text-transform:none; }
+  nav.crumbs a { color:#b7c7e1; padding:8px 14px; border-radius:20px; border:1px solid transparent; }
+  nav.crumbs a:hover { text-decoration:none; color:var(--gold); border-color:#d3ac6277; background:#4d371b35; }
+  .search input, .nl input, .ask textarea { background:#060d22d9; border-color:#4777ac99; }
+  .chips button { background:#08142dcc; border-color:#4777ac77; }
+  .chips button[aria-pressed="true"] { background:#4d371b66; color:var(--gold); border-color:#d3ac62aa; }
+  .agent, .try { background:linear-gradient(165deg,#1a3d9e59 0%,#0e2263a6 45%,#071236d9 100%); border:1px solid #7fe0ff59; box-shadow:inset 0 1px 0 #bff0ff38, 0 0 14px #7fe0ff1a, 0 16px 30px -14px #000c; }
+  .agent:hover { border-color:#7fe0ffaa; background:linear-gradient(165deg,#1f4bb066 0%,#0e2263b3 45%,#071236e0 100%); box-shadow:inset 0 1px 0 #d6f5ff55, 0 0 22px #7fe0ff33, 0 16px 30px -14px #000c; }
+  .glyph { border-color:#7fe0ff66; background:#060d22b3; color:var(--gold); }
+  .agent .cat { color:var(--gold); }
+  .chat { background:linear-gradient(165deg,#173a94b3 0%,#0d2060d9 38%,#071236f2 100%); border:1px solid #7fe0ff66; box-shadow:inset 0 1px 0 #bff0ff40, 0 0 22px #7fe0ff22, 0 30px 60px -20px #000c; }
+  .chat-head, .ask { border-color:#7fe0ff33; }
+  .msg.bot { background:#060d22d9; border-color:#4777ac77; }
+  .ask button { background:#4d371b88; color:var(--gold); border:1px solid #d3ac62aa; }
+  .nl { background:linear-gradient(135deg,#4d371b40,#0e2263b3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="si-logo" href="/" aria-label="Use Superintelligence, back to the brain"><svg class="si-star" viewBox="62 62 900 900" aria-hidden="true"><defs><linearGradient id="siG" gradientUnits="userSpaceOnUse" x1="92" y1="92" x2="932" y2="932"><stop offset="0" stop-color="#7fe0ff"/><stop offset=".5" stop-color="#d6f5ff"/><stop offset="1" stop-color="#f0c674"/></linearGradient></defs><path d="M512 92 L592 432 L932 512 L592 592 L512 932 L432 592 L92 512 L432 432 Z" fill="none" stroke="url(#siG)" stroke-width="40" stroke-linejoin="round"/><path d="M512 222 L562 462 L802 512 L562 562 L512 802 L462 562 L222 512 L462 462 Z" fill="none" stroke="url(#siG)" stroke-width="22" stroke-linejoin="round" opacity=".75"/><circle cx="512" cy="512" r="44" fill="#f0c674"/></svg><span class="si-w"><span class="si-use">USE</span><span class="si-name">SUPERINTELLIGENCE</span></span></a><nav class="crumbs"><a href="/agents.html">← All 100 agents</a><a href="/">3D Brain</a><a href="/marketplace.html">Marketplace</a></nav></header>
+  <div class="agent-layout">
+    <div class="intro">
+      <div>
+        <p class="eyebrow">Career · Free AI agent</p>
+        <h1>Resume Helper</h1>
+        <p class="lede">Turns your experience into a strong, results-focused resume.</p>
+      </div>
+      <div class="try"><h2>Try asking</h2><ul><li>Make this stronger: I helped customers</li><li>What skills should I list for data entry?</li><li>Review my resume summary</li></ul></div>
+    </div>
+    <aside class="chat" aria-label="Chat with Resume Helper">
+      <div class="chat-head"><span class="glyph" aria-hidden="true">R</span><div><b>Resume Helper</b><small>Free · no sign-up</small></div></div>
+      <div class="log" id="log" aria-live="polite"></div>
+      <div class="starters" id="starters"></div>
+      <div class="tools-row"><button type="button" id="clear" hidden>NEW CHAT</button></div>
+      <form class="ask" id="ask"><textarea id="askInput" rows="1" maxlength="1500" placeholder="Type a message…" aria-label="Your message"></textarea><button id="askBtn" type="submit">SEND</button></form>
+    </aside>
+    <section class="more">
+      <div class="nl" data-source="agent-resume"><span class="tag">Free guide</span><b>Get "50 AI prompts that save you hours" free</b><p>Plus one practical AI tip a week. No spam, unsubscribe anytime.</p><form novalidate><input type="email" required maxlength="120" placeholder="Your email" aria-label="Your email" autocomplete="email"><button type="submit">Send it to me</button></form><p class="msg" role="status" hidden></p><small>By joining you agree to our <a href="/privacy.html">Privacy Policy</a>.</small></div>
+      <h2>More Career agents</h2>
+      <div class="grid"><a class="agent" href="/agents/cover-letter" data-cat="Career" data-q="cover letter writer career writes a tailored cover letter in minutes. cover letter for a cashier job cover letter for a nursing role, 5 years experience make my cover letter shorter"><div class="row"><span class="glyph" aria-hidden="true">C</span><div><h3>Cover Letter Writer</h3><span class="cat">Career</span></div></div><p>Writes a tailored cover letter in minutes.</p></a><a class="agent" href="/agents/interview-coach" data-cat="Career" data-q="interview coach career practice interviews with feedback on every answer. mock interview for a customer service job how do i answer &#39;tell me about yourself&#39;? common questions for a nurse interview"><div class="row"><span class="glyph" aria-hidden="true">I</span><div><h3>Interview Coach</h3><span class="cat">Career</span></div></div><p>Practice interviews with feedback on every answer.</p></a><a class="agent" href="/agents/linkedin" data-cat="Career" data-q="linkedin profile pro career writes a headline and about section that get noticed. write my linkedin headline: marketing assistant improve my about section linkedin post announcing my new job"><div class="row"><span class="glyph" aria-hidden="true">L</span><div><h3>LinkedIn Profile Pro</h3><span class="cat">Career</span></div></div><p>Writes a headline and About section that get noticed.</p></a><a class="agent" href="/agents/salary-negotiator" data-cat="Career" data-q="salary negotiator career helps you ask for more money with confidence. how do i negotiate my first job offer? script to ask my boss for a raise they offered $50k, i want $58k"><div class="row"><span class="glyph" aria-hidden="true">S</span><div><h3>Salary Negotiator</h3><span class="cat">Career</span></div></div><p>Helps you ask for more money with confidence.</p></a><a class="agent" href="/agents/career-switch" data-cat="Career" data-q="career switch guide career maps a realistic path into a new career. i&#39;m a teacher, how do i move into tech? careers that fit someone who likes helping people what can i do with retail experience?"><div class="row"><span class="glyph" aria-hidden="true">C</span><div><h3>Career Switch Guide</h3><span class="cat">Career</span></div></div><p>Maps a realistic path into a new career.</p></a><a class="agent" href="/agents/job-search" data-cat="Career" data-q="job search planner career builds a weekly plan to land interviews faster. make me a 4-week job search plan where do i find remote jobs? i applied to 50 jobs and got no replies"><div class="row"><span class="glyph" aria-hidden="true">J</span><div><h3>Job Search Planner</h3><span class="cat">Career</span></div></div><p>Builds a weekly plan to land interviews faster.</p></a><a class="agent" href="/agents/networking" data-cat="Career" data-q="networking messages career writes friendly outreach that people actually answer. message to a recruiter on linkedin ask a former coworker for a referral follow up after a networking event"><div class="row"><span class="glyph" aria-hidden="true">N</span><div><h3>Networking Messages</h3><span class="cat">Career</span></div></div><p>Writes friendly outreach that people actually answer.</p></a><a class="agent" href="/agents/reference-letter" data-cat="Career" data-q="recommendation letter writer career drafts recommendation and reference letters. reference letter for a great employee recommendation for a student&#39;s college application character reference for a friend"><div class="row"><span class="glyph" aria-hidden="true">R</span><div><h3>Recommendation Letter Writer</h3><span class="cat">Career</span></div></div><p>Drafts recommendation and reference letters.</p></a><a class="agent" href="/agents/resignation" data-cat="Career" data-q="resignation letter writer career leave your job gracefully, on good terms. two weeks&#39; notice letter resign politely from a job i didn&#39;t like tell my manager i&#39;m leaving"><div class="row"><span class="glyph" aria-hidden="true">R</span><div><h3>Resignation Letter Writer</h3><span class="cat">Career</span></div></div><p>Leave your job gracefully, on good terms.</p></a></div>
+      <a class="all-link" href="/agents.html">See all 100 agents →</a>
+    </section>
+  </div>
+  <p class="fine">Free · no sign-up · powered by open-source AI. AI can make mistakes; for health, legal or money decisions, check with a qualified professional. <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></p>
+</div>
+<script>
+(function () {
+  "use strict";
+  var A = {"id":"resume","name":"Resume Helper","blurb":"Turns your experience into a strong, results-focused resume.","starters":["Make this stronger: I helped customers","What skills should I list for data entry?","Review my resume summary"]};
+  var $ = function (id) { return document.getElementById(id); };
+  var log = $("log"), starters = $("starters"), form = $("ask"), input = $("askInput"), btn = $("askBtn"), clear = $("clear");
+  var key = "si-chat-" + A.id, hist = [];
+  try { hist = JSON.parse(sessionStorage.getItem(key) || "[]") || []; } catch (e) { hist = []; }
+  var busy = false;
+  function save() { try { sessionStorage.setItem(key, JSON.stringify(hist.slice(-20))); } catch (e) {} }
+  function bubble(kind, text) { var d = document.createElement("div"); d.className = "msg " + kind; d.textContent = text; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; }
+  function render() {
+    log.innerHTML = "";
+    if (!hist.length) bubble("note", "Say hi, or tap one of the ideas below.");
+    hist.forEach(function (t) { bubble(t.role === "user" ? "you" : "bot", t.content); });
+    starters.innerHTML = "";
+    if (!hist.length) A.starters.forEach(function (s) { var b = document.createElement("button"); b.type = "button"; b.textContent = s; b.addEventListener("click", function () { send(s); }); starters.appendChild(b); });
+    clear.hidden = !hist.length;
+  }
+  function setBusy(b) { busy = b; btn.disabled = b; }
+  async function send(text) {
+    text = (text || "").trim(); if (!text || busy) return;
+    hist.push({ role: "user", content: text }); input.value = ""; input.style.height = "auto"; render();
+    setBusy(true); var out = bubble("bot wait", "Thinking…");
+    try {
+      var res = await fetch("/api/agent", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ agent: A.id, messages: hist.slice(-10) }) });
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok) throw new Error(data.error || "The agent couldn't answer right now. Please try again.");
+      var reply = (data.text || "").trim() || "I couldn't come up with an answer. Try asking another way.";
+      hist.push({ role: "assistant", content: reply }); save();
+      out.classList.remove("wait"); out.textContent = reply; clear.hidden = false;
+    } catch (err) {
+      hist.pop(); out.classList.remove("wait");
+      out.textContent = (err && err.message && !/fetch|network/i.test(err.message)) ? err.message : "Couldn't reach the agent. Check your connection and try again.";
+    } finally { setBusy(false); log.scrollTop = log.scrollHeight; }
+  }
+  form.addEventListener("submit", function (e) { e.preventDefault(); send(input.value); });
+  input.addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input.value); } });
+  input.addEventListener("input", function () { input.style.height = "auto"; input.style.height = Math.min(140, input.scrollHeight) + "px"; });
+  clear.addEventListener("click", function () { hist = []; save(); render(); input.focus(); });
+  render();
+})();
+</script>
+<script>
+(function () {
+  document.querySelectorAll(".nl").forEach(function (box) {
+    var form = box.querySelector("form"), input = box.querySelector("input"), btn = box.querySelector("button"), msg = box.querySelector(".msg");
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var email = input.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.hidden = false; msg.textContent = "Please enter a valid email."; return; }
+      btn.disabled = true; msg.hidden = false; msg.textContent = "Sending…";
+      try {
+        var res = await fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email, source: box.dataset.source }) });
+        var data = await res.json().catch(function () { return {}; });
+        if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+        form.hidden = true; msg.className = "done";
+        msg.innerHTML = (data.already ? "You're already on the list. " : "You're in! Check your inbox. ") + '<a href="' + (data.guide || "/free/50-ai-prompts.pdf") + '" target="_blank" rel="noopener">Download the guide now →</a>';
+      } catch (err) { msg.textContent = err.message; btn.disabled = false; }
+    });
+  });
+})();
+</script>
+</body>
+</html>
