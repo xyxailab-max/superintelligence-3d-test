@@ -81,7 +81,7 @@ const bg=document.createElement('div');bg.className='bgimg';bg.setAttribute('ari
 const stage=document.createElement('div');stage.className='stage';g.before(stage);stage.append(g);
 const nav=document.createElement('div');nav.className='slidenav';nav.innerHTML='<button class="arr" data-d="-1" aria-label="Previous">&#8249;</button><div class="dots" aria-hidden="true"></div><button class="arr" data-d="1" aria-label="Next">&#8250;</button>';stage.append(nav);const dots=nav.querySelector('.dots');
 // Bottom navigation dock
-const nd=document.createElement('nav');nd.className='navdock';nd.setAttribute('aria-label','Site');nd.innerHTML='<a class="active" href="marketplace-v7.html" aria-current="page">Marketplace</a><a href="https://usesuperintelligence.com/marketplace.html#sell">For Creators</a><a href="https://usesuperintelligence.com/agents.html">Agent Hub</a>';document.querySelector('main .notice').before(nd);
+const nd=document.createElement('nav');nd.className='navdock';nd.setAttribute('aria-label','Site');nd.innerHTML='<a class="active" href="marketplace-v7.html" aria-current="page">Marketplace</a><a href="https://usesuperintelligence.com/marketplace.html#sell">For Creators</a><a href="https://usesuperintelligence.com/agents.html">Agent Hub</a>';const nt=document.querySelector('main .notice');nt.before(nd);stage.append(nd,nt);
 const CAT_ICONS={'All':'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
 'Featured':'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z',
 'Agent':'M12 5a3 3 0 0 0-5.8.9A3 3 0 0 0 4 10a3 3 0 0 0 .9 3.6A3 3 0 0 0 7.5 19 3 3 0 0 0 12 19.5zM12 5a3 3 0 0 1 5.8.9A3 3 0 0 1 20 10a3 3 0 0 1-.9 3.6A3 3 0 0 1 16.5 19 3 3 0 0 1 12 19.5zM8 10.5c1 0 2 .6 2 1.8M16 10.5c-1 0-2 .6-2 1.8',
@@ -148,5 +148,11 @@ new MutationObserver(refresh).observe(g,{childList:true});addEventListener('resi
 @media(max-width:520px){.dots .ic span{font-size:8px}.dots .ic{height:46px!important;min-width:30px;width:auto!important}}
 @media(max-width:520px){.slidenav button.arr{width:38px!important;height:38px!important;font-size:18px!important}.dots .ic{width:30px;height:38px}.dots .ic svg{width:22px;height:22px}.dots .ic:after{width:20px;margin-left:-10px}}
 @media(prefers-reduced-motion:reduce){.dots .ic,.dots .ic:after{transition:none}}
+</style>
+<style>
+/* V9: dock + legal line pinned inside the visible carousel area (bottom never cut off) */
+.stage .navdock{position:absolute;left:50%;translate:-50% 0;bottom:calc(20px + env(safe-area-inset-bottom));margin:0!important;z-index:210}
+.stage .notice{position:absolute;left:0;right:0;bottom:calc(3px + env(safe-area-inset-bottom));margin:0!important;z-index:210;pointer-events:auto}
+.slidenav{bottom:calc(76px + env(safe-area-inset-bottom))!important}
 </style>
 </body></html>
