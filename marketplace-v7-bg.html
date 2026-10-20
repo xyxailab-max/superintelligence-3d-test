@@ -106,7 +106,7 @@ const end=e=>{if(!drag||e.pointerId!==drag.id)return;const m=drag.moved;drag=nul
 addEventListener('pointerup',end);addEventListener('pointercancel',end);
 g.addEventListener('dragstart',e=>e.preventDefault());
 nav.addEventListener('click',e=>{const b=e.target.closest('.arr');if(b)step(Number(b.dataset.d))});
-g.addEventListener('click',e=>{if(justDragged){e.preventDefault();e.stopImmediatePropagation();return}const c=e.target.closest('.product');if(c&&!c.classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();go(cs.indexOf(c))}},true);
+g.addEventListener('click',e=>{if(justDragged){e.preventDefault();e.stopImmediatePropagation();return}const c=e.target.closest('.product');if(!c)return;e.preventDefault();e.stopImmediatePropagation();if(!c.classList.contains('on')){go(cs.indexOf(c));return}const p=products[Number(c.dataset.i)];if(!p||!/^https:\/\//.test(p.url))return;if(p.house||!p.price)location.href=p.url;else window.open(p.url,'_blank','noopener')},true);
 addEventListener('keydown',e=>{if(document.querySelector('dialog[open]')||e.target===search)return;if(e.key==='ArrowRight')step(1);if(e.key==='ArrowLeft')step(-1)});
 // Find where the image's gold platform lands on screen (image 1536x1024, platform top ~y700, cover + 50% 70%) and seat the cards on it
 const fit=()=>{const W=innerWidth,H=innerHeight,port=H>=W,sc=port?Math.max(W/1086,H/1448):Math.max(W/1536,H/1024),oy=port?(H-1448*sc)*.5:(H-1024*sc)*.7,plat=oy+(port?1022:712)*sc,gr=g.getBoundingClientRect(),c=g.querySelector('.product .info'),ih=c?c.offsetHeight:140,base=Math.min(gr.height-6,plat-gr.top),room=base-12;
