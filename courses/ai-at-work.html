@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#070914"><meta name="robots" content="noindex">
+<title>AI at Work in 5 Lessons · Free Mini-Course · Use Superintelligence</title>
+<meta name="description" content="A free beginner mini-course: learn to use AI at work in 5 short lessons, each with a 5-minute practice task.">
+<link rel="icon" href="../brand/favicon_48.png" sizes="48x48" type="image/png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#070914;--s2:#0E1220;--card:#111725;--line:#283246;--tx:#E9EDFF;--tx2:#9AA3B8;--blue:#3D7BFF;--ice:#7FE0FF;--gold:#F0C674}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:400 16px/1.6 Manrope,system-ui,sans-serif}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--line)}
+.bar a{color:var(--tx2);text-decoration:none;font-size:13px;font-weight:600}
+.logo{display:flex;align-items:center;gap:9px;color:var(--tx)!important}.logo img{height:28px;width:auto}
+main{max-width:780px;margin:0 auto;padding:32px 16px 56px}
+.eye{font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--ice)}
+h1{margin:12px 0 8px;font-size:clamp(28px,5vw,40px);line-height:1.1}
+.lead{color:var(--tx2);margin:0 0 22px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:0 0 22px}
+.steps button{min-height:44px;border-radius:6px;border:1px solid var(--line);background:var(--s2);color:var(--tx2);font:600 13px Manrope,sans-serif;cursor:pointer}
+.steps button.on{border-color:var(--blue);color:var(--tx);box-shadow:inset 0 -2px 0 var(--blue)}
+.steps button.done{color:var(--gold)}
+.lesson{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:22px 20px}
+.lesson h2{margin:6px 0 12px;font-size:23px;line-height:1.25}
+.lesson p,.lesson li{color:#c5cbdb}.lesson ul{padding-left:20px}
+.task{margin:18px 0 0;padding:14px 16px;border-radius:6px;border:1px solid #3D7BFF66;background:#3D7BFF12}
+.task b{display:block;margin-bottom:4px;font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--ice)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.nav button{min-height:46px;padding:0 18px;border-radius:6px;border:1px solid var(--line);background:var(--s2);color:var(--tx);font:700 14px Manrope,sans-serif;cursor:pointer}
+.nav .next{background:var(--blue);border-color:var(--blue);color:#fff}
+.nav button[disabled]{opacity:.35;cursor:default}
+a.in{color:var(--ice)}
+.foot{margin-top:36px;color:#6d768a;font-size:12px;text-align:center}.foot a{color:var(--tx2)}
+</style></head><body>
+<header class="bar"><a class="logo" href="../index.html"><img src="../brand/logo-cube.png" alt=""><span>Use Superintelligence</span></a><a href="../marketplace-usi-slider.html">← Marketplace</a></header>
+<main>
+<div class="eye">Free mini-course · 5 lessons · about 30 minutes</div>
+<h1>AI at Work in 5 Lessons</h1>
+<p class="lead">For complete beginners. Each lesson takes about 5 minutes to read and ends with a 5-minute practice task. Use any AI chat, or one of our free agents.</p>
+<div class="steps" id="steps" role="tablist" aria-label="Lessons"></div>
+<article class="lesson" id="lesson" aria-live="polite"></article>
+<div class="nav"><button id="prev" type="button">← Back</button><button class="next" id="next" type="button">Next lesson →</button></div>
+<p class="foot">Free from Use Superintelligence. <a href="../prompts/ai-at-work.html">Get the free prompt pack</a> · <a href="../marketplace-usi-slider.html">Back to the Marketplace</a></p>
+</main>
+<script>
+const L=[
+["What AI is good at (and not)",`<p>An AI chat is like a fast, well-read assistant. It's great at <b>first drafts</b>, <b>summaries</b>, <b>explaining things</b> and <b>brainstorming</b>.</p>
+<p>It is <b>not</b> always right. It can sound confident and still be wrong, especially with facts, numbers, dates and anything very recent.</p>
+<ul><li>Use it to save time on the first 80% of a task.</li><li>You do the last 20%: check facts, add your judgment, make the final call.</li><li>Never paste passwords, private customer data or anything secret.</li></ul>`,
+"Ask an AI chat: \"Explain what you're good at and what you get wrong, in 5 bullet points.\" Compare its answer with this lesson."],
+["Writing a good prompt",`<p>The AI only knows what you tell it. A good prompt has four parts:</p>
+<ul><li><b>Role:</b> who it should act as (\"You are an experienced HR manager\").</li><li><b>Task:</b> exactly what you want (\"Write a job post\").</li><li><b>Context:</b> the details (\"for a part-time bookkeeper, remote, $25/hour\").</li><li><b>Format:</b> how the answer should look (\"under 150 words, with 3 bullet points\").</li></ul>
+<p>Weak: <i>\"Write an email.\"</i><br>Strong: <i>\"You are a friendly office manager. Write a 100-word email telling the team the office is closed Friday for repairs. Include who to call in an emergency.\"</i></p>`,
+"Take one real email you need to send this week. Write a prompt for it using all four parts, then compare the result with a one-line prompt."],
+["Improve the answer, don't start over",`<p>The first answer is a starting point. Talk back to it like you would to a colleague:</p>
+<ul><li>\"Make it shorter.\" / \"More formal.\" / \"Simpler words.\"</li><li>\"Give me 3 different versions.\"</li><li>\"What's missing?\" or \"What questions would a customer ask?\"</li><li>\"Ask me questions first, then write it.\"</li></ul>
+<p>Two or three quick follow-ups usually beat writing a long perfect prompt.</p>`,
+"Ask for a short bio for yourself, then improve it with at least three follow-up messages. Notice how much better the third version is."],
+["Everyday work tasks",`<p>The biggest wins come from tasks you do every week:</p>
+<ul><li><b>Email:</b> replies, follow-ups, saying no politely.</li><li><b>Meetings:</b> agendas before, summaries and action items after.</li><li><b>Planning:</b> breaking big projects into small steps, sorting your to-do list.</li><li><b>Learning:</b> \"explain this simply\" for anything new.</li></ul>
+<p>Our free <a class="in" href="../prompts/ai-at-work.html">AI at Work Prompt Pack</a> has 25 ready prompts for exactly these tasks.</p>`,
+"Pick one task you do every week. Use a prompt from the pack for it and time how long it takes compared with doing it by hand."],
+["Check it and use it safely",`<p>Before you send or share anything the AI wrote, run a quick 4-point check:</p>
+<ul><li><b>Facts:</b> are names, numbers, dates and links correct?</li><li><b>Tone:</b> does it sound like you and fit the person reading it?</li><li><b>Privacy:</b> did you avoid pasting private or company-secret information?</li><li><b>Ownership:</b> you're responsible for what you send, not the AI.</li></ul>
+<p>That's it. You now know enough to save real time every week. Keep practicing with small tasks and build from there.</p>`,
+"Take something the AI wrote for you in an earlier lesson and run the 4-point check on it. Fix anything that fails."]];
+let i=0;const seen=new Set();try{(JSON.parse(localStorage.getItem('usiCourseSeen')||'[]')).forEach(x=>seen.add(x))}catch(e){}
+const st=document.getElementById('steps'),le=document.getElementById('lesson'),pv=document.getElementById('prev'),nx=document.getElementById('next');
+function show(k){i=k;seen.add(k);try{localStorage.setItem('usiCourseSeen',JSON.stringify([...seen]))}catch(e){}
+ st.innerHTML=L.map((_,j)=>`<button type="button" role="tab" data-j="${j}" class="${j===i?'on':''}${seen.has(j)&&j!==i?' done':''}" aria-selected="${j===i}">Lesson ${j+1}</button>`).join('');
+ const [t,b,task]=L[i];le.innerHTML=`<div class="eye">Lesson ${i+1} of ${L.length}</div><h2>${t}</h2>${b}<div class="task"><b>5-minute practice</b>${task}</div>`;
+ pv.disabled=i===0;nx.disabled=false;nx.textContent=i===L.length-1?'Finish ✓':'Next lesson →';}
+st.addEventListener('click',e=>{const b=e.target.closest('[data-j]');if(b){show(+b.dataset.j);le.scrollIntoView({behavior:'smooth',block:'start'})}});
+pv.addEventListener('click',()=>{if(i>0){show(i-1);le.scrollIntoView({behavior:'smooth',block:'start'})}});
+nx.addEventListener('click',()=>{if(i<L.length-1){show(i+1);le.scrollIntoView({behavior:'smooth',block:'start'})}else{le.innerHTML='<div class="eye">Course complete</div><h2>Well done! 🎉</h2><p>You finished AI at Work in 5 Lessons. Keep the momentum: pick one task a day and try it with AI.</p><p><a class="in" href="../prompts/ai-at-work.html">Get the free prompt pack →</a></p>';nx.disabled=true}});
+show(0);
+</script>
+</body></html>
