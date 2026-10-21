@@ -235,4 +235,29 @@ dialog p{color:var(--tx2)!important}
 dialog .close{background:#070914d9!important;border:1px solid #3a4459!important;border-radius:6px!important}
 dialog .go{display:flex;align-items:center;justify-content:center;margin-top:16px;min-height:46px;padding:0 18px;border-radius:6px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;font-size:14px;box-shadow:inset 0 1px 0 #ffffff33}
 </style>
+<style>
+/* USI six category icons in the slider's bottom bar (images never stretched) */
+.dots .ic,.dots .usi-off{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;min-width:46px;width:auto!important;height:auto!important;padding:0 0 7px;border:0;background:none;color:var(--tx2,#9AA3B8);-webkit-tap-highlight-color:transparent}
+.dots .ic{cursor:pointer}
+.dots .usi-im{display:block;width:44px;height:44px;flex:none;object-fit:contain;object-position:50% 50%;border-radius:6px;border:1px solid #283246;background:#070914}
+.dots .ic.on .usi-im{border-color:#3D7BFF;box-shadow:0 0 0 1px #3D7BFF55}
+.dots .usi-off{opacity:.42;cursor:default}
+.dots .ic span,.dots .usi-off span{font-size:9px!important;letter-spacing:.04em;line-height:1;white-space:nowrap}
+@media(max-width:520px){.dots .ic,.dots .usi-off{min-width:38px}.dots .usi-im{width:34px;height:34px}.dots .ic span,.dots .usi-off span{font-size:7.5px!important}.dots{gap:3px!important}}
+</style>
+<script>
+/* Swaps the bottom bar's icons for the six USI categories. Taps on a category that has products use the slider's
+   existing .ic handler (sets the existing filter + render); no carousel code is changed. */
+(()=>{const dots=document.querySelector('.slidenav .dots');if(!dots)return;
+const C=[['AI Agents','AI Agents','ai-agents',['Agent']],['AI Tools & Automation','AI Tools','ai-tools-automation',['Automation','Tool']],
+ ['Prompts & Templates','Prompts','prompts-templates',['Prompt pack','Template']],['Digital Art & Creative Assets','Digital Art','digital-art-creative-assets',[]],
+ ['Courses','Courses','courses',['Course']],['Software','Software','software',[]]];
+function build(){const cur=filter.value||'All',opts=[...filter.options].map(o=>o.value);
+ dots.innerHTML=C.map(([full,short,file,types])=>{const t=types.find(x=>opts.includes(x)&&products.some(p=>p.type===x)),on=types.includes(cur),
+  img=`<img class="usi-im" src="marketplace/cat-icons/${file}.webp" width="192" height="192" alt="" draggable="false">`;
+  return t?`<button class="ic${on?' on':''}" type="button" data-cat="${esc(on?'All':t)}" aria-label="${esc(on?'Show all products':'Show '+full)}" aria-pressed="${on}">${img}<span>${esc(short)}</span></button>`
+   :`<span class="usi-off" role="img" aria-label="${esc(full)}, coming soon">${img}<span>${esc(short)}</span></span>`}).join('');
+ dispatchEvent(new Event('resize'))}
+new MutationObserver(()=>{if(!dots.querySelector('.usi-im'))build()}).observe(dots,{childList:true});build()})();
+</script>
 </body></html>
