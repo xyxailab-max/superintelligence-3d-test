@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#070914"><meta name="robots" content="noindex">
+<title>AI at Work: 25 Ready Prompts · Use Superintelligence</title>
+<meta name="description" content="A free pack of 25 copy-ready AI prompts for email, meetings, planning, research and customers. Works with any AI chat.">
+<link rel="icon" href="../brand/favicon_48.png" sizes="48x48" type="image/png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#070914;--s2:#0E1220;--card:#111725;--line:#283246;--tx:#E9EDFF;--tx2:#9AA3B8;--blue:#3D7BFF;--ice:#7FE0FF;--gold:#F0C674}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:400 15px/1.55 Manrope,system-ui,sans-serif}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--line)}
+.bar a{color:var(--tx2);text-decoration:none;font-size:13px;font-weight:600}
+.logo{display:flex;align-items:center;gap:9px;color:var(--tx)!important}.logo img{height:28px;width:auto}
+main{max-width:860px;margin:0 auto;padding:32px 16px 56px}
+.eye{font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--ice)}
+h1{margin:12px 0 8px;font-size:clamp(28px,5vw,40px);line-height:1.1}
+.lead{color:var(--tx2);margin:0 0 8px}.how{color:var(--tx2);font-size:13px;margin:0 0 28px;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--s2)}
+.how b{color:var(--gold)}
+h2{margin:32px 0 12px;font:600 12px/1 "JetBrains Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--tx2)}
+.p{position:relative;margin:0 0 10px;padding:14px 92px 14px 16px;background:var(--card);border:1px solid var(--line);border-radius:6px}
+.p strong{display:block;margin-bottom:4px;font-size:14px}.p span{color:var(--tx2);font-size:14px}
+.p button{position:absolute;right:10px;top:12px;min-height:34px;padding:0 12px;border-radius:6px;border:1px solid var(--line);background:var(--s2);color:var(--tx);font:600 12px Manrope,sans-serif;cursor:pointer}
+.p button.ok{border-color:var(--blue);color:var(--ice)}
+@media(max-width:520px){.p{padding:14px 14px 56px}.p button{top:auto;bottom:10px;right:10px}}
+.foot{margin-top:36px;color:#6d768a;font-size:12px;text-align:center}.foot a{color:var(--tx2)}
+</style></head><body>
+<header class="bar"><a class="logo" href="../index.html"><img src="../brand/logo-cube.png" alt=""><span>Use Superintelligence</span></a><a href="../marketplace-usi-slider.html">← Marketplace</a></header>
+<main>
+<div class="eye">Free prompt pack</div>
+<h1>AI at Work: 25 Ready Prompts</h1>
+<p class="lead">Copy a prompt, paste it into any AI chat (ChatGPT, Claude, Gemini or our free agents), and fill in the parts in [brackets].</p>
+<p class="how"><b>Tip:</b> the more detail you put in the brackets, the better the answer. If the result isn't right, reply "make it shorter", "more formal" or "give me 3 options".</p>
+<div id="list"></div>
+<p class="foot">Free from Use Superintelligence. Share it with anyone. <a href="../marketplace-usi-slider.html">Back to the Marketplace</a></p>
+</main>
+<script>
+const P=[
+["Email & writing",[
+["Reply to an email","Write a polite, clear reply to this email. My answer is: [your answer]. Keep it under 120 words. Email: [paste email]"],
+["Say no nicely","Help me decline this request politely and keep a good relationship. Offer one alternative if possible. Request: [describe request]"],
+["Follow up","Write a short, friendly follow-up email to [person] about [topic]. It's been [time] since my last message. Make it easy to reply."],
+["Fix my writing","Improve this text so it's clear, confident and easy to read. Keep my meaning and my voice. Show the new version only. Text: [paste text]"],
+["Announcement","Write a short announcement for [audience] about [news]. Include what changes, when, and what they need to do."]]],
+["Meetings",[
+["Agenda","Create a 30-minute meeting agenda for [goal] with [who's attending]. Include time for each item and the decision we need at the end."],
+["Summary","Turn these meeting notes into a summary with: decisions made, action items (who + by when), and open questions. Notes: [paste notes]"],
+["Prepare me","I have a meeting with [person/role] about [topic]. List the 5 questions they will most likely ask me and a short strong answer for each."],
+["Hard conversation","Help me plan a difficult conversation with [person] about [issue]. Give me an opening line, key points, and how to respond if they get upset."],
+["Status update","Write a short weekly status update for my manager. Done: [list]. Next: [list]. Blockers: [list]. Keep it scannable."]]],
+["Planning & productivity",[
+["Break it down","Break this project into small steps I can finish in under an hour each, in order: [describe project and deadline]"],
+["Prioritize","Here is my to-do list. Sort it by urgency and impact, and tell me what to do first, what to delegate and what to drop: [paste list]"],
+["Weekly plan","Make me a realistic weekly plan. My working hours are [hours]. My top goals this week: [goals]. Fixed meetings: [list]."],
+["Decision helper","I'm deciding between [option A] and [option B]. My goal is [goal]. List pros, cons, risks and your recommendation with a reason."],
+["Checklist","Create a step-by-step checklist for [task] so a new person could do it correctly the first time."]]],
+["Research & learning",[
+["Explain simply","Explain [topic] in simple words, like I'm new to it. Then give one real-world example and 3 key terms I should know."],
+["Summarize","Summarize this in 5 bullet points, then one sentence on why it matters for [my job/goal]. Text: [paste text]"],
+["Compare","Compare [option A], [option B] and [option C] for [purpose] in a short table: cost, ease of use, best for, main downside."],
+["Learn fast","Make me a 7-day plan to learn the basics of [skill], 30 minutes a day, with one small practice task each day."],
+["Challenge my idea","Here's my idea: [idea]. Point out the 3 biggest weaknesses and how I could fix each one. Be honest."]]],
+["Customers & business",[
+["Customer reply","Write a calm, helpful reply to this customer. Apologize where it's fair, explain the next step, and keep it short. Message: [paste message]"],
+["Product description","Write a clear product description for [product] aimed at [customer]. Include 3 benefits, who it's for, and a short call to action."],
+["Social post","Write 3 short social media posts announcing [news/product] for [platform]. Friendly tone, one hashtag each."],
+["FAQ","Write 8 frequently asked questions and short answers for [product/service], based on these details: [details]"],
+["Price it","Help me think about pricing [product/service]. My costs are [costs], my customer is [customer]. Suggest 3 price options and who each fits."]]]];
+const L=document.getElementById('list');let n=0;
+L.innerHTML=P.map(([g,items])=>`<h2>${g}</h2>`+items.map(([t,x])=>{n++;return `<div class="p"><strong>${n}. ${t}</strong><span>${x.replace(/</g,'&lt;')}</span><button type="button" data-t="${encodeURIComponent(x)}">Copy</button></div>`}).join('')).join('');
+L.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const t=decodeURIComponent(b.dataset.t);
+ try{await navigator.clipboard.writeText(t)}catch(_){const a=document.createElement('textarea');a.value=t;document.body.append(a);a.select();document.execCommand('copy');a.remove()}
+ b.textContent='Copied';b.classList.add('ok');setTimeout(()=>{b.textContent='Copy';b.classList.remove('ok')},1500)});
+</script>
+</body></html>
