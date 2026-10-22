@@ -241,7 +241,7 @@ dialog .go{display:flex;align-items:center;justify-content:center;margin-top:16p
 /* USI six category icons in the slider's bottom bar (images never stretched) */
 .dots .ic,.dots .usi-off{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;min-width:46px;width:auto!important;height:auto!important;padding:0 0 7px;border:0;background:none;color:var(--tx2,#9AA3B8);-webkit-tap-highlight-color:transparent}
 .dots .ic{cursor:pointer}
-.dots .usi-im{display:block;width:44px;height:44px;flex:none;object-fit:contain;object-position:50% 50%;border-radius:6px;border:1px solid #283246;background:#070914}
+.dots .usi-im{display:block;width:44px;height:44px;flex:none;object-fit:cover;object-position:50% 50%;border-radius:6px;border:1px solid #283246;background:#070914}
 .dots .ic.on .usi-im{border-color:#3D7BFF;box-shadow:0 0 0 1px #3D7BFF55}
 .dots .usi-off{opacity:.42;cursor:default}
 /* category menu hidden: the six icons choose the category (it could mix all categories) */
@@ -258,7 +258,7 @@ const C=[['AI Agents','AI Agents','ai-agents',['Agent']],['AI Tools & Automation
  ['Courses','Courses','courses',['Course']],['Software','Software','software',[]]];
 function build(){const cur=filter.value||'All',opts=[...filter.options].map(o=>o.value);
  dots.innerHTML=C.map(([full,short,file,types])=>{const t=types.find(x=>opts.includes(x)&&products.some(p=>p.type===x)),on=types.includes(cur),
-  img=`<img class="usi-im" src="marketplace/cat-icons/${file}.webp" width="192" height="192" alt="" draggable="false">`;
+  img=`<img class="usi-im" src="marketplace/categories/${file}.webp" width="720" height="960" alt="" draggable="false">`;
   return t?`<button class="ic${on?' on':''}" type="button" data-cat="${esc(on?cur:t)}" aria-label="${esc('Show '+full)}" aria-pressed="${on}">${img}<span>${esc(short)}</span></button>`
    :`<span class="usi-off" role="img" aria-label="${esc(full)}, coming soon">${img}<span>${esc(short)}</span></span>`}).join('');
  dispatchEvent(new Event('resize'))}
