@@ -244,6 +244,8 @@ dialog .go{display:flex;align-items:center;justify-content:center;margin-top:16p
 .dots .usi-im{display:block;width:44px;height:44px;flex:none;object-fit:contain;object-position:50% 50%;border-radius:6px;border:1px solid #283246;background:#070914}
 .dots .ic.on .usi-im{border-color:#3D7BFF;box-shadow:0 0 0 1px #3D7BFF55}
 .dots .usi-off{opacity:.42;cursor:default}
+/* category menu hidden: the six icons choose the category (it could mix all categories) */
+#filter{display:none!important}
 .dots .ic span,.dots .usi-off span{font-size:9px!important;letter-spacing:.04em;line-height:1;white-space:nowrap}
 @media(max-width:520px){.dots .ic,.dots .usi-off{min-width:38px}.dots .usi-im{width:34px;height:34px}.dots .ic span,.dots .usi-off span{font-size:7.5px!important}.dots{gap:3px!important}}
 </style>
@@ -257,9 +259,14 @@ const C=[['AI Agents','AI Agents','ai-agents',['Agent']],['AI Tools & Automation
 function build(){const cur=filter.value||'All',opts=[...filter.options].map(o=>o.value);
  dots.innerHTML=C.map(([full,short,file,types])=>{const t=types.find(x=>opts.includes(x)&&products.some(p=>p.type===x)),on=types.includes(cur),
   img=`<img class="usi-im" src="marketplace/cat-icons/${file}.webp" width="192" height="192" alt="" draggable="false">`;
-  return t?`<button class="ic${on?' on':''}" type="button" data-cat="${esc(on?'All':t)}" aria-label="${esc(on?'Show all products':'Show '+full)}" aria-pressed="${on}">${img}<span>${esc(short)}</span></button>`
+  return t?`<button class="ic${on?' on':''}" type="button" data-cat="${esc(on?cur:t)}" aria-label="${esc('Show '+full)}" aria-pressed="${on}">${img}<span>${esc(short)}</span></button>`
    :`<span class="usi-off" role="img" aria-label="${esc(full)}, coming soon">${img}<span>${esc(short)}</span></span>`}).join('');
  dispatchEvent(new Event('resize'))}
-new MutationObserver(()=>{if(!dots.querySelector('.usi-im'))build()}).observe(dots,{childList:true});build()})();
+new MutationObserver(()=>{if(!dots.querySelector('.usi-im'))build()}).observe(dots,{childList:true});
+/* One category at a time: never show a mixed list. Start on AI Agents; keep any mixed choice (All, Free, Featured) out. */
+const own=t=>C.some(c=>c[3].includes(t));
+const keep=()=>{if(!own(filter.value)){const o=[...filter.options].map(x=>x.value);filter.value=o.includes('Agent')?'Agent':(C.flatMap(c=>c[3]).find(t=>o.includes(t))||filter.value);render()}};
+filter.addEventListener('change',keep);new MutationObserver(()=>{if(!own(filter.value))keep()}).observe(filter,{childList:true});
+keep();build()})();
 </script>
 </body></html>
