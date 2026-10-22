@@ -1,0 +1,71 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#070914"><meta name="robots" content="noindex">
+<title>Caption Writer · Use Superintelligence</title>
+<meta name="description" content="A free caption writer: type what your post is about, pick a platform and tone, and get ready-to-copy captions with hashtags.">
+<link rel="icon" href="../brand/favicon_48.png" sizes="48x48" type="image/png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#070914;--s2:#0E1220;--card:#111725;--line:#283246;--tx:#E9EDFF;--tx2:#9AA3B8;--blue:#3D7BFF;--ice:#7FE0FF;--gold:#F0C674}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:400 15px/1.55 Manrope,system-ui,sans-serif}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--line)}
+.bar a{color:var(--tx2);text-decoration:none;font-size:13px;font-weight:600}
+.logo{display:flex;align-items:center;gap:9px;color:var(--tx)!important}.logo img{height:28px;width:auto}
+main{max-width:860px;margin:0 auto;padding:32px 16px 56px}
+.eye{font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--ice)}
+h1{margin:12px 0 8px;font-size:clamp(28px,5vw,40px);line-height:1.1}
+.lead{color:var(--tx2);margin:0 0 24px}
+label{display:block;margin:0 0 6px;font-size:13px;font-weight:600;color:var(--tx2)}
+textarea,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--tx);font:15px Manrope,sans-serif}
+textarea{min-height:90px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px}
+.go{width:100%;min-height:48px;border:0;border-radius:6px;background:linear-gradient(120deg,#9fe3ff,#c8f1ff);color:#05060f;font:700 15px Manrope,sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}
+h2{margin:32px 0 12px;font:600 12px/1 "JetBrains Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--tx2)}
+.p{position:relative;margin:0 0 10px;padding:14px 92px 14px 16px;background:var(--card);border:1px solid var(--line);border-radius:6px;white-space:pre-line}
+.p button{position:absolute;right:10px;top:12px;min-height:34px;padding:0 12px;border-radius:6px;border:1px solid var(--line);background:var(--s2);color:var(--tx);font:600 12px Manrope,sans-serif;cursor:pointer}
+.p button.ok{border-color:var(--blue);color:var(--ice)}
+.tip{color:var(--tx2);font-size:13px;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--s2)}.tip b{color:var(--gold)}
+@media(max-width:520px){.p{padding:14px 14px 56px}.p button{top:auto;bottom:10px;right:10px}.row{grid-template-columns:1fr}}
+.foot{margin-top:36px;color:#6d768a;font-size:12px;text-align:center}.foot a{color:var(--tx2)}
+</style></head><body>
+<header class="bar"><a class="logo" href="../index.html"><img src="../brand/logo-cube.png" alt=""><span>Use Superintelligence</span></a><a href="../marketplace-usi-slider.html">← Marketplace</a></header>
+<main>
+<div class="eye">Free AI Tool</div>
+<h1>Caption Writer</h1>
+<p class="lead">Type what your post is about, pick where it's going and how it should sound, and get captions ready to copy. Free, no sign-up.</p>
+<label for="topic">What is your post about?</label>
+<textarea id="topic" placeholder="e.g. our new iced coffee, a sunset at the beach, my first marathon"></textarea>
+<div class="row">
+ <div><label for="plat">Platform</label><select id="plat"><option>Instagram</option><option>TikTok</option><option>Facebook</option><option>LinkedIn</option><option>X</option></select></div>
+ <div><label for="tone">Tone</label><select id="tone"><option>Fun</option><option>Warm</option><option>Bold</option><option>Professional</option></select></div>
+</div>
+<button class="go" id="go" type="button">Write my captions</button>
+<div id="out"></div>
+<p class="foot">Made by Use Superintelligence · <a href="https://usesuperintelligence.com/privacy.html">Privacy</a> · <a href="https://usesuperintelligence.com/terms.html">Terms</a></p>
+</main>
+<script>
+const $=id=>document.getElementById(id),esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const T={
+ Fun:["Plot twist: {t} just made my day. 😄","Me, ignoring everything else for {t}. ✨","If {t} is wrong, I don't want to be right. 🙌","Current mood: {t}. Who's with me? 🎉","Warning: {t} may cause extreme happiness. 😎","Not to brag, but {t}. 💫"],
+ Warm:["Grateful for moments like this: {t}. 💛","Some things just feel like home. {t} is one of them.","Little joys matter. Today it's {t}. 🌿","Sharing a bit of happiness with you: {t}.","This one's close to my heart: {t}. ❤️","Slow down and enjoy it. {t}."],
+ Bold:["{T}. No excuses. 🔥","This is what showing up looks like: {t}.","They said it couldn't be done. {T}. 💪","Go big or go home: {t}.","Raising the bar with {t}. Your move.","{T}. Remember this moment."],
+ Professional:["Proud to share: {t}.","A quick look at {t}, and why it matters.","Excited to announce {t}. More to come.","Here's what we learned from {t}.","{T}: a milestone worth sharing with our community.","Thank you to everyone who made {t} possible."]};
+const END={Instagram:"\n\nDouble-tap if you agree. 👇",TikTok:"\n\nWait for it… 👀",Facebook:"\n\nTell me in the comments what you think!",LinkedIn:"\n\nWhat's your take? I'd love to hear it.",X:""};
+const MAXTAGS={Instagram:8,TikTok:5,Facebook:3,LinkedIn:3,X:2};
+const STOP=new Set('a an the my our your their of at in on for to and with is was just new first this that it from by me we i'.split(' '));
+function tags(t,p){const w=t.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(x=>x.length>2&&!STOP.has(x));
+ const set=[...new Set(w)];if(set.length>1)set.unshift(set.join('').slice(0,24));
+ const extra={Instagram:['instagood','photooftheday'],TikTok:['fyp','foryou'],Facebook:[],LinkedIn:['growth'],X:[]}[p];
+ return [...new Set([...set,...extra])].slice(0,MAXTAGS[p]).map(x=>'#'+x).join(' ')}
+function make(){const raw=$('topic').value.trim().replace(/\s+/g,' ').replace(/[.!]+$/,'');
+ if(!raw){$('topic').focus();return}
+ const t=raw.charAt(0).toLowerCase()+raw.slice(1),Tc=raw.charAt(0).toUpperCase()+raw.slice(1),p=$('plat').value,tone=$('tone').value,hs=tags(raw,p);
+ const caps=T[tone].map(s=>{let c=s.replace('{t}',t).replace('{T}',Tc);if(p==='LinkedIn'||tone==='Professional')c=c.replace(/\s?[\u{1F300}-\u{1FAFF}☀-➿]️?/gu,'');return c+END[p]+(hs?'\n\n'+hs:'')});
+ const prompt=`Write 5 ${tone.toLowerCase()} ${p} captions about: ${raw}. Keep each one short, add a call to action, and suggest a few hashtags.`;
+ $('out').innerHTML='<h2>Your captions</h2>'+caps.map(c=>`<div class="p">${esc(c)}<button type="button" data-t="${encodeURIComponent(c)}">Copy</button></div>`).join('')+
+  `<h2>Want more?</h2><div class="p tip"><b>Copy this into any AI chat</b> for even more ideas:\n${esc(prompt)}<button type="button" data-t="${encodeURIComponent(prompt)}">Copy</button></div>`;
+ $('out').scrollIntoView({behavior:'smooth',block:'start'})}
+$('go').addEventListener('click',make);
+$('out').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const t=decodeURIComponent(b.dataset.t);
+ try{await navigator.clipboard.writeText(t)}catch(_){const a=document.createElement('textarea');a.value=t;document.body.append(a);a.select();document.execCommand('copy');a.remove()}
+ b.textContent='Copied';b.classList.add('ok');setTimeout(()=>{b.textContent='Copy';b.classList.remove('ok')},1500)});
+</script>
+</body></html>
