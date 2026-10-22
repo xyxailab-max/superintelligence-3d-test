@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Logo Sign Options</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Poppins:wght@600;700&display=swap">
+<style>
+body{margin:0;background:#070914;color:#9AA3B8;font:14px/1.4 system-ui,sans-serif;padding:24px 16px 60px}
+h1{color:#E9EDFF;font:600 18px/1.3 Poppins,sans-serif;text-align:center;margin:0 0 20px}
+.grid{display:grid;gap:16px;max-width:900px;margin:0 auto;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.opt{background:#0E1220;border:1px solid #283246;border-radius:8px;padding:22px 12px 14px;text-align:center}
+.tag{color:#E9EDFF;font:700 13px/1 "JetBrains Mono",monospace;margin-top:16px}
+.note{font-size:12px;margin-top:4px}
+.si-logo{display:inline-flex;flex-direction:column;align-items:center;gap:8px;line-height:1}
+.si-logo img{height:64px;width:auto}
+.si-w{display:grid;justify-items:center;gap:6px}
+.si-use{font:500 .78rem/1 "JetBrains Mono",monospace;letter-spacing:.9em;padding-left:.9em}
+.si-name{font:600 1.25rem/1 Poppins,sans-serif;letter-spacing:.22em;padding-left:.22em;white-space:nowrap}
+.small{margin-top:14px;padding-top:12px;border-top:1px solid #283246}
+.small .si-logo{gap:6px}.small .si-logo img{height:30px}.small .si-w{gap:3px}
+.small .si-use{font-size:.38rem}.small .si-name{font-size:.64rem}
+.clip{-webkit-background-clip:text;background-clip:text;color:transparent}
+/* A silver + blue */
+.a .si-use{color:#3D8BFF;text-shadow:0 0 6px #2F6BFF99}
+.a .si-name{background:linear-gradient(180deg,#f5f7fa 0%,#d3d8df 42%,#8f96a2 56%,#e4e7ec 100%)}
+/* B bright blue name */
+.b .si-use{color:#D3D8DF}
+.b .si-name{background:linear-gradient(180deg,#bfe0ff 0%,#5aa2ff 45%,#1f5bff 60%,#7fc0ff 100%);filter:drop-shadow(0 0 6px #2F6BFF88)}
+/* C silver with blue glow */
+.c .si-use{color:#5aa2ff;text-shadow:0 0 8px #2F6BFF}
+.c .si-name{background:linear-gradient(180deg,#ffffff 0%,#dfe3e9 45%,#aab1bc 56%,#f0f2f5 100%);filter:drop-shadow(0 0 5px #2F6BFFcc) drop-shadow(0 0 12px #1f5bff66)}
+/* D split */
+.d .si-use{color:#3D8BFF;text-shadow:0 0 6px #2F6BFF99}
+.d .s1{background:linear-gradient(180deg,#f5f7fa,#c3c9d2 50%,#e4e7ec)}
+.d .s2{background:linear-gradient(180deg,#9fd0ff,#3D8BFF 50%,#1f5bff);filter:drop-shadow(0 0 5px #2F6BFF99)}
+/* E neon blue */
+.e .si-use{color:#E9EDFF}
+.e .si-name{color:#eaf3ff;text-shadow:0 0 4px #5aa2ff,0 0 10px #2F6BFF,0 0 20px #1f5bff}
+</style></head><body>
+<h1>Pick a sign: big view on top, real header size below</h1>
+<div class="grid" id="g"></div>
+<script>
+const opts=[['a','A · Silver + blue USE','Silver metal name, bright blue USE'],
+['b','B · Bright blue name','Blue metal name with glow, silver USE'],
+['c','C · Silver with blue glow','Bright silver name, blue light around it'],
+['d','D · Split','SUPER silver, INTELLIGENCE bright blue'],
+['e','E · Neon blue','White name glowing bright blue']];
+const mark=k=>`<span class="si-logo"><img src="brand/logo-cube-v2.png" alt=""><span class="si-w"><span class="si-use">USE</span>`+
+ (k==='d'?`<span class="si-name"><span class="clip s1">SUPER</span><span class="clip s2">INTELLIGENCE</span></span>`
+ :`<span class="si-name${k==='e'?'':' clip'}">SUPERINTELLIGENCE</span>`)+`</span></span>`;
+document.getElementById('g').innerHTML=opts.map(([k,t,n])=>`<div class="opt ${k}">${mark(k)}<div class="small">${mark(k)}</div><div class="tag">${t}</div><div class="note">${n}</div></div>`).join('');
+</script></body></html>
