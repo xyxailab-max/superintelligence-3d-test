@@ -260,10 +260,11 @@
   @media (min-width: 561px) and (max-width: 1100px) { .today { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); } }
   /* Logo: star + USE / SUPERINTELLIGENCE */
   .si-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; line-height: 1; }
-  .si-logo > * { opacity: 0; filter: blur(5px); transform: translateY(-4px); transition: opacity 1s cubic-bezier(.22,.61,.36,1), filter 1s cubic-bezier(.22,.61,.36,1), transform 1s cubic-bezier(.22,.61,.36,1); }
-  .si-logo .si-w { transition-delay: .15s; }
-  .si-logo.in > * { opacity: 1; filter: none; transform: none; }
-  @media (prefers-reduced-motion: reduce) { .si-logo > * { filter: none; transform: none; transition: opacity .4s ease; } }
+  .si-logo .si-star { position: relative; z-index: 2; opacity: 0; filter: brightness(0) blur(6px); transform: scale(.94); transition: opacity 1.8s ease, filter 2.2s cubic-bezier(.4,0,.2,1), transform 2.2s cubic-bezier(.22,.61,.36,1); }
+  .si-logo .si-w { position: relative; z-index: 1; opacity: 0; transform: translateY(14px); filter: blur(3px); transition: opacity 1.4s ease 1.9s, transform 1.6s cubic-bezier(.22,.61,.36,1) 1.9s, filter 1.4s ease 1.9s; }
+  .si-logo.in .si-star { opacity: 1; filter: none; transform: none; }
+  .si-logo.in .si-w { opacity: 1; transform: none; filter: none; }
+  @media (prefers-reduced-motion: reduce) { .si-logo .si-star, .si-logo .si-w { filter: none; transform: none; transition: opacity .5s ease; } }
    .si-star{width:auto;height:30px; flex: none; display: block; }
   .si-w { display: grid; justify-items: center; gap: 3px; }
   .si-use { font: 500 0.38rem/1 "JetBrains Mono", ui-monospace, Menlo, monospace; letter-spacing: 0.9em; padding-left: 0.9em; color: #5aa2ff; }
