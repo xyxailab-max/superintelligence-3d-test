@@ -270,8 +270,9 @@ keep();build()})();
 <!-- FILTER-BUTTON: makes the three-line icon in the search bar open a category menu (delete this block to undo) -->
 <style>
 #usiFilterBtn{position:absolute;right:0;top:0;bottom:0;width:50px;border:0;background:none;cursor:pointer;border-radius:0 999px 999px 0;-webkit-tap-highlight-color:transparent}
-#usiFilterMenu{position:absolute;right:0;top:calc(100% + 8px);z-index:500;min-width:210px;padding:6px;border:1px solid #7fe0ff55;border-radius:16px;background:#08142df2;box-shadow:0 14px 34px #000a;display:none}
+#usiFilterMenu{position:absolute;right:0;top:calc(100% + 8px);z-index:500;min-width:210px;padding:6px;border:1px solid #7fe0ff55;border-radius:16px;background:#08142d;box-shadow:0 14px 34px #000c;display:none}
 #usiFilterMenu.open{display:block}
+header.usi-menu-open{z-index:3000!important}
 #usiFilterMenu button{display:block;width:100%;text-align:left;padding:11px 14px;border:0;border-radius:10px;background:none;color:#e8f0ff;font:13px Manrope,system-ui,sans-serif;cursor:pointer}
 #usiFilterMenu button.on{color:#f0c674;background:#4d371b40}
 #usiFilterMenu button:disabled{color:#7d8aa3;cursor:default}
@@ -280,11 +281,12 @@ keep();build()})();
 (()=>{const tools=document.querySelector('header .tools'),dots=document.querySelector('.slidenav .dots');if(!tools||!dots)return;
 const btn=document.createElement('button');btn.id='usiFilterBtn';btn.type='button';btn.setAttribute('aria-label','Choose a category');btn.setAttribute('aria-expanded','false');
 const menu=document.createElement('div');menu.id='usiFilterMenu';tools.append(btn,menu);
-const close=()=>{menu.classList.remove('open');btn.setAttribute('aria-expanded','false')};
+const hdr=tools.closest('header');
+const close=()=>{hdr.classList.remove('usi-menu-open');menu.classList.remove('open');btn.setAttribute('aria-expanded','false')};
 btn.addEventListener('click',e=>{e.stopPropagation();if(menu.classList.contains('open'))return close();
  menu.innerHTML=[...dots.children].map((el,i)=>{const name=(el.getAttribute('aria-label')||'').replace(/^Show /,'').replace(/, coming soon$/,'');
   return el.classList.contains('ic')?`<button type="button" data-i="${i}" class="${el.classList.contains('on')?'on':''}">${esc(name)}</button>`:`<button type="button" disabled>${esc(name)} · coming soon</button>`}).join('');
- menu.classList.add('open');btn.setAttribute('aria-expanded','true')});
+ hdr.classList.add('usi-menu-open');menu.classList.add('open');btn.setAttribute('aria-expanded','true')});
 menu.addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('[data-i]');if(!b)return;const ic=dots.children[+b.dataset.i];if(ic)ic.click();close()});
 document.addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});})();
 </script>
