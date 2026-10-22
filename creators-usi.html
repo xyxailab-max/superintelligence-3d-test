@@ -1,0 +1,169 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#070914">
+<meta name="robots" content="noindex"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap"><title>For Creators · Use Superintelligence</title>
+<meta name="description" content="List your AI agent, course, prompt pack, template or automation in the Use Superintelligence Marketplace. Free during launch, including Featured.">
+<link rel="icon" href="brand/favicon_48.png" sizes="48x48" type="image/png"><link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap');
+:root{color-scheme:dark;--ice:#7fe0ff;--gold:#f0c674;--bg:#070914;--ink:#eef2ff;--mist:#aab9d4;--good:#7be3a8}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);background:var(--bg);font-family:Manrope,system-ui,sans-serif}
+.bgimg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#070914 url(marketplace/bg/astral-hall-soft.webp) no-repeat 50% 70%/cover}
+.bgimg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#070914cc 0,#07091480 30%,#070914b3 100%)}
+@media(orientation:portrait){.bgimg{background-image:url(marketplace/bg/astral-hall-portrait-soft.webp);background-position:50% 50%}}
+header,main,footer{position:relative;z-index:1}
+header{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px clamp(14px,3vw,40px);flex-wrap:wrap}
+.brand{font:500 clamp(19px,2vw,26px) 'Cormorant Garamond',serif;color:inherit;text-decoration:none;white-space:nowrap}
+.brand span{color:var(--gold);margin-right:8px}.brand small{font:600 10px Manrope,sans-serif;letter-spacing:.24em;color:#a8b8d5;margin-left:10px}
+nav{display:flex;gap:6px;padding:5px;border-radius:24px;background:#07142bcc;border:1px solid #41689b99}
+nav a{padding:8px 14px;border-radius:20px;color:#b7c7e1;text-decoration:none;font-size:12px;white-space:nowrap;border:1px solid transparent}
+nav a.active{color:var(--gold);border-color:#d3ac6277;background:#4d371b35}
+main{max-width:680px;margin:0 auto;padding:24px 16px 40px}
+.eyebrow{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);text-align:center}
+h1{font:500 clamp(36px,6vw,58px)/1.02 'Cormorant Garamond',serif;text-align:center;margin:10px 0 12px}
+h1 em{color:var(--gold)}
+.lead{text-align:center;color:var(--mist);font-size:14px;line-height:1.65;margin:0 auto 22px;max-width:520px}
+.lead b{color:var(--gold)}
+.steps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 0 22px;padding:0;list-style:none}
+.steps li{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;background:#08142dcc;border:1px solid #4777ac66;font-size:12px;color:#c9d6ee}
+.steps b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1px solid #f0c674aa;color:var(--gold);font-size:11px}
+.panel{border-radius:20px;padding:clamp(16px,3vw,26px);background:linear-gradient(165deg,#1a3d9e66 0%,#0e2263aa 40%,#071236dd 100%);border:1px solid #7fe0ff66;box-shadow:inset 0 1px 0 #bff0ff40,0 0 22px #7fe0ff22,0 30px 60px -20px #000c}
+form{display:grid;gap:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label.f{display:grid;gap:5px;font-size:12px;color:var(--mist)}
+.f input,.f select,.f textarea{font:14px/1.3 Manrope,sans-serif;color:var(--ink);background:#060d22d9;border:1px solid #4777ac99;border-radius:12px;padding:11px 12px;width:100%}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--ice);box-shadow:0 0 0 3px #7fe0ff22}
+.f textarea{resize:vertical;min-height:76px}
+.f input[type=file]{padding:9px}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--mist);line-height:1.5}
+.check input{margin-top:2px;accent-color:#f0c674}
+.btn{justify-self:start;padding:12px 22px;border-radius:24px;border:1px solid #d3ac62aa;background:#4d371b66;color:var(--gold);font:600 14px Manrope,sans-serif;cursor:pointer}
+.btn:hover{background:#4d371b99}.btn:disabled{opacity:.6;cursor:wait}
+.msg{font-size:13px;color:var(--mist);margin:0;min-height:1em}.msg.ok{color:var(--good)}.msg.bad{color:#ff9a9a}
+#s-imgprev{display:block;width:150px;aspect-ratio:360/464;object-fit:cover;border-radius:14px;border:1px solid #7fe0ff88;box-shadow:0 0 18px #3d7bff44}
+footer{text-align:center;font-size:11px;color:#869ab8;padding:0 16px max(18px,env(safe-area-inset-bottom))}
+footer a{color:inherit}
+@media(max-width:560px){.two{grid-template-columns:1fr}header{justify-content:center}.brand small{display:none}}
+</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=JetBrains+Mono:wght@500&display=swap"><style>
+/* Official logo (same as the 3D brain page and Agent Hub) */
+.si-logo{display:inline-flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;line-height:1}
+ .si-star{width:auto;height:30px;flex:none;display:block}
+.si-w{display:grid;justify-items:center;gap:3px}
+.si-use{font:500 .38rem/1 "JetBrains Mono",ui-monospace,Menlo,monospace;letter-spacing:.9em;padding-left:.9em;color:#5aa2ff}
+.si-name{font:600 .64rem/1 "Poppins","Manrope",system-ui,sans-serif;letter-spacing:.22em;padding-left:.22em;white-space:nowrap;background:linear-gradient(180deg,#ffffff 0%,#dfe3e9 45%,#aab1bc 56%,#f0f2f5 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media(max-width:420px){.si-star{width:auto;height:24px}.si-name{font-size:.56rem;letter-spacing:.18em}.si-logo{gap:5px}}
+</style></head><body>
+<div class="bgimg" aria-hidden="true"></div>
+<header><a class="si-logo" href="/" aria-label="Use Superintelligence, back to the brain"><img class="si-star" src="brand/logo-cube-v2.png" alt="" aria-hidden="true"><span class="si-w"><span class="si-use">USE</span><span class="si-name">SUPERINTELLIGENCE</span></span></a>
+<nav aria-label="Site"><a href="marketplace-usi-slider.html">Marketplace</a><a class="active" href="creators.html" aria-current="page">For Creators</a><a href="https://usesuperintelligence.com/agents.html">Agent Hub</a></nav></header>
+<main id="sell">
+  <div class="eyebrow">For creators</div>
+  <h1>List your <em>AI product</em></h1>
+  <p class="lead">Agents, courses, prompt packs, templates and automations. Get a place in the Marketplace and share one link instead of answering "send me the link". <b>Free during launch, including Featured.</b></p>
+  <ol class="steps"><li><b>1</b>Submit below</li><li><b>2</b>We review it</li><li><b>3</b>It goes live</li></ol>
+  <div class="panel">
+    <form id="submitForm" novalidate>
+      <div class="two">
+        <label class="f">Your name or brand<input id="s-creator" required maxlength="80" autocomplete="organization"></label>
+        <label class="f">Email (private)<input id="s-email" type="email" required maxlength="120" autocomplete="email"></label>
+      </div>
+      <label class="f">Product name<input id="s-title" required maxlength="100"></label>
+      <div class="two">
+        <label class="f">Type<select id="s-type" required><option value="">Choose…</option><option>Agent</option><option>Course</option><option>Prompt pack</option><option>Template</option><option>Automation</option><option>Tool</option></select></label>
+        <label class="f">Price (0 = free)<input id="s-price" type="number" min="0" step="1" required inputmode="numeric"></label>
+      </div>
+      <label class="f">Link to your product or checkout<input id="s-url" type="url" required maxlength="300" placeholder="https://"></label>
+      <label class="f">What does it do? (one or two sentences)<textarea id="s-desc" required maxlength="400"></textarea></label>
+      <label class="f">Product image (recommended; JPG, PNG or WebP; we fit it to the card shape automatically)<input id="s-image" type="file" accept="image/png,image/jpeg,image/webp"></label>
+      <label class="f">Your social profile (optional)<input id="s-social" maxlength="200" placeholder="@yourhandle or a link"></label>
+      <label class="check"><input id="s-ok" type="checkbox" required> I own this product or have the right to sell it, and I agree to have it reviewed before it's listed and to the <a href="https://usesuperintelligence.com/terms.html" target="_blank" style="color:inherit">Terms</a>.</label>
+      <button class="btn" id="s-btn" type="submit">Submit for review</button>
+      <p class="msg" id="s-msg" role="status"></p>
+    </form>
+  </div>
+</main>
+<footer>Use Superintelligence reviews every listing before it goes live. <a href="https://usesuperintelligence.com/privacy.html">Privacy</a> · <a href="https://usesuperintelligence.com/terms.html">Terms</a></footer>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  // On the TEST site (github.io) nothing is sent: the form shows a preview message instead.
+  async function post(path, body) {
+    if (location.protocol === "file:" || /github\.io$/.test(location.hostname)) return { preview: true };
+    const res = await fetch("/api" + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+    return data;
+  }
+  // Crop to the card shape (360:464) at 720x928 and shrink before upload
+  function cardImage(file) {
+    return new Promise(function (ok, bad) {
+      if (!/^image\/(png|jpeg|webp)$/.test(file.type)) return bad(new Error("Image must be a JPG, PNG or WebP."));
+      if (file.size > 15e6) return bad(new Error("That image is too large. Please use one under 15 MB."));
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        const W = 720, H = 928, c = document.createElement("canvas"); c.width = W; c.height = H;
+        const s = Math.max(W / img.naturalWidth, H / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
+        const g = c.getContext("2d"); g.fillStyle = "#070914"; g.fillRect(0, 0, W, H); g.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+        let d = c.toDataURL("image/webp", 0.85); if (!/^data:image\/webp/.test(d)) d = c.toDataURL("image/jpeg", 0.85);
+        if (d.length > 680000) d = c.toDataURL("image/jpeg", 0.7);
+        if (d.length > 680000) return bad(new Error("Couldn't shrink that image enough. Please try a simpler one."));
+        ok(d);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); bad(new Error("Couldn't read that image.")); };
+      img.src = url;
+    });
+  }
+  // Show the creator how their card image will look
+  $("s-image").addEventListener("change", async function () {
+    let pv = $("s-imgprev"); const f = this.files && this.files[0];
+    if (!f) { if (pv) pv.remove(); return; }
+    if (!pv) { pv = document.createElement("img"); pv.id = "s-imgprev"; pv.alt = "How your card image will look"; this.closest("label").after(pv); }
+    try { pv.src = await cardImage(f); } catch (e) { pv.remove(); $("s-msg").className = "msg bad"; $("s-msg").textContent = e.message; }
+  });
+  $("submitForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); const m = $("s-msg"), btn = $("s-btn");
+    const v = (id) => $(id).value.trim();
+    const data = { creator: v("s-creator"), email: v("s-email"), title: v("s-title"), type: v("s-type"), price: v("s-price"), url: v("s-url"), desc: v("s-desc"), social: v("s-social") };
+    const miss = !data.creator || !data.title || !data.type || data.price === "" || !data.desc;
+    if (miss) { m.className = "msg bad"; m.textContent = "Fill in every field except your social profile."; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { m.className = "msg bad"; m.textContent = "Enter a valid email address."; return; }
+    if (!/^https:\/\/\S+\.\S+/.test(data.url)) { m.className = "msg bad"; m.textContent = "The product link must start with https://"; return; }
+    if (!$("s-ok").checked) { m.className = "msg bad"; m.textContent = "Please confirm you own the product or have the right to sell it."; return; }
+    btn.disabled = true;
+    try { const f = $("s-image").files && $("s-image").files[0]; if (f) data.image = await cardImage(f); } catch (err) { m.className = "msg bad"; m.textContent = err.message; btn.disabled = false; return; }
+    try {
+      const r = await post("/submit", data); m.className = "msg ok";
+      m.textContent = r.preview ? "Preview only: on the live site this sends your product for review." : "Submitted! We'll email you after we review it.";
+      if (!r.preview) { this.reset(); const pv = $("s-imgprev"); if (pv) pv.remove(); }
+    } catch (err) { m.className = "msg bad"; m.textContent = err.message; } finally { btn.disabled = false; }
+  });
+})();
+</script>
+<style>
+/* ===== USI cube-logo style for Creators (visual only, no glow) ===== */
+:root{--line:#283246;--s2:#0E1220;--card:#111725;--eb:#2F6BFF;--eb2:#5aa2ff;--tx:#E9EDFF;--tx2:#9AA3B8;
+ --sil:linear-gradient(180deg,#f4f6f9 0%,#cfd4dc 40%,#8f96a2 55%,#dde1e7 100%)}
+body{background:#070914!important}
+.bgimg{background:#070914!important}.bgimg:after{display:none!important}
+header{border-bottom:1px solid var(--line)}
+nav{background:var(--s2)!important;border:1px solid #3a4459!important;border-radius:8px!important}
+nav a{border-radius:6px!important;color:var(--tx2)!important}
+nav a.active{color:var(--tx)!important;background:#16213a!important;border-color:var(--eb)!important}
+.eyebrow{color:var(--eb2)!important;font-family:"JetBrains Mono",ui-monospace,monospace}
+h1{font:700 clamp(30px,5vw,46px)/1.1 Manrope,system-ui,sans-serif!important;letter-spacing:-.01em}
+h1 em{font-style:normal;color:transparent;background-image:var(--sil);-webkit-background-clip:text;background-clip:text}
+.lead{color:var(--tx2)!important}.lead b{color:var(--tx)!important}
+.steps li{background:var(--s2)!important;border:1px solid #3a4459!important;border-radius:6px!important;color:var(--tx)!important}
+.steps b{border-color:var(--eb)!important;color:var(--eb2)!important}
+.panel{border-radius:8px!important;border:1px solid transparent!important;
+ background:linear-gradient(180deg,#121a2c,#0b101c) padding-box,var(--sil) border-box!important;box-shadow:0 20px 40px -18px #000!important}
+label.f{color:var(--tx2)!important}
+.f input,.f select,.f textarea{background:var(--s2)!important;border:1px solid #3a4459!important;border-radius:6px!important;color:var(--tx)!important}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--eb)!important;box-shadow:none!important}
+.check{color:var(--tx2)!important}.check input{accent-color:var(--eb)!important}
+.btn{background:var(--eb)!important;border:1px solid var(--eb)!important;color:#fff!important;border-radius:6px!important}
+.btn:hover{background:#2559d9!important}
+#s-imgprev{border-radius:6px!important;border:1px solid #3a4459!important;box-shadow:none!important}
+.si-use{color:#5aa2ff!important}
+</style>
+</body></html>
