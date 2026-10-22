@@ -241,8 +241,8 @@ dialog .go{display:flex;align-items:center;justify-content:center;margin-top:16p
 /* USI six category icons in the slider's bottom bar (images never stretched) */
 .dots .ic,.dots .usi-off{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;min-width:46px;width:auto!important;height:auto!important;padding:0 0 7px;border:0;background:none;color:var(--tx2,#9AA3B8);-webkit-tap-highlight-color:transparent}
 .dots .ic{cursor:pointer}
-.dots .usi-im{display:block;width:44px;height:44px;flex:none;object-fit:cover;object-position:50% 50%;border-radius:6px;border:1px solid #283246;background:#070914}
-.dots .ic.on .usi-im{border-color:#3D7BFF;box-shadow:0 0 0 1px #3D7BFF55}
+.dots .usi-im{display:block;width:44px;height:44px;flex:none;object-fit:contain;object-position:50% 50%}
+
 .dots .usi-off{opacity:.42;cursor:default}
 /* category menu hidden: the six icons choose the category (it could mix all categories) */
 #filter{display:none!important}
@@ -269,4 +269,5 @@ const keep=()=>{if(!own(filter.value)){const o=[...filter.options].map(x=>x.valu
 filter.addEventListener('change',keep);new MutationObserver(()=>{if(!own(filter.value))keep()}).observe(filter,{childList:true});
 keep();build()})();
 </script>
+<style>/* transparent category art: show whole image, no added effects */#grid .pic img[src*="marketplace/categories/"],dialog .pic img[src*="marketplace/categories/"]{object-fit:contain!important;transform:none!important}</style>
 </body></html>
