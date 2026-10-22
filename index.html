@@ -8,6 +8,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="brand/favicon_32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="brand/favicon_48.png">
 <link rel="apple-touch-icon" sizes="180x180" href="brand/apple-touch-icon.png">
+<link rel="preload" as="image" href="brand/logo-horizontal.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -41,7 +42,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 #toast span{display:block;margin-top:8px;font:600 11px/1 Manrope,system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
 @media(max-width:640px){#dest{bottom:max(160px,calc(env(safe-area-inset-bottom) + 150px))}}
 #brand{position:fixed;left:max(18px,env(safe-area-inset-left));top:max(14px,env(safe-area-inset-top));z-index:4;display:block;line-height:0;transition:opacity .9s ease}
-#brand img{display:block;height:52px;width:auto}
+#brand img{display:block;height:52px;width:auto;opacity:0;transform:translateY(-6px) scale(.98);filter:blur(6px);transition:opacity 1.1s cubic-bezier(.22,.61,.36,1),transform 1.1s cubic-bezier(.22,.61,.36,1),filter 1.1s cubic-bezier(.22,.61,.36,1)}
+#brand img.in{opacity:1;transform:none;filter:none}
+@media(prefers-reduced-motion:reduce){#brand img{transform:none;filter:none;transition:opacity .4s ease}}
 @media(max-width:1024px){#brand img{height:44px}}
 @media(max-width:640px){#brand img{height:38px}}
 #glowT{position:fixed;left:max(14px,env(safe-area-inset-left));top:calc(max(14px,env(safe-area-inset-top)) + 62px);z-index:4;border:1px solid rgba(127,224,255,.35);background:rgba(14,18,38,.6);color:#E9EDFF;font:600 12px/1 Manrope,system-ui,sans-serif;letter-spacing:.06em;padding:9px 13px;border-radius:99px;cursor:pointer;transition:opacity .9s ease}
@@ -56,7 +59,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 <canvas id="scene" aria-label="Use Superintelligence: an interactive 3D crystal brain"></canvas>
 <div id="labels"></div>
 <a id="credit" href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html" target="_blank" rel="noopener">3D anatomy: BodyParts3D © DBCLS, CC BY 4.0 (modified)</a>
-<a id="brand" href="./" aria-label="Use Super Intelligence — home"><img src="brand/logo-horizontal.webp" width="238" height="120" alt="Use Super Intelligence" draggable="false"></a>
+<a id="brand" href="./" aria-label="Use Super Intelligence — home"><img src="brand/logo-horizontal.webp" width="238" height="120" alt="Use Super Intelligence" draggable="false" fetchpriority="high" decoding="async"></a>
+<script>(function(){var i=document.querySelector('#brand img');function show(){requestAnimationFrame(function(){requestAnimationFrame(function(){i.classList.add('in')})})}function go(){(i.decode?i.decode():Promise.resolve()).then(show,show)}if(i.complete&&i.naturalWidth)go();else{i.addEventListener('load',go,{once:true});i.addEventListener('error',show,{once:true})}setTimeout(show,2500)})();</script>
 <nav id="dock" aria-label="Main">
   <a href="marketplace-v5.html">Marketplace</a>
   <a href="https://usesuperintelligence.com/marketplace.html#sell">For Creators</a>
