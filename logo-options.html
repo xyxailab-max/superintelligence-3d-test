@@ -18,30 +18,30 @@ h1{color:#E9EDFF;font:600 18px/1.3 Poppins,sans-serif;text-align:center;margin:0
 .small .si-use{font-size:.38rem}.small .si-name{font-size:.64rem}
 .clip{-webkit-background-clip:text;background-clip:text;color:transparent}
 /* A silver + blue */
-.a .si-use{color:#3D8BFF;text-shadow:0 0 6px #2F6BFF99}
+.a .si-use{color:#3D8BFF}
 .a .si-name{background:linear-gradient(180deg,#f5f7fa 0%,#d3d8df 42%,#8f96a2 56%,#e4e7ec 100%)}
 /* B bright blue name */
 .b .si-use{color:#D3D8DF}
-.b .si-name{background:linear-gradient(180deg,#bfe0ff 0%,#5aa2ff 45%,#1f5bff 60%,#7fc0ff 100%);filter:drop-shadow(0 0 6px #2F6BFF88)}
+.b .si-name{background:linear-gradient(180deg,#bfe0ff 0%,#5aa2ff 45%,#1f5bff 60%,#7fc0ff 100%)}
 /* C silver with blue glow */
-.c .si-use{color:#5aa2ff;text-shadow:0 0 8px #2F6BFF}
-.c .si-name{background:linear-gradient(180deg,#ffffff 0%,#dfe3e9 45%,#aab1bc 56%,#f0f2f5 100%);filter:drop-shadow(0 0 5px #2F6BFFcc) drop-shadow(0 0 12px #1f5bff66)}
+.c .si-use{color:#5aa2ff}
+.c .si-name{background:linear-gradient(180deg,#ffffff 0%,#dfe3e9 45%,#aab1bc 56%,#f0f2f5 100%)}
 /* D split */
-.d .si-use{color:#3D8BFF;text-shadow:0 0 6px #2F6BFF99}
+.d .si-use{color:#3D8BFF}
 .d .s1{background:linear-gradient(180deg,#f5f7fa,#c3c9d2 50%,#e4e7ec)}
-.d .s2{background:linear-gradient(180deg,#9fd0ff,#3D8BFF 50%,#1f5bff);filter:drop-shadow(0 0 5px #2F6BFF99)}
+.d .s2{background:linear-gradient(180deg,#9fd0ff,#3D8BFF 50%,#1f5bff)}
 /* E neon blue */
 .e .si-use{color:#E9EDFF}
-.e .si-name{color:#eaf3ff;text-shadow:0 0 4px #5aa2ff,0 0 10px #2F6BFF,0 0 20px #1f5bff}
+.e .si-name{color:#3D8BFF}
 </style></head><body>
 <h1>Pick a sign: big view on top, real header size below</h1>
 <div class="grid" id="g"></div>
 <script>
 const opts=[['a','A · Silver + blue USE','Silver metal name, bright blue USE'],
-['b','B · Bright blue name','Blue metal name with glow, silver USE'],
-['c','C · Silver with blue glow','Bright silver name, blue light around it'],
+['b','B · Bright blue name','Blue metal name, silver USE'],
+['c','C · Bright silver','Brighter silver name, blue USE'],
 ['d','D · Split','SUPER silver, INTELLIGENCE bright blue'],
-['e','E · Neon blue','White name glowing bright blue']];
+['e','E · Solid blue','Plain solid bright blue name, white USE']];
 const mark=k=>`<span class="si-logo"><img src="brand/logo-cube-v2.png" alt=""><span class="si-w"><span class="si-use">USE</span>`+
  (k==='d'?`<span class="si-name"><span class="clip s1">SUPER</span><span class="clip s2">INTELLIGENCE</span></span>`
  :`<span class="si-name${k==='e'?'':' clip'}">SUPERINTELLIGENCE</span>`)+`</span></span>`;
