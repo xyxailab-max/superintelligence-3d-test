@@ -255,7 +255,7 @@ const C=[['AI Agents','AI Agents','ai-agents',['Agent']],['AI Tools & Automation
  ['Courses','Courses','courses',['Course']],['Software','Software','software',[]]];
 function build(){const cur=filter.value||'All',opts=[...filter.options].map(o=>o.value);
  dots.innerHTML=C.map(([full,short,file,types])=>{const t=types.find(x=>opts.includes(x)&&products.some(p=>p.type===x)),on=types.includes(cur),
-  img=`<img class="usi-im" src="marketplace/categories/${file}.webp?v=17" width="720" height="960" alt="" draggable="false">`;
+  img=`<img class="usi-im" src="marketplace/categories/${file}.webp?v=18" width="720" height="960" alt="" draggable="false">`;
   return t?`<button class="ic${on?' on':''}" type="button" data-cat="${esc(on?cur:t)}" aria-label="${esc('Show '+full)}" aria-pressed="${on}">${img}<span>${esc(short)}</span></button>`
    :`<span class="usi-off" role="img" aria-label="${esc(full)}, coming soon">${img}<span>${esc(short)}</span></span>`}).join('');
  dispatchEvent(new Event('resize'))}
