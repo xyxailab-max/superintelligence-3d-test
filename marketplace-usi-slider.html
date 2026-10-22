@@ -30,8 +30,8 @@ let products=[
  ["email","Agent","Email Writer","Drafts clear, polite, ready-to-send emails for any situation."],
  ["quiz","Agent","Quiz Master","Runs a multiple-choice quiz on any topic and keeps your score."]
 ].map(([a,type,title,desc])=>({id:'house'+a,type,title,desc,price:0,creator:'Use Superintelligence',url:SITE+'/agents/'+a,house:true,featured:false,image:'marketplace/astral-v2/'+title.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.webp',gets:HOUSE_GETS}));
-products.push({id:'houseprompts-work',type:'Prompt pack',title:'AI at Work Prompt Pack',desc:'25 copy-ready prompts for email, meetings, planning, research and customers. Works with any AI chat.',price:0,creator:'Use Superintelligence',url:'https://xyxailab-max.github.io/superintelligence-3d-test/prompts/ai-at-work.html',house:true,featured:false,image:'marketplace/categories/prompts-templates.webp?v=10',gets:['Free, no sign-up','25 prompts in 5 groups','One-tap copy']});
-products.push({id:'housecourse-work',type:'Course',title:'AI at Work in 5 Lessons',desc:'A free beginner mini-course: 5 short lessons, each with a 5-minute practice task. About 30 minutes total.',price:0,creator:'Use Superintelligence',url:'https://xyxailab-max.github.io/superintelligence-3d-test/courses/ai-at-work.html',house:true,featured:false,image:'marketplace/categories/courses.webp?v=10',gets:['Free, no sign-up','5 lessons, about 30 minutes','Practice task in every lesson']});
+products.push({id:'houseprompts-work',type:'Prompt pack',title:'AI at Work Prompt Pack',desc:'25 copy-ready prompts for email, meetings, planning, research and customers. Works with any AI chat.',price:0,creator:'Use Superintelligence',url:'https://xyxailab-max.github.io/superintelligence-3d-test/prompts/ai-at-work.html',house:true,featured:false,image:'marketplace/categories/prompts-templates.webp?v=11',gets:['Free, no sign-up','25 prompts in 5 groups','One-tap copy']});
+products.push({id:'housecourse-work',type:'Course',title:'AI at Work in 5 Lessons',desc:'A free beginner mini-course: 5 short lessons, each with a 5-minute practice task. About 30 minutes total.',price:0,creator:'Use Superintelligence',url:'https://xyxailab-max.github.io/superintelligence-3d-test/courses/ai-at-work.html',house:true,featured:false,image:'marketplace/categories/courses.webp?v=11',gets:['Free, no sign-up','5 lessons, about 30 minutes','Practice task in every lesson']});
 const TYPES=["All","Featured","Free","Agent","Course","Prompt pack","Template","Automation","Tool"];
 const grid=document.getElementById('grid'),dock=document.getElementById('dock'),filter=document.getElementById('filter'),search=document.getElementById('search'),detail=document.getElementById('detail');
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -258,7 +258,7 @@ const C=[['AI Agents','AI Agents','ai-agents',['Agent']],['AI Tools & Automation
  ['Courses','Courses','courses',['Course']],['Software','Software','software',[]]];
 function build(){const cur=filter.value||'All',opts=[...filter.options].map(o=>o.value);
  dots.innerHTML=C.map(([full,short,file,types])=>{const t=types.find(x=>opts.includes(x)&&products.some(p=>p.type===x)),on=types.includes(cur),
-  img=`<img class="usi-im" src="marketplace/categories/${file}.webp?v=10" width="720" height="960" alt="" draggable="false">`;
+  img=`<img class="usi-im" src="marketplace/categories/${file}.webp?v=11" width="720" height="960" alt="" draggable="false">`;
   return t?`<button class="ic${on?' on':''}" type="button" data-cat="${esc(on?cur:t)}" aria-label="${esc('Show '+full)}" aria-pressed="${on}">${img}<span>${esc(short)}</span></button>`
    :`<span class="usi-off" role="img" aria-label="${esc(full)}, coming soon">${img}<span>${esc(short)}</span></span>`}).join('');
  dispatchEvent(new Event('resize'))}
