@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Email Signature</title>
+<style>
+  body{margin:0;background:#0b0f17;color:#e6e9ef;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:24px 16px}
+  .wrap{max-width:560px;margin:0 auto}
+  h1{font-size:18px;margin:0 0 16px;font-weight:600}
+  .card{border-radius:14px;padding:22px;margin-bottom:14px}
+  .light{background:#ffffff}
+  .dark{background:#1b1c1f}
+  .label{font-size:12px;color:#8a93a6;margin:0 0 6px}
+  button{width:100%;padding:14px;border:0;border-radius:10px;background:#2f6bff;color:#fff;font-size:16px;font-weight:600;margin:6px 0 18px}
+  ol{padding-left:20px;line-height:1.6;font-size:14px;color:#c3c9d5}
+  a{color:#7fa6ff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Use Superintelligence — Email Signature</h1>
+
+  <p class="label">Preview on white (light mode)</p>
+  <div class="card light"><div id="sig">
+<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Helvetica,Arial,sans-serif;">
+  <tr>
+    <td style="padding:0 16px 0 0;vertical-align:middle;">
+      <a href="https://usesuperintelligence.com" style="text-decoration:none;"><img src="https://xyxailab-max.github.io/superintelligence-3d-test/brand/logo-cube-v2.png" width="56" height="64" alt="Use Superintelligence" style="display:block;border:0;width:56px;height:64px;"></a>
+    </td>
+    <td style="padding:0 0 0 16px;border-left:2px solid #2f6bff;vertical-align:middle;">
+      <div style="font-size:16px;font-weight:bold;color:#7d8696;line-height:20px;">Akmal Ibragimov</div>
+      <div style="font-size:13px;color:#7d8696;line-height:18px;">Founder</div>
+      <div style="font-size:13px;font-weight:bold;letter-spacing:2px;line-height:22px;padding-top:4px;"><span style="color:#2f6bff;">USE</span> <span style="color:#7d8696;">SUPERINTELLIGENCE</span></div>
+      <div style="font-size:13px;line-height:18px;">
+        <a href="https://usesuperintelligence.com" style="color:#2f6bff;text-decoration:none;">usesuperintelligence.com</a>
+        <span style="color:#7d8696;">&nbsp;|&nbsp;</span>
+        <a href="mailto:hello@usesuperintelligence.com" style="color:#2f6bff;text-decoration:none;">hello@usesuperintelligence.com</a>
+      </div>
+      <div style="font-size:12px;font-style:italic;color:#7d8696;line-height:18px;padding-top:4px;">The greatest intelligence is the one we share.</div>
+    </td>
+  </tr>
+</table>
+  </div></div>
+
+  <p class="label">Preview on dark (Gmail dark mode)</p>
+  <div class="card dark" id="sigdark"></div>
+
+  <button id="copy">Copy signature</button>
+
+  <ol>
+    <li>Tap <b>Copy signature</b>.</li>
+    <li>Open Gmail settings in a browser (desktop view): <a href="https://mail.google.com/mail/u/0/#settings/general">mail.google.com/mail/u/0/#settings/general</a></li>
+    <li>Signature → select the old one, delete it, paste the new one.</li>
+    <li>Scroll down → <b>Save Changes</b>.</li>
+  </ol>
+</div>
+<script>
+  var sig=document.getElementById('sig');
+  document.getElementById('sigdark').innerHTML=sig.innerHTML;
+  document.getElementById('copy').onclick=function(){
+    var b=this;
+    try{
+      var html=sig.innerHTML;
+      navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([sig.innerText],{type:'text/plain'})})]).then(function(){b.textContent='Copied ✓';},fallback);
+    }catch(e){fallback();}
+    function fallback(){
+      var r=document.createRange();r.selectNodeContents(sig);var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      document.execCommand('copy');s.removeAllRanges();b.textContent='Copied ✓';
+    }
+  };
+</script>
+</body>
+</html>
