@@ -22,6 +22,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 #dock a{color:var(--mist);text-decoration:none;font:600 12px/1 Manrope,system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;opacity:.7;padding:12px 2px;white-space:nowrap;transition:opacity .3s,color .3s}
 #dock a:hover,#dock a:focus-visible{opacity:1;color:var(--ink);outline:none}
 #credit{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(6px,env(safe-area-inset-bottom));z-index:4;font:500 9.5px/1.3 Manrope,system-ui,sans-serif;letter-spacing:.02em;color:rgba(154,163,199,.55);text-decoration:none;transition:opacity .9s ease}
+#legal{position:fixed;left:max(10px,env(safe-area-inset-left));bottom:max(6px,env(safe-area-inset-bottom));z-index:4;font:500 9.5px/1.3 Manrope,system-ui,sans-serif;letter-spacing:.02em;color:rgba(154,163,199,.55);transition:opacity .9s ease}#legal a{color:inherit;text-decoration:none}#legal a:hover,#legal a:focus-visible{color:rgba(233,237,255,.9);outline:none}#legal.hide{opacity:0;pointer-events:none}
 #credit:hover,#credit:focus-visible{color:rgba(233,237,255,.9);outline:none}
 .hide{opacity:0!important;pointer-events:none!important}
 #hud{position:fixed;inset:0;pointer-events:none;z-index:3;transition:opacity .8s ease}
@@ -55,6 +56,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--void)
 <body>
 <canvas id="scene" aria-label="Use Superintelligence: an interactive 3D crystal brain"></canvas>
 <div id="labels"></div>
+<nav id="legal" aria-label="Legal"><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></nav>
 <a id="credit" href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html" target="_blank" rel="noopener">3D anatomy: BodyParts3D © DBCLS, CC BY 4.0 (modified)</a>
 <a id="brand" href="./" aria-label="Use Super Intelligence — home"><img src="brand/logo-horizontal.webp" width="238" height="120" alt="Use Super Intelligence" draggable="false"></a>
 <nav id="dock" aria-label="Main">
@@ -775,12 +777,12 @@ const _qa=new THREE.Quaternion(),_qb=new THREE.Quaternion(),AX=new THREE.Vector3
 function rotateBrain(dx,dy){_qa.setFromAxisAngle(AY,dx);_qb.setFromAxisAngle(AX,dy);brain.quaternion.premultiply(_qa).premultiply(_qb)}
 function hubFov(){const a=camera.aspect;return clamp(2*Math.atan(Math.tan(32.5*Math.PI/180)/a)*180/Math.PI,46,80)}
 
-function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');brand.classList.add('hide');$('credit').classList.add('hide');$('glowT').classList.add('hide');buildHub()}
+function startEntrance(){if(state!=='brain')return;state='enter';E=0;veil.style.background='';dock.classList.add('hide');brand.classList.add('hide');$('credit').classList.add('hide');$('legal').classList.add('hide');$('glowT').classList.add('hide');buildHub()}
 function toHub(){renderer.toneMappingExposure=1.2;cosmos.rotation.x=.33;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=false;current=hubScene;hubScene.add(cosmos);camera.fov=hubFov();camera.updateProjectionMatrix();camera.rotation.order='YXZ';P.x=ENTRY.x;P.z=ENTRY.z;P.yaw=P.yawT=0;P.pitch=P.pitchT=.2;resetQuality()}
 function arriveHub(){state='hub';hud.hidden=false;hud.classList.remove('hide');veil.style.opacity=0;fadeEl.style.opacity=0}
 function requestSkip(){if(state==='enter'&&skipT<0)skipT=0}
 function exitHub(){if(state!=='hub')return;state='leave';E=0}
-function toBrain(){$('credit').classList.remove('hide');$('glowT').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');brand.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
+function toBrain(){$('credit').classList.remove('hide');$('legal').classList.remove('hide');$('glowT').classList.remove('hide');renderer.toneMappingExposure=1;cosmos.rotation.x=0;galaxies[0].visible=galaxies[1].visible=planets[0].visible=planets[2].visible=true;setDest(null);$('toast').style.opacity=0;current=brainScene;brainScene.add(cosmos);camera.fov=40;camera.updateProjectionMatrix();camera.rotation.order='XYZ';zoom.v=zoom.t=0;rotVel.x=rotVel.y=0;brain.quaternion.copy(brainQ0);hud.hidden=true;dock.classList.remove('hide');brand.classList.remove('hide');for(const s of hub.spheres)s.el.style.opacity=0;resetQuality()}
 
 // Pointers: brain = 1-finger rotate + pinch zoom; hub = swipe to look.
 const cv=renderer.domElement,ptrs=new Map();let pinch0=0;
