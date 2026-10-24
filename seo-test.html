@@ -859,7 +859,7 @@
     if (/[?&]shell=live\b/.test(location.search) || !window.DecompressionStream || !window.fetch) return;
     const SX = 2.62, SY = 2.45, SZ = 2.53, OY = -0.035;   // fits the atlas brain around everything the live brain holds
     const randn = function () { const u = Math.random() || 1e-6, v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.2831853 * v); };
-    fetch("brain/brain-" + (isSmall ? "lo" : "hi") + ".b64.txt")
+    fetch("https://xyxailab-max.github.io/superintelligence-3d-test/brain/brain-" + (isSmall ? "lo" : "hi") + ".b64.txt")
       .then(function (r) { if (!r.ok) throw new Error("brain " + r.status); return r.text(); })
       .then(function (t) {
         const bin = atob(t.trim()), u = new Uint8Array(bin.length);
