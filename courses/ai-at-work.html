@@ -1,7 +1,13 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#070914"><meta name="robots" content="noindex">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#070914">
 <title>AI at Work in 5 Lessons · Free Mini-Course · Use Superintelligence</title>
 <meta name="description" content="A free beginner mini-course: learn to use AI at work in 5 short lessons, each with a 5-minute practice task.">
-<link rel="icon" href="../brand/favicon_48.png" sizes="48x48" type="image/png">
+<link rel="icon" href="/favicon.ico?v=4" sizes="any">
+<link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png?v=4" sizes="48x48" type="image/png">
+<link rel="icon" href="/favicon-96.png?v=4" sizes="96x96" type="image/png">
+<link rel="icon" href="/favicon-192.png?v=4" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" sizes="180x180">
+<link rel="manifest" href="/site.webmanifest?v=3">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 :root{color-scheme:dark;--bg:#070914;--s2:#0E1220;--card:#111725;--line:#283246;--tx:#E9EDFF;--tx2:#9AA3B8;--blue:#3D7BFF;--ice:#7FE0FF;--gold:#F0C674}
@@ -29,7 +35,7 @@ h1{margin:12px 0 8px;font-size:clamp(28px,5vw,40px);line-height:1.1}
 a.in{color:var(--ice)}
 .foot{margin-top:36px;color:#6d768a;font-size:12px;text-align:center}.foot a{color:var(--tx2)}
 </style></head><body>
-<header class="bar"><a class="logo" href="../index.html"><img src="../brand/logo-cube.png" alt=""><span>Use Superintelligence</span></a><a href="../marketplace-usi-slider.html">← Marketplace</a></header>
+<header class="bar"><a class="logo" href="/"><img src="/brand/logo-cube.png?v=2" alt=""><span>Use Superintelligence</span></a><a href="/marketplace.html">← Marketplace</a></header>
 <main>
 <div class="eye">Free mini-course · 5 lessons · about 30 minutes</div>
 <h1>AI at Work in 5 Lessons</h1>
@@ -37,7 +43,7 @@ a.in{color:var(--ice)}
 <div class="steps" id="steps" role="tablist" aria-label="Lessons"></div>
 <article class="lesson" id="lesson" aria-live="polite"></article>
 <div class="nav"><button id="prev" type="button">← Back</button><button class="next" id="next" type="button">Next lesson →</button></div>
-<p class="foot">Free from Use Superintelligence. <a href="../prompts/ai-at-work.html">Get the free prompt pack</a> · <a href="../marketplace-usi-slider.html">Back to the Marketplace</a></p>
+<p class="foot">Free from Use Superintelligence. <a href="/prompts/ai-at-work.html">Get the free prompt pack</a> · <a href="/marketplace.html">Back to the Marketplace</a></p>
 </main>
 <script>
 const L=[
@@ -55,7 +61,7 @@ const L=[
 "Ask for a short bio for yourself, then improve it with at least three follow-up messages. Notice how much better the third version is."],
 ["Everyday work tasks",`<p>The biggest wins come from tasks you do every week:</p>
 <ul><li><b>Email:</b> replies, follow-ups, saying no politely.</li><li><b>Meetings:</b> agendas before, summaries and action items after.</li><li><b>Planning:</b> breaking big projects into small steps, sorting your to-do list.</li><li><b>Learning:</b> \"explain this simply\" for anything new.</li></ul>
-<p>Our free <a class="in" href="../prompts/ai-at-work.html">AI at Work Prompt Pack</a> has 25 ready prompts for exactly these tasks.</p>`,
+<p>Our free <a class="in" href="/prompts/ai-at-work.html">AI at Work Prompt Pack</a> has 25 ready prompts for exactly these tasks.</p>`,
 "Pick one task you do every week. Use a prompt from the pack for it and time how long it takes compared with doing it by hand."],
 ["Check it and use it safely",`<p>Before you send or share anything the AI wrote, run a quick 4-point check:</p>
 <ul><li><b>Facts:</b> are names, numbers, dates and links correct?</li><li><b>Tone:</b> does it sound like you and fit the person reading it?</li><li><b>Privacy:</b> did you avoid pasting private or company-secret information?</li><li><b>Ownership:</b> you're responsible for what you send, not the AI.</li></ul>
@@ -69,7 +75,7 @@ function show(k){i=k;seen.add(k);try{localStorage.setItem('usiCourseSeen',JSON.s
  pv.disabled=i===0;nx.disabled=false;nx.textContent=i===L.length-1?'Finish ✓':'Next lesson →';}
 st.addEventListener('click',e=>{const b=e.target.closest('[data-j]');if(b){show(+b.dataset.j);le.scrollIntoView({behavior:'smooth',block:'start'})}});
 pv.addEventListener('click',()=>{if(i>0){show(i-1);le.scrollIntoView({behavior:'smooth',block:'start'})}});
-nx.addEventListener('click',()=>{if(i<L.length-1){show(i+1);le.scrollIntoView({behavior:'smooth',block:'start'})}else{le.innerHTML='<div class="eye">Course complete</div><h2>Well done! 🎉</h2><p>You finished AI at Work in 5 Lessons. Keep the momentum: pick one task a day and try it with AI.</p><p><a class="in" href="../prompts/ai-at-work.html">Get the free prompt pack →</a></p>';nx.disabled=true}});
+nx.addEventListener('click',()=>{if(i<L.length-1){show(i+1);le.scrollIntoView({behavior:'smooth',block:'start'})}else{le.innerHTML='<div class="eye">Course complete</div><h2>Well done! 🎉</h2><p>You finished AI at Work in 5 Lessons. Keep the momentum: pick one task a day and try it with AI.</p><p><a class="in" href="/prompts/ai-at-work.html">Get the free prompt pack →</a></p>';nx.disabled=true}});
 show(0);
 </script>
 </body></html>

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Marketplace Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Private review desk: sign in, then two queues (waiting, live) and a leads count. One tap per decision. */
+  :root {
+    --void: #070914; --panel: #0e1226; --line: #232a4a; --ink: #e9edff; --mist: #9aa3c7;
+    --aether: #7fe0ff; --gold: #f0c674; --good: #7be3a8; --bad: #ff9a9a;
+    --serif: "Cormorant Garamond", Georgia, serif; --sans: "Manrope", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--void); color: var(--ink); font: 16px/1.5 var(--sans); }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; display: grid; gap: 28px; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .home { font: 500 0.72rem var(--mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--aether); text-decoration: none; }
+  h1 { margin: 0; font: 400 2.4rem/1.05 var(--serif); }
+  h2 { margin: 0 0 12px; font: 500 1.5rem/1.1 var(--serif); display: flex; align-items: baseline; gap: 10px; }
+  h2 small { font: 0.75rem var(--mono); color: var(--mist); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+  .login { display: grid; gap: 10px; max-width: 420px; }
+  input { font: 1rem var(--sans); color: var(--ink); background: var(--void); border: 1px solid var(--line); border-radius: 10px; padding: 12px; width: 100%; }
+  .btn { font: 600 0.9rem/1 var(--sans); color: var(--void); background: var(--aether); border: 0; border-radius: 10px; padding: 12px 16px; cursor: pointer; }
+  .btn.gold { background: var(--gold); }
+  .btn.ghost { color: var(--ink); background: transparent; border: 1px solid var(--line); }
+  .btn.danger { color: var(--bad); background: transparent; border: 1px solid color-mix(in srgb, var(--bad) 45%, var(--line)); }
+  .btn:disabled { opacity: 0.5; cursor: progress; }
+  .list { display: grid; gap: 12px; }
+  .item { border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 8px; }
+  .item.featured { border-color: var(--gold); }
+  .item .top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .item h3 { margin: 0; font: 600 1.05rem/1.3 var(--sans); }
+  .meta { font: 0.75rem var(--mono); color: var(--mist); }
+  .item p { margin: 0; color: var(--mist); font-size: 0.92rem; }
+  .item a { color: var(--aether); word-break: break-all; font-size: 0.85rem; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .empty { color: var(--mist); border: 1px dashed var(--line); border-radius: 14px; padding: 18px; }
+  .msg { font-size: 0.88rem; color: var(--mist); min-height: 1.3em; }
+  .msg.bad { color: var(--bad); } .msg.ok { color: var(--good); }
+  .tag { font: 500 0.65rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  td, th { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 500 0.7rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--mist); }
+  .scroll { overflow-x: auto; }
+  .pw { position: relative; }
+  .pw input { padding-right: 52px; }
+  .eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; display: grid; place-items: center; background: none; border: 0; color: var(--mist); cursor: pointer; border-radius: 8px; }
+  .eye:hover, .eye:focus-visible { color: var(--aether); }
+  .eye[aria-pressed="false"] .slash { display: none; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><a class="home" href="marketplace.html">← Marketplace</a><h1>Admin</h1></div>
+    <button class="btn ghost" id="out" type="button" hidden>Sign out</button>
+  </header>
+
+  <section class="panel" id="loginBox">
+    <form class="login" id="login">
+      <label for="key">Admin password</label>
+      <div class="pw">
+        <input id="key" type="password" autocomplete="current-password" required>
+        <button class="eye" id="eye" type="button" aria-label="Show password" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg>
+        </button>
+      </div>
+      <button class="btn" type="submit">Sign in</button>
+      <p class="msg" id="loginMsg" role="status"></p>
+    </form>
+  </section>
+
+  <div id="desk" hidden>
+    <section>
+      <h2>Waiting for review <small id="pCount"></small></h2>
+      <div class="list" id="pending"></div>
+    </section>
+    <section style="margin-top:28px">
+      <h2>Live on the Marketplace <small id="lCount"></small></h2>
+      <div class="list" id="live"></div>
+    </section>
+    <section style="margin-top:28px">
+      <h2>Emails collected <small id="eCount"></small></h2>
+      <div class="scroll"><table><thead><tr><th>Email</th><th>Product</th><th>Creator</th><th>Date</th></tr></thead><tbody id="leads"></tbody></table></div>
+    </section>
+    <section style="margin-top:28px">
+      <h2>Newsletter subscribers <small id="nCount"></small></h2>
+      <div class="actions" style="margin-bottom:10px"><button class="btn ghost" id="nCopy" type="button">Copy all emails</button><button class="btn ghost" id="nCsv" type="button">Download CSV</button></div>
+      <p class="msg" id="nMsg" role="status"></p>
+      <div class="scroll"><table><thead><tr><th>Email</th><th>From</th><th>Date</th></tr></thead><tbody id="subs"></tbody></table></div>
+    </section>
+    <section style="margin-top:28px">
+      <h2>Email check</h2>
+      <form class="login" id="testForm" style="max-width:none">
+        <label for="testTo">Send a test email to</label>
+        <input id="testTo" type="email" placeholder="you@gmail.com" required>
+        <button class="btn ghost" type="submit">Send test email</button>
+        <p class="msg" id="testMsg" role="status"></p>
+      </form>
+    </section>
+    <p class="msg" id="deskMsg" role="status"></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  let KEY = "";
+  try { KEY = sessionStorage.getItem("si-admin") || ""; } catch (e) {}
+
+  async function api(path, body) {
+    const res = await fetch("/api/admin/" + path, {
+      method: body ? "POST" : "GET",
+      headers: Object.assign({ "X-Admin-Key": KEY }, body ? { "Content-Type": "application/json" } : {}),
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { const err = new Error(data.error || "Something went wrong."); err.status = res.status; throw err; }
+    return data;
+  }
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const day = (s) => (s ? new Date(s).toLocaleDateString() : "");
+  const price = (p) => (Number(p) ? "$" + p : "Free");
+
+  function card(x, buttons) {
+    const d = el("div", "item" + (x.featured ? " featured" : ""));
+    const top = el("div", "top"); top.append(el("h3", "", x.title), el("span", "meta", x.type + " · " + price(x.price)));
+    d.append(top);
+    if (x.featured) d.append(el("span", "tag", "Featured"));
+    d.append(el("span", "meta", (x.creator || "") + (x.email ? " · " + x.email : "") + (x.social ? " · " + x.social : "") + " · " + day(x.at || x.approvedAt)));
+    if (x.image) { const im = el("img"); im.src = x.image; im.alt = ""; im.style.cssText = "display:block;width:120px;aspect-ratio:360/464;object-fit:cover;border-radius:10px;margin:8px 0;border:1px solid #7fe0ff55"; d.append(im); }
+    d.append(el("p", "", x.desc));
+    const a = el("a", "", x.url); a.href = x.url; a.target = "_blank"; a.rel = "noopener noreferrer"; d.append(a);
+    const act = el("div", "actions"); buttons.forEach((b) => act.append(b)); d.append(act);
+    return d;
+  }
+  function button(label, cls, fn) {
+    const b = el("button", "btn " + (cls || ""), label); b.type = "button";
+    b.addEventListener("click", async () => {
+      b.disabled = true; $("deskMsg").className = "msg"; $("deskMsg").textContent = "";
+      try { await fn(); await load(); } catch (e) { b.disabled = false; if (e.message === "Cancelled.") return; $("deskMsg").className = "msg bad"; $("deskMsg").textContent = e.message; }
+    });
+    return b;
+  }
+
+  async function load() {
+    const [p, l, e, n] = await Promise.all([api("pending"), api("listings"), api("leads"), api("subscribers")]);
+    SUBS = n.items;
+    const sb = $("subs"); sb.innerHTML = "";
+    $("nCount").textContent = n.total ? n.total + " total" : "";
+    if (!n.items.length) { const tr = el("tr"); const td = el("td", "", "No subscribers yet. They sign up on the brain page."); td.colSpan = 3; tr.append(td); sb.append(tr); }
+    n.items.forEach((x) => { const tr = el("tr"); [x.email, x.source, day(x.at)].forEach((v) => tr.append(el("td", "", v || ""))); sb.append(tr); });
+    const pend = $("pending"); pend.innerHTML = "";
+    $("pCount").textContent = p.items.length ? p.items.length + " new" : "";
+    if (!p.items.length) pend.append(el("div", "empty", "Nothing waiting. New submissions from the Marketplace form show up here."));
+    p.items.forEach((x) => pend.append(card(x, [
+      button("Approve", "", () => api("approve", { key: x.key })),
+      button("Approve + Featured", "gold", () => api("approve", { key: x.key, featured: true })),
+      button("Reject", "danger", () => { if (!confirm("Reject and delete “" + x.title + "”?")) throw new Error("Cancelled."); return api("reject", { key: x.key }); }),
+    ])));
+
+    const live = $("live"); live.innerHTML = "";
+    $("lCount").textContent = l.items.length ? l.items.length + " live" : "";
+    if (!l.items.length) live.append(el("div", "empty", "No real products yet, so the Marketplace still shows the example listings. Approve one and the examples disappear."));
+    l.items.forEach((x) => live.append(card(x, [
+      x.featured ? button("Remove Featured", "ghost", () => api("feature", { id: x.id, featured: false }))
+                 : button("Make Featured", "gold", () => api("feature", { id: x.id, featured: true })),
+      button("Take down", "danger", () => { if (!confirm("Take “" + x.title + "” off the Marketplace?")) throw new Error("Cancelled."); return api("remove", { id: x.id }); }),
+    ])));
+
+    const body = $("leads"); body.innerHTML = "";
+    $("eCount").textContent = e.total ? e.total + " total" : "";
+    if (!e.items.length) { const tr = el("tr"); const td = el("td", "", "No emails yet."); td.colSpan = 4; tr.append(td); body.append(tr); }
+    e.items.forEach((x) => { const tr = el("tr"); [x.email, x.title || x.product, x.creator, day(x.at)].forEach((v) => tr.append(el("td", "", v || ""))); body.append(tr); });
+  }
+
+  let SUBS = [];
+  $("nCopy").addEventListener("click", async () => {
+    const m = $("nMsg"), text = SUBS.map((x) => x.email).join("\n");
+    if (!text) { m.className = "msg"; m.textContent = "No emails to copy yet."; return; }
+    try { await navigator.clipboard.writeText(text); m.className = "msg ok"; m.textContent = "Copied " + SUBS.length + " emails. Paste them into Mailchimp or any newsletter tool."; }
+    catch (e) { m.className = "msg bad"; m.textContent = "Couldn't copy here. Use Download CSV instead."; }
+  });
+  $("nCsv").addEventListener("click", () => {
+    const rows = [["email", "source", "date"]].concat(SUBS.map((x) => [x.email, x.source || "", x.at || ""]));
+    const csv = rows.map((r) => r.map((v) => '"' + String(v).replace(/"/g, '""') + '"').join(",")).join("\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "subscribers.csv"; document.body.appendChild(a); a.click(); a.remove();
+  });
+  async function enter() {
+    try {
+      await load();
+      $("loginBox").hidden = true; $("desk").hidden = false; $("out").hidden = false;
+      try { sessionStorage.setItem("si-admin", KEY); } catch (e) {}
+    } catch (e) {
+      $("loginMsg").className = "msg bad"; $("loginMsg").textContent = e.message;
+      try { sessionStorage.removeItem("si-admin"); } catch (er) {}
+    }
+  }
+  $("eye").addEventListener("click", () => {
+    const k = $("key"), show = k.type === "password";
+    k.type = show ? "text" : "password";
+    $("eye").setAttribute("aria-pressed", String(show));
+    $("eye").setAttribute("aria-label", show ? "Hide password" : "Show password");
+  });
+  $("login").addEventListener("submit", (ev) => { ev.preventDefault(); KEY = $("key").value; $("loginMsg").textContent = ""; enter(); });
+  $("testForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault(); const m = $("testMsg"); m.className = "msg"; m.textContent = "Sending…";
+    try {
+      const r = await api("test-email", { to: $("testTo").value.trim() });
+      if (r.ok) { m.className = "msg ok"; m.textContent = "Sent! Check that inbox (and Spam) in a minute."; }
+      else { m.className = "msg bad"; m.textContent = "Not sent" + (r.status ? " (error " + r.status + ")" : "") + ": " + (r.detail || "unknown error"); }
+    } catch (e) { m.className = "msg bad"; m.textContent = e.message; }
+  });
+  $("out").addEventListener("click", () => { KEY = ""; try { sessionStorage.removeItem("si-admin"); } catch (e) {} location.reload(); });
+  if (KEY) enter();
+})();
+</script>
+</body>
+</html>

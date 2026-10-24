@@ -1,7 +1,13 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#070914">
-<title>For Creators · Use Superintelligence</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap"><title>For Creators · Use Superintelligence</title>
 <meta name="description" content="List your AI agent, course, prompt pack, template or automation in the Use Superintelligence Marketplace. Free during launch, including Featured.">
-<link rel="icon" href="brand/favicon_48.png" sizes="48x48" type="image/png"><link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico?v=4" sizes="any">
+<link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png?v=4" sizes="48x48" type="image/png">
+<link rel="icon" href="/favicon-96.png?v=4" sizes="96x96" type="image/png">
+<link rel="icon" href="/favicon-192.png?v=4" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" sizes="180x180">
+<link rel="manifest" href="/site.webmanifest?v=3">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap');
 :root{color-scheme:dark;--ice:#7fe0ff;--gold:#f0c674;--bg:#070914;--ink:#eef2ff;--mist:#aab9d4;--good:#7be3a8}
@@ -43,9 +49,17 @@ label.f{display:grid;gap:5px;font-size:12px;color:var(--mist)}
 footer{text-align:center;font-size:11px;color:#869ab8;padding:0 16px max(18px,env(safe-area-inset-bottom))}
 footer a{color:inherit}
 @media(max-width:560px){.two{grid-template-columns:1fr}header{justify-content:center}.brand small{display:none}}
+</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=JetBrains+Mono:wght@500&display=swap"><style>
+/* Official logo (same as the 3D brain page and Agent Hub) */
+.si-logo{display:inline-flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;line-height:1}
+ .si-star{width:auto;height:30px;flex:none;display:block}
+.si-w{display:grid;justify-items:center;gap:3px}
+.si-use{font:500 .38rem/1 "JetBrains Mono",ui-monospace,Menlo,monospace;letter-spacing:.9em;padding-left:.9em;color:#5aa2ff}
+.si-name{font:600 .64rem/1 "Poppins","Manrope",system-ui,sans-serif;letter-spacing:.22em;padding-left:.22em;white-space:nowrap;background:linear-gradient(180deg,#ffffff 0%,#dfe3e9 45%,#aab1bc 56%,#f0f2f5 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media(max-width:420px){.si-star{width:auto;height:24px}.si-name{font-size:.56rem;letter-spacing:.18em}.si-logo{gap:5px}}
 </style></head><body>
 <div class="bgimg" aria-hidden="true"></div>
-<header><a class="brand" href="./" aria-label="Use Superintelligence, home"><span>✧</span>Use Superintelligence <small>FOR CREATORS</small></a>
+<header><a class="si-logo" href="/" aria-label="Use Superintelligence, back to the brain"><img class="si-star" src="/brand/logo-cube.png?v=2" alt="" aria-hidden="true"><span class="si-w"><span class="si-use">USE</span><span class="si-name">SUPERINTELLIGENCE</span></span></a>
 <nav aria-label="Site"><a href="marketplace.html">Marketplace</a><a class="active" href="creators.html" aria-current="page">For Creators</a><a href="https://usesuperintelligence.com/agents.html">Agent Hub</a></nav></header>
 <main id="sell">
   <div class="eyebrow">For creators</div>
@@ -60,7 +74,7 @@ footer a{color:inherit}
       </div>
       <label class="f">Product name<input id="s-title" required maxlength="100"></label>
       <div class="two">
-        <label class="f">Type<select id="s-type" required><option value="">Choose…</option><option>Agent</option><option>Course</option><option>Prompt pack</option><option>Template</option><option>Automation</option><option>Tool</option></select></label>
+        <label class="f">Type<select id="s-type" required><option value="">Choose…</option><option>Agent</option><option>Course</option><option>Prompt pack</option><option>Template</option><option>Automation</option><option>Tool</option><option>Digital Art</option><option>Software</option></select></label>
         <label class="f">Price (0 = free)<input id="s-price" type="number" min="0" step="1" required inputmode="numeric"></label>
       </div>
       <label class="f">Link to your product or checkout<input id="s-url" type="url" required maxlength="300" placeholder="https://"></label>
@@ -131,4 +145,31 @@ footer a{color:inherit}
   });
 })();
 </script>
+<style>
+/* ===== USI cube-logo style for Creators (visual only, no glow) ===== */
+:root{--line:#283246;--s2:#0E1220;--card:#111725;--eb:#2F6BFF;--eb2:#5aa2ff;--tx:#E9EDFF;--tx2:#9AA3B8;
+ --sil:linear-gradient(180deg,#f4f6f9 0%,#cfd4dc 40%,#8f96a2 55%,#dde1e7 100%)}
+body{background:#070914!important}
+.bgimg{background:#070914!important}.bgimg:after{display:none!important}
+header{border-bottom:1px solid var(--line)}
+nav{background:var(--s2)!important;border:1px solid #3a4459!important;border-radius:8px!important}
+nav a{border-radius:6px!important;color:var(--tx2)!important}
+nav a.active{color:var(--tx)!important;background:#16213a!important;border-color:var(--eb)!important}
+.eyebrow{color:var(--eb2)!important;font-family:"JetBrains Mono",ui-monospace,monospace}
+h1{font:700 clamp(30px,5vw,46px)/1.1 Manrope,system-ui,sans-serif!important;letter-spacing:-.01em}
+h1 em{font-style:normal;color:transparent;background-image:var(--sil);-webkit-background-clip:text;background-clip:text}
+.lead{color:var(--tx2)!important}.lead b{color:var(--tx)!important}
+.steps li{background:var(--s2)!important;border:1px solid #3a4459!important;border-radius:6px!important;color:var(--tx)!important}
+.steps b{border-color:var(--eb)!important;color:var(--eb2)!important}
+.panel{border-radius:8px!important;border:1px solid transparent!important;
+ background:linear-gradient(180deg,#121a2c,#0b101c) padding-box,var(--sil) border-box!important;box-shadow:0 20px 40px -18px #000!important}
+label.f{color:var(--tx2)!important}
+.f input,.f select,.f textarea{background:var(--s2)!important;border:1px solid #3a4459!important;border-radius:6px!important;color:var(--tx)!important}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--eb)!important;box-shadow:none!important}
+.check{color:var(--tx2)!important}.check input{accent-color:var(--eb)!important}
+.btn{background:var(--eb)!important;border:1px solid var(--eb)!important;color:#fff!important;border-radius:6px!important}
+.btn:hover{background:#2559d9!important}
+#s-imgprev{border-radius:6px!important;border:1px solid #3a4459!important;box-shadow:none!important}
+.si-use{color:#5aa2ff!important}
+</style>
 </body></html>
