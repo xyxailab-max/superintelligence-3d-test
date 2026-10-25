@@ -263,6 +263,14 @@
   .today button:focus-visible, .today input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   @media (max-width: 560px) { .today { left: 16px; right: 76px; width: auto; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); } }
   @media (min-width: 561px) and (max-width: 1100px) { .today { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); } }
+  /* Shown once you have zoomed all the way through and out the back of the brain */
+  #nothingHere { position: fixed; left: 50%; top: 50%; z-index: 5; transform: translate(-50%, -50%); width: min(420px, calc(100vw - 32px));
+    text-align: center; color: var(--starlight); font-family: var(--sans); pointer-events: none; opacity: 0; transition: opacity .8s ease; }
+  #nothingHere.on { opacity: 1; pointer-events: auto; }
+  #nothingHere .nh-title { margin: 0 0 8px; font-family: var(--serif); font-weight: 300; font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.1; }
+  #nothingHere .nh-text { margin: 0 0 16px; font-size: 0.95rem; color: rgba(238, 242, 255, 0.72); }
+  #nothingHere button { font: 600 0.85rem/1 var(--sans); color: #05060f; background: var(--aether); border: 0; border-radius: 12px; padding: 11px 18px; cursor: pointer; }
+  #nothingHere button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   /* Logo: star + USE / SUPERINTELLIGENCE */
   .si-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; line-height: 1; }
    .si-star{width:auto;height:30px; flex: none; display: block; }
@@ -318,6 +326,11 @@
   <div class="fc-hint">CLICK ANY OBJECT TO FLY TO IT · ESC TO RETURN</div>
 </div>
 <div id="hoverTag" hidden></div>
+<div id="nothingHere" role="status" aria-live="polite" aria-hidden="true">
+  <p class="nh-title">There is nothing here</p>
+  <p class="nh-text">You have already zoomed in all the way and passed right through the brain.</p>
+  <button type="button" id="nhBack" tabindex="-1">Zoom back out</button>
+</div>
 </div>
 
 
@@ -12016,6 +12029,16 @@
   });
   canvas.addEventListener("touchcancel", dragEnd);
   depthInput.addEventListener("input", function () { zoom.target = depthInput.value / 1000; });
+  // Past the back of the brain there is nothing left to see, so say so
+  const nothingHere = document.getElementById("nothingHere"), nhBack = document.getElementById("nhBack");
+  let nhOn = false;
+  function nothingCheck() {
+    const on = nhOn ? zoom.value > 0.93 : zoom.value > 0.96;   // a little slack so it doesn't flicker at the edge
+    if (on === nhOn) return;
+    nhOn = on; nothingHere.classList.toggle("on", on);
+    nothingHere.setAttribute("aria-hidden", on ? "false" : "true"); nhBack.tabIndex = on ? 0 : -1;
+  }
+  nhBack.addEventListener("click", function () { setZoom(0.55); });
 
   // Layers panel
   const layersBtn = document.getElementById("layersBtn");
@@ -12672,6 +12695,7 @@
       : lerp(0.3, -2.4, (zoom.value - 0.8) / 0.2);
     const introCam = 1 - Math.pow(1 - Math.min(1, t / 7), 3);
     camDist = dist;
+    nothingCheck();
     const k = Math.max(dist, 0.3) / base;
     camera.position.set(pan.x + smooth.x * 1.0 * k, brain.position.y + pan.y + 0.4 * k + smooth.y * 0.5 * k, dist + (1 - introCam) * 6);   // opening: drift in from deep space
     // Keep the same gentle downward look as before, always facing forward
