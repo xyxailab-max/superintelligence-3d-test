@@ -12033,7 +12033,7 @@
   const nothingHere = document.getElementById("nothingHere"), nhBack = document.getElementById("nhBack");
   let nhOn = false;
   function nothingCheck() {
-    const on = nhOn ? zoom.value > 0.93 : zoom.value > 0.96;   // a little slack so it doesn't flicker at the edge
+    const on = nhOn ? zoom.value > 0.91 : zoom.value > 0.935;   // a little slack so it doesn't flicker at the edge
     if (on === nhOn) return;
     nhOn = on; nothingHere.classList.toggle("on", on);
     nothingHere.setAttribute("aria-hidden", on ? "false" : "true"); nhBack.tabIndex = on ? 0 : -1;
