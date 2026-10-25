@@ -614,6 +614,48 @@
   const brain = new THREE.Group();
   brain.position.y = 1.0;
   scene.add(brain);
+
+  // Golden bicycle riding a Fibonacci (golden) spiral inside the brain
+  const goldBike = (function () {
+    const PHI = 1.6180339887, R0 = 0.09, TMAX = Math.PI * 2.5, Y = -0.05;
+    const gold = new THREE.MeshBasicMaterial({ color: 0xf0c674, transparent: true, opacity: 0.95, depthWrite: false });
+    const ice = new THREE.MeshBasicMaterial({ color: 0x9fe3ff, transparent: true, opacity: 0.95, depthWrite: false });
+    function spiral(th) { const r = R0 * Math.pow(PHI, th / (Math.PI / 2)); return new THREE.Vector3(Math.cos(th) * r, Y, Math.sin(th) * r); }
+    // faint path
+    const pts = []; for (let i = 0; i <= 160; i++) pts.push(spiral(TMAX * i / 160));
+    const path = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xf0c674, transparent: true, opacity: 0.35, depthWrite: false }));
+    brain.add(path);
+    // bicycle (faces +x), about 0.3 long
+    const bk = new THREE.Group(), W = 0.065, T = 0.007;
+    function bar(a, b, m) {
+      const A = new THREE.Vector3().fromArray(a), B = new THREE.Vector3().fromArray(b), d = B.clone().sub(A);
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(T, T, d.length(), 6), m);
+      c.position.copy(A).add(B).multiplyScalar(0.5); c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); bk.add(c);
+    }
+    const wheels = [];
+    [-0.11, 0.11].forEach(function (x) {
+      const w = new THREE.Group(); w.position.set(x, W, 0);
+      w.add(new THREE.Mesh(new THREE.TorusGeometry(W, T, 6, 28), ice));
+      for (let k = 0; k < 3; k++) { const sp = new THREE.Mesh(new THREE.CylinderGeometry(T * 0.4, T * 0.4, W * 2, 4), ice); sp.rotation.z = k * Math.PI / 3; w.add(sp); }
+      bk.add(w); wheels.push(w);
+    });
+    const rear = [-0.11, W, 0], front = [0.11, W, 0], crank = [-0.01, W, 0], seat = [-0.045, W + 0.1, 0], head = [0.075, W + 0.1, 0];
+    bar(rear, crank, gold); bar(crank, seat, gold); bar(rear, seat, gold); bar(seat, head, gold); bar(crank, head, gold); bar(head, front, gold);
+    bar([-0.07, W + 0.115, 0], [-0.02, W + 0.115, 0], gold);                      // saddle
+    bar([0.075, W + 0.1, 0], [0.085, W + 0.13, 0], gold); bar([0.085, W + 0.13, -0.035], [0.085, W + 0.13, 0.035], gold); // handlebar
+    bk.renderOrder = 5; brain.add(bk);
+    const prev = new THREE.Vector3(), cur = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+    let yaw = 0, last = 0;
+    return function update(t) {
+      const u = (1 - Math.cos(t * 0.22)) / 2, th = TMAX * u;
+      cur.copy(spiral(th)); bk.position.copy(cur);
+      const dx = cur.x - prev.x, dz = cur.z - prev.z;
+      if (dx * dx + dz * dz > 1e-8) { const want = Math.atan2(-dz, dx); let d = want - yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); yaw += d * 0.15; }
+      bk.setRotationFromAxisAngle(up, yaw);
+      const dist = Math.sqrt(dx * dx + dz * dz); wheels.forEach(function (w) { w.rotation.z -= dist / W; });
+      prev.copy(cur); last = t;
+    };
+  })();
   // Light for the 3D solids
   scene.add(new THREE.HemisphereLight(0xbfdcff, 0x201030, 0.9));
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
@@ -12585,6 +12627,7 @@
     brain.quaternion.copy(qTmp2.setFromAxisAngle(AX_Y, (1 - intro) * 2.4)).multiply(brainQ);
     brain.scale.setScalar((extras.breath || 1) * (0.55 + 0.45 * intro));
     brain.position.y = 1.0 + Math.sin(t * 0.5) * 0.06;
+    goldBike(t);
 
 
     // Cursor lights up the part of the brain it touches
