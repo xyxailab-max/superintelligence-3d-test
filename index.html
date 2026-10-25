@@ -617,16 +617,16 @@
 
   // Golden bicycle riding a Fibonacci (golden) spiral inside the brain
   const goldBike = (function () {
-    const PHI = 1.6180339887, R0 = 0.09, TMAX = Math.PI * 2.5, Y = -0.05;
+    const GA = Math.PI * (3 - Math.sqrt(5)), N = 16, AX = 1.25, AYT = 0.95, AYB = 0.62, AZ = 1.58;  // golden angle, Fibonacci-sphere spiral sized to the inside of the brain
     const ADD = THREE.AdditiveBlending;
-    const gold = new THREE.MeshBasicMaterial({ color: 0xffd98a, transparent: true, opacity: 1, depthWrite: false });
-    const ice = new THREE.MeshBasicMaterial({ color: 0xbff0ff, transparent: true, opacity: 1, depthWrite: false });
-    const white = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, depthWrite: false });
-    const gGlow = new THREE.MeshBasicMaterial({ color: 0xf0b040, transparent: true, opacity: 0.22, blending: ADD, depthWrite: false });
-    const iGlow = new THREE.MeshBasicMaterial({ color: 0x33c8ff, transparent: true, opacity: 0.3, blending: ADD, depthWrite: false });
-    function spiral(th) { const r = R0 * Math.pow(PHI, th / (Math.PI / 2)); return new THREE.Vector3(Math.cos(th) * r, Y, Math.sin(th) * r); }
-    const pts = []; for (let i = 0; i <= 160; i++) pts.push(spiral(TMAX * i / 160));
-    brain.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xf0c674, transparent: true, opacity: 0.4, blending: ADD, depthWrite: false })));
+    const gold = new THREE.MeshBasicMaterial({ color: 0xd4b06a, transparent: true, opacity: 0.9, depthWrite: false });
+    const ice = new THREE.MeshBasicMaterial({ color: 0x92cde6, transparent: true, opacity: 0.9, depthWrite: false });
+    const white = new THREE.MeshBasicMaterial({ color: 0xd8e2ee, transparent: true, opacity: 0.85, depthWrite: false });
+    const gGlow = new THREE.MeshBasicMaterial({ color: 0xf0b040, transparent: true, opacity: 0.14, blending: ADD, depthWrite: false });
+    const iGlow = new THREE.MeshBasicMaterial({ color: 0x33c8ff, transparent: true, opacity: 0.18, blending: ADD, depthWrite: false });
+    function spiral(u) { const y = 1 - 2 * u, rr = Math.sqrt(Math.max(0, 1 - y * y)), th = u * N * GA; return new THREE.Vector3(Math.cos(th) * rr * AX, y * (y > 0 ? AYT : AYB), Math.sin(th) * rr * AZ); }
+    const pts = []; for (let i = 0; i <= 900; i++) pts.push(spiral(0.03 + 0.94 * i / 900));
+    brain.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xf0c674, transparent: true, opacity: 0.22, blending: ADD, depthWrite: false })));
     const bk = new THREE.Group(), W = 0.065, T = 0.0042, Y0 = new THREE.Vector3(0, 1, 0);
     function bar(a, b, m, r, glow, parent) {
       const A = new THREE.Vector3().fromArray(a), B = new THREE.Vector3().fromArray(b), d = B.clone().sub(A), L = d.length(); d.normalize();
@@ -701,19 +701,24 @@
     hx.fillStyle = gr; hx.fillRect(0, 0, 64, 64);
     const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(hc), blending: ADD, transparent: true, depthWrite: false, opacity: 0.55 }));
     halo.scale.set(0.36, 0.26, 1); halo.position.set(0, W + 0.04, 0); bk.add(halo);
-    const lamp = new THREE.Sprite(halo.material.clone()); lamp.material.opacity = 0.9; lamp.scale.set(0.06, 0.06, 1); lamp.position.set(0.095, W + 0.11, 0); bk.add(lamp);
+    const lamp = new THREE.Sprite(halo.material.clone()); lamp.material.opacity = 0.6; lamp.scale.set(0.06, 0.06, 1); lamp.position.set(0.095, W + 0.11, 0); bk.add(lamp);
     bk.scale.setScalar(0.64); bk.renderOrder = 5; brain.add(bk);
-    const prev = new THREE.Vector3(), cur = new THREE.Vector3();
-    let yaw = 0;
+    const prev = new THREE.Vector3(), cur = new THREE.Vector3(), fw = new THREE.Vector3(1, 0, 0), sd = new THREE.Vector3(), upv = new THREE.Vector3(), M4 = new THREE.Matrix4(), qT = new THREE.Quaternion();
+    let first = true;
     return function update(t) {
-      const u = (1 - Math.cos(t * 0.22)) / 2, th = TMAX * u;
-      cur.copy(spiral(th)); bk.position.copy(cur);
-      const dx = cur.x - prev.x, dz = cur.z - prev.z;
-      if (dx * dx + dz * dz > 1e-8) { const want = Math.atan2(-dz, dx); let d = want - yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); yaw += d * 0.15; }
-      bk.setRotationFromAxisAngle(Y0, yaw);
-      const dist = Math.sqrt(dx * dx + dz * dz) / 0.64;
-      spinners[0].rotation.z -= dist / W; spinners[1].rotation.z -= dist / W; spinners[2].rotation.z -= dist / 0.03;
-      halo.material.opacity = 0.45 + 0.15 * Math.sin(t * 3);
+      const u = 0.03 + 0.94 * (1 - Math.cos(t * Math.PI / 80)) / 2;   // rides top to bottom and back, about 80 s each way
+      cur.copy(spiral(u)); bk.position.copy(cur);
+      const v = cur.clone().sub(prev), dist = v.length();
+      if (dist > 1e-6) {
+        fw.lerp(v.normalize(), 0.2).normalize();
+        upv.copy(cur).normalize().multiplyScalar(0.35).add(Y0).normalize();   // mostly upright, leaning with the spiral
+        sd.crossVectors(fw, upv).normalize(); upv.crossVectors(sd, fw).normalize();
+        M4.makeBasis(fw, upv, sd); qT.setFromRotationMatrix(M4);
+        if (first) { bk.quaternion.copy(qT); first = false; } else bk.quaternion.slerp(qT, 0.15);
+      }
+      const dd = dist / 0.64;
+      spinners[0].rotation.z -= dd / W; spinners[1].rotation.z -= dd / W; spinners[2].rotation.z -= dd / 0.03;
+      halo.material.opacity = 0.26 + 0.08 * Math.sin(t * 3);
       prev.copy(cur);
     };
   })();
