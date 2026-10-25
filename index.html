@@ -618,42 +618,83 @@
   // Golden bicycle riding a Fibonacci (golden) spiral inside the brain
   const goldBike = (function () {
     const PHI = 1.6180339887, R0 = 0.09, TMAX = Math.PI * 2.5, Y = -0.05;
-    const gold = new THREE.MeshBasicMaterial({ color: 0xf0c674, transparent: true, opacity: 0.95, depthWrite: false });
-    const ice = new THREE.MeshBasicMaterial({ color: 0x9fe3ff, transparent: true, opacity: 0.95, depthWrite: false });
+    const ADD = THREE.AdditiveBlending;
+    const gold = new THREE.MeshBasicMaterial({ color: 0xffd98a, transparent: true, opacity: 1, depthWrite: false });
+    const ice = new THREE.MeshBasicMaterial({ color: 0xbff0ff, transparent: true, opacity: 1, depthWrite: false });
+    const white = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, depthWrite: false });
+    const gGlow = new THREE.MeshBasicMaterial({ color: 0xf0b040, transparent: true, opacity: 0.28, blending: ADD, depthWrite: false });
+    const iGlow = new THREE.MeshBasicMaterial({ color: 0x33c8ff, transparent: true, opacity: 0.3, blending: ADD, depthWrite: false });
     function spiral(th) { const r = R0 * Math.pow(PHI, th / (Math.PI / 2)); return new THREE.Vector3(Math.cos(th) * r, Y, Math.sin(th) * r); }
-    // faint path
     const pts = []; for (let i = 0; i <= 160; i++) pts.push(spiral(TMAX * i / 160));
-    const path = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xf0c674, transparent: true, opacity: 0.35, depthWrite: false }));
-    brain.add(path);
-    // bicycle (faces +x), about 0.3 long
-    const bk = new THREE.Group(), W = 0.065, T = 0.007;
-    function bar(a, b, m) {
-      const A = new THREE.Vector3().fromArray(a), B = new THREE.Vector3().fromArray(b), d = B.clone().sub(A);
-      const c = new THREE.Mesh(new THREE.CylinderGeometry(T, T, d.length(), 6), m);
-      c.position.copy(A).add(B).multiplyScalar(0.5); c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); bk.add(c);
+    brain.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xf0c674, transparent: true, opacity: 0.4, blending: ADD, depthWrite: false })));
+    const bk = new THREE.Group(), W = 0.065, T = 0.0065, Y0 = new THREE.Vector3(0, 1, 0);
+    function bar(a, b, m, r, glow, parent) {
+      const A = new THREE.Vector3().fromArray(a), B = new THREE.Vector3().fromArray(b), d = B.clone().sub(A), L = d.length(); d.normalize();
+      [[m, r || T], [glow || gGlow, (r || T) * 2.8]].forEach(function (x) {
+        const c = new THREE.Mesh(new THREE.CylinderGeometry(x[1], x[1], L, 8), x[0]);
+        c.position.copy(A).add(B).multiplyScalar(0.5); c.quaternion.setFromUnitVectors(Y0, d); (parent || bk).add(c);
+      });
     }
-    const wheels = [];
+    function ball(p, r, m, parent) { const b = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 8), m); b.position.fromArray(p); (parent || bk).add(b); return b; }
+    // wheels: tyre, rim, 12 spokes, hub, glow ring
+    const spinners = [];
     [-0.11, 0.11].forEach(function (x) {
       const w = new THREE.Group(); w.position.set(x, W, 0);
-      w.add(new THREE.Mesh(new THREE.TorusGeometry(W, T, 6, 28), ice));
-      for (let k = 0; k < 3; k++) { const sp = new THREE.Mesh(new THREE.CylinderGeometry(T * 0.4, T * 0.4, W * 2, 4), ice); sp.rotation.z = k * Math.PI / 3; w.add(sp); }
-      bk.add(w); wheels.push(w);
+      w.add(new THREE.Mesh(new THREE.TorusGeometry(W, T * 1.15, 10, 48), ice));
+      w.add(new THREE.Mesh(new THREE.TorusGeometry(W * 0.86, T * 0.45, 6, 48), white));
+      w.add(new THREE.Mesh(new THREE.TorusGeometry(W, T * 3.2, 8, 48), iGlow));
+      for (let k = 0; k < 12; k++) {
+        const a = k * Math.PI / 6, sz = (k % 2 ? 1 : -1) * 0.008;
+        bar([0, 0, sz], [Math.cos(a) * W * 0.86, Math.sin(a) * W * 0.86, 0], white, T * 0.22, iGlow, w);
+      }
+      ball([0, 0, 0], T * 1.6, gold, w); bk.add(w); spinners.push(w);
     });
-    const rear = [-0.11, W, 0], front = [0.11, W, 0], crank = [-0.01, W, 0], seat = [-0.045, W + 0.1, 0], head = [0.075, W + 0.1, 0];
-    bar(rear, crank, gold); bar(crank, seat, gold); bar(rear, seat, gold); bar(seat, head, gold); bar(crank, head, gold); bar(head, front, gold);
-    bar([-0.07, W + 0.115, 0], [-0.02, W + 0.115, 0], gold);                      // saddle
-    bar([0.075, W + 0.1, 0], [0.085, W + 0.13, 0], gold); bar([0.085, W + 0.13, -0.035], [0.085, W + 0.13, 0.035], gold); // handlebar
-    bk.renderOrder = 5; brain.add(bk);
-    const prev = new THREE.Vector3(), cur = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
-    let yaw = 0, last = 0;
+    const rear = [-0.11, W, 0], front = [0.11, W, 0], crank = [-0.01, W, 0], seat = [-0.045, W + 0.1, 0], head = [0.075, W + 0.1, 0], head2 = [0.083, W + 0.075, 0];
+    const Z = 0.012;
+    bar(crank, seat, gold, T * 1.2); bar(seat, head, gold, T * 1.1); bar(crank, head2, gold, T * 1.3); bar(head2, head, gold, T * 1.3);
+    [-Z, Z].forEach(function (z) {                         // 3D: paired stays and fork legs
+      bar([crank[0], crank[1], z * 0.6], [rear[0], rear[1], z], gold, T * 0.8);
+      bar([seat[0], seat[1], z * 0.4], [rear[0], rear[1], z], gold, T * 0.75);
+      bar([head2[0], head2[1], z * 0.4], [front[0], front[1], z], gold, T * 0.85);
+    });
+    bar(seat, [-0.055, W + 0.125, 0], gold, T);                       // seat post
+    bar([-0.082, W + 0.13, 0], [-0.03, W + 0.128, 0], white, T * 1.7);   // saddle
+    bar(head, [0.08, W + 0.135, 0], gold, T);                          // stem
+    bar([0.08, W + 0.135, -0.04], [0.08, W + 0.135, 0.04], gold, T);   // handlebar
+    ball([0.08, W + 0.135, -0.04], T * 1.4, white); ball([0.08, W + 0.135, 0.04], T * 1.4, white);
+    ball(head, T * 1.6, white); ball(seat, T * 1.4, gold);
+    // drivetrain: chainring, crank arms, pedals, chain
+    const cr = new THREE.Group(); cr.position.set(crank[0], crank[1], 0);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.024, T * 0.5, 6, 32), gold); ring.position.z = 0.016; cr.add(ring);
+    const rg = new THREE.Mesh(new THREE.TorusGeometry(0.024, T * 1.8, 6, 32), gGlow); rg.position.z = 0.016; cr.add(rg);
+    [1, -1].forEach(function (s) {
+      bar([0, 0, s * 0.02], [0, -s * 0.035, s * 0.02], white, T * 0.6, gGlow, cr);
+      bar([-0.009, -s * 0.035, s * 0.032], [0.009, -s * 0.035, s * 0.032], gold, T * 0.9, gGlow, cr);
+    });
+    bk.add(cr); spinners.push(cr);
+    ball([rear[0], rear[1], 0.016], 0.01, gold);
+    bar([crank[0], crank[1] + 0.024, 0.016], [rear[0], rear[1] + 0.01, 0.016], ice, T * 0.35, iGlow);
+    bar([crank[0], crank[1] - 0.024, 0.016], [rear[0], rear[1] - 0.01, 0.016], ice, T * 0.35, iGlow);
+    // soft halo + headlight
+    const hc = document.createElement('canvas'); hc.width = hc.height = 64; const hx = hc.getContext('2d');
+    const gr = hx.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,230,170,0.9)'); gr.addColorStop(0.35, 'rgba(255,190,90,0.35)'); gr.addColorStop(1, 'rgba(255,170,60,0)');
+    hx.fillStyle = gr; hx.fillRect(0, 0, 64, 64);
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(hc), blending: ADD, transparent: true, depthWrite: false, opacity: 0.55 }));
+    halo.scale.set(0.42, 0.3, 1); halo.position.set(0, W + 0.04, 0); bk.add(halo);
+    const lamp = new THREE.Sprite(halo.material.clone()); lamp.material.opacity = 0.9; lamp.scale.set(0.06, 0.06, 1); lamp.position.set(0.095, W + 0.11, 0); bk.add(lamp);
+    bk.scale.setScalar(0.8); bk.renderOrder = 5; brain.add(bk);
+    const prev = new THREE.Vector3(), cur = new THREE.Vector3();
+    let yaw = 0;
     return function update(t) {
       const u = (1 - Math.cos(t * 0.22)) / 2, th = TMAX * u;
       cur.copy(spiral(th)); bk.position.copy(cur);
       const dx = cur.x - prev.x, dz = cur.z - prev.z;
       if (dx * dx + dz * dz > 1e-8) { const want = Math.atan2(-dz, dx); let d = want - yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); yaw += d * 0.15; }
-      bk.setRotationFromAxisAngle(up, yaw);
-      const dist = Math.sqrt(dx * dx + dz * dz); wheels.forEach(function (w) { w.rotation.z -= dist / W; });
-      prev.copy(cur); last = t;
+      bk.setRotationFromAxisAngle(Y0, yaw);
+      const dist = Math.sqrt(dx * dx + dz * dz) / 0.8;
+      spinners[0].rotation.z -= dist / W; spinners[1].rotation.z -= dist / W; spinners[2].rotation.z -= dist / 0.03;
+      halo.material.opacity = 0.45 + 0.15 * Math.sin(t * 3);
+      prev.copy(cur);
     };
   })();
   // Light for the 3D solids
