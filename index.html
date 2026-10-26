@@ -384,6 +384,7 @@
     <button data-layer="ufo" aria-pressed="true">Alien spaceship</button>
     <button data-layer="trex" aria-pressed="true">Hologram T-Rex</button>
     <button data-layer="wyvern" aria-pressed="true">Flying dragon</button>
+    <button data-layer="reddragon" aria-pressed="true">Red dragon</button>
     <button data-layer="computer" aria-pressed="true">Classic computer</button>
     <button data-layer="cradle" aria-pressed="true">Newton's cradle</button>
     <button data-layer="eye" aria-pressed="true">Cyborg eye</button>
@@ -9308,6 +9309,156 @@
     });
   })();
 
+  /* ---- Red dragon: a winged dragon of red light that floats in one spot for 2-3 s, vanishes in a flash and reappears somewhere else in the brain ---- */
+  (function () {
+    const b = SegBuilder();
+    const VIO = [1.0, 0.22, 0.14], DV = [0.72, 0.06, 0.06], TEAL = [1.0, 0.55, 0.12], GOLD = [1.0, 0.8, 0.35], MEM = [0.9, 0.1, 0.08], PALE = [1.0, 0.78, 0.68], EYE = [1.0, 0.92, 0.2];
+    const Z = [0, 0, 0];
+    const L = function (a, c, col, part, piv) { b.L(a, c, col, { aPart: [part || 0, part || 0], aPiv: [piv || Z, piv || Z] }); };
+    // body, neck and tail: rings along a curving spine (front is +z)
+    const spine = new THREE.CatmullRomCurve3([[0, 0.0, -0.3], [0, 0.005, -0.2], [0, 0.0, -0.1], [0, 0.0, 0.0], [0, 0.012, 0.06], [0, 0.04, 0.1], [0, 0.058, 0.13]].map(function (p) { return new THREE.Vector3(p[0], p[1], p[2]); }));
+    const RAD = function (u) { return u < 0.55 ? 0.002 + 0.03 * Math.pow(u / 0.55, 1.4) : u < 0.72 ? 0.032 - 0.004 * (u - 0.55) / 0.17 : 0.028 - 0.016 * (u - 0.72) / 0.28; };
+    const NS = 44, NR = 14, rings = [];
+    for (let i = 0; i <= NS; i++) {
+      const u = i / NS, p = spine.getPoint(u), tg = spine.getTangent(u), r = RAD(u);
+      const sx = new THREE.Vector3(1, 0, 0), sy = new THREE.Vector3().crossVectors(tg, sx).normalize();
+      const ring = []; for (let k = 0; k < NR; k++) { const a = k / NR * 6.2832; ring.push([p.x + Math.cos(a) * r * 0.85, p.y + Math.sin(a) * r * sy.y * 0.9, p.z + Math.sin(a) * r * sy.z * 0.9]); }
+      rings.push(ring);
+    }
+    rings.forEach(function (ring, i) {
+      if (i % 2 === 0 && i > 0) for (let k = 0; k < NR; k++) L(ring[k], ring[(k + 1) % NR], i % 4 ? DV : VIO);
+      if (i < NS) for (let k = 0; k < NR; k += 2) L(ring[k], rings[i + 1][k], VIO);
+      if (i < NS && i % 2) for (let k = 1; k < NR; k += 2) L(ring[k], rings[i + 1][(k + 1) % NR], DV);   // scales
+    });
+    // spines down the back and a spade at the tip of the tail
+    for (let i = 3; i < NS - 4; i += 2) { const u = i / NS, p = spine.getPoint(u), r = RAD(u), h = 0.004 + 0.01 * Math.sin(Math.PI * Math.min(1, u * 1.3)); L([p.x, p.y + r * 0.9, p.z - 0.004], [p.x, p.y + r + h, p.z - 0.008], TEAL); L([p.x, p.y + r + h, p.z - 0.008], [p.x, p.y + r * 0.9, p.z + 0.004], TEAL); }
+    for (let i = 6; i < 30; i += 2) { const u = i / NS, p = spine.getPoint(u), r = RAD(u); L([p.x - r * 0.4, p.y - r * 0.85, p.z], [p.x + r * 0.4, p.y - r * 0.85, p.z], GOLD); }   // belly plates
+    { const T = spine.getPoint(0); L([0, T.y, T.z], [0.018, T.y, T.z - 0.012], TEAL, 6); L([0.018, T.y, T.z - 0.012], [0, T.y, T.z - 0.04], TEAL, 6); L([0, T.y, T.z - 0.04], [-0.018, T.y, T.z - 0.012], TEAL, 6); L([-0.018, T.y, T.z - 0.012], [0, T.y, T.z], TEAL, 6); }
+    // the head: snout, jaw, swept-back horns, frills and glowing eyes
+    const H = [0, 0.058, 0.13];
+    const hp = function (f, a) { const z = H[2] + f * 0.065, w = 0.019 * (1 - 0.6 * f), h = 0.016 * (1 - 0.5 * f); return [Math.cos(a) * w, H[1] - 0.006 * f + Math.sin(a) * h * (Math.sin(a) < 0 ? 0.5 : 1), z]; };
+    for (let i = 0; i <= 8; i++) for (let k = 0; k < 12; k++) if (i % 2 === 0) L(hp(i / 8, k / 12 * 6.2832), hp(i / 8, (k + 1) / 12 * 6.2832), VIO);
+    for (let k = 0; k < 12; k += 2) for (let i = 0; i < 8; i++) L(hp(i / 8, k / 12 * 6.2832), hp((i + 1) / 8, k / 12 * 6.2832), DV);
+    const JP = [0, 0.05, 0.13];
+    [-1, 1].forEach(function (sd) {
+      L([sd * 0.014, 0.048, 0.13], [sd * 0.006, 0.044, 0.192], VIO, 7, JP);                                // lower jaw
+      for (let q = 0; q < 7; q++) L([sd * (0.013 - q * 0.0011), 0.05, 0.138 + q * 0.008], [sd * (0.013 - q * 0.0011), 0.054, 0.14 + q * 0.008], [1, 1, 1]);   // teeth
+      for (let k = 0; k < 8; k++) { const a1 = k / 8 * 6.2832, a2 = (k + 1) / 8 * 6.2832; L([sd * 0.0155, 0.066 + Math.sin(a1) * 0.003, 0.15 + Math.cos(a1) * 0.004], [sd * 0.0155, 0.066 + Math.sin(a2) * 0.003, 0.15 + Math.cos(a2) * 0.004], EYE); }
+      L([sd * 0.012, 0.072, 0.135], [sd * 0.022, 0.09, 0.09], GOLD); L([sd * 0.022, 0.09, 0.09], [sd * 0.026, 0.1, 0.06], GOLD);   // long horns
+      L([sd * 0.016, 0.068, 0.128], [sd * 0.03, 0.078, 0.11], GOLD);                                       // small horns
+      for (let q = 0; q < 4; q++) L([sd * 0.017, 0.055 - q * 0.004, 0.128 - q * 0.002], [sd * 0.03, 0.052 - q * 0.006, 0.112 - q * 0.004], TEAL);   // cheek frills
+      L([sd * 0.004, 0.056, 0.195], [sd * 0.006, 0.058, 0.19], PALE);                                       // nostrils
+    });
+    L([0, 0.044, 0.192], [-0.006, 0.044, 0.192], VIO, 7, JP); L([0, 0.044, 0.192], [0.006, 0.044, 0.192], VIO, 7, JP);
+    // four legs tucked up under the body, with gold claws
+    [[0.04, 1], [-0.12, 1]].forEach(function (lg) { [-1, 1].forEach(function (sd) {
+      const z = lg[0], top = [sd * 0.02, -0.01, z], kn = [sd * 0.03, -0.035, z - 0.01], ft = [sd * 0.028, -0.045, z - 0.035];
+      L(top, kn, VIO, 5, top); L(kn, ft, VIO, 5, top);
+      [-1, 0, 1].forEach(function (q) { L(ft, [ft[0] + q * 0.004, ft[1] - 0.006, ft[2] - 0.008], GOLD, 5, top); });
+    }); });
+    // the wings: arm bones, four long fingers, and a scalloped membrane with veins (parts 2 and 3 flap)
+    [-1, 1].forEach(function (sd) {
+      const part = sd < 0 ? 2 : 3, root = [sd * 0.022, 0.024, 0.04];
+      const elbow = [sd * 0.09, 0.06, 0.02], wrist = [sd * 0.15, 0.075, -0.005];
+      const tips = [[sd * 0.31, 0.05, -0.04], [sd * 0.27, 0.03, -0.11], [sd * 0.2, 0.018, -0.155], [sd * 0.12, 0.012, -0.17]];
+      L(root, elbow, TEAL, part, root); L(elbow, wrist, TEAL, part, root);
+      L([wrist[0], wrist[1], wrist[2]], [wrist[0] + sd * 0.012, wrist[1] + 0.014, wrist[2] + 0.01], GOLD, part, root);   // thumb claw
+      tips.forEach(function (tp, k) {
+        const mid = [(wrist[0] + tp[0]) / 2, (wrist[1] + tp[1]) / 2 + 0.008, (wrist[2] + tp[2]) / 2];
+        L(wrist, mid, TEAL, part, root); L(mid, tp, TEAL, part, root);
+      });
+      const edge = [tips[0], tips[1], tips[2], tips[3], [sd * 0.03, 0.005, -0.09]];
+      for (let k = 0; k < edge.length - 1; k++) {                    // the trailing edge sags between the fingers in scallops
+        const A = edge[k], B = edge[k + 1], toward = [wrist[0], wrist[1], wrist[2]];
+        let prev = A;
+        for (let s2 = 1; s2 <= 8; s2++) {
+          const f = s2 / 8, sag = Math.sin(Math.PI * f) * 0.28;
+          const P = [A[0] + (B[0] - A[0]) * f, A[1] + (B[1] - A[1]) * f, A[2] + (B[2] - A[2]) * f];
+          const Q = [P[0] + (toward[0] - P[0]) * sag, P[1] + (toward[1] - P[1]) * sag, P[2] + (toward[2] - P[2]) * sag];
+          L(prev, Q, MEM, part, root); prev = Q;
+          if (s2 % 2 === 0) L(Q, [Q[0] + (wrist[0] - Q[0]) * 0.55, Q[1] + (wrist[1] - Q[1]) * 0.55, Q[2] + (wrist[2] - Q[2]) * 0.55], DV, part, root);   // veins
+        }
+      }
+      L(root, [sd * 0.03, 0.005, -0.09], MEM, part, root);
+      L(elbow, tips[3], DV, part, root); L(elbow, [sd * 0.03, 0.005, -0.09], DV, part, root);
+    });
+    const geo = b.geo();
+    const u = { uTime: U.uTime, uOn: { value: 0 }, uFlap: { value: 0 } };
+    const dragon = new THREE.LineSegments(geo, new THREE.ShaderMaterial({ uniforms: u, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: `uniform float uTime, uFlap; attribute float aPart; attribute vec3 aPiv, aCol; varying vec3 vC; varying float vWY;
+        void main() {
+          vec3 p = position;
+          if (aPart > 1.5 && aPart < 3.5) {                                   // great wingbeats: down strong, up slow, tips lagging behind
+            float sd = aPart < 2.5 ? -1.0 : 1.0, dx = abs(p.x - aPiv.x), dy = p.y - aPiv.y;
+            float ph = uFlap - dx * 3.0;
+            float a = 0.15 + 0.7 * (sin(ph) + 0.3 * sin(ph * 2.0)) * 0.8;
+            float c = cos(a), s = sin(a);
+            float nx = dx * c - dy * s, ny = dx * s + dy * c;
+            p.x = aPiv.x + sd * nx; p.y = aPiv.y + ny;
+            p.z += sin(ph - 1.0) * 0.012 * dx / 0.3;                         // the membrane ripples
+          } else {
+            float tail = clamp(-p.z / 0.3, 0.0, 1.0);
+            p.x += sin(uTime * 1.6 - p.z * 14.0) * 0.02 * tail * tail;       // the tail sways like a rudder
+            p.y += sin(uFlap + 3.14) * 0.006;                                // the body rises and falls with each beat
+            if (aPart > 4.5 && aPart < 5.5) p.z -= 0.004 * (0.5 + 0.5 * sin(uFlap));
+            if (aPart > 6.5) { float a = 0.15 + 0.12 * sin(uTime * 1.2); vec2 d = p.zy - aPiv.zy; p.z = aPiv.z + d.x * cos(a) + d.y * sin(a); p.y = aPiv.y - d.x * sin(a) + d.y * cos(a); }   // the jaw opens a little
+          }
+          vec4 wp = modelMatrix * vec4(p, 1.0); vWY = wp.y; vC = aCol;
+          gl_Position = projectionMatrix * viewMatrix * wp;
+        }`,
+      fragmentShader: `uniform float uTime, uOn; varying vec3 vC; varying float vWY;
+        void main() { float scan = 0.78 + 0.22 * sin(vWY * 380.0 - uTime * 4.0); float flick = 0.93 + 0.07 * sin(uTime * 29.0);
+          gl_FragColor = vec4(vC * 1.2, 0.85 * scan * flick * uOn); }` }));
+    dragon.frustumCulled = false;
+    const body = new THREE.Group(); body.add(dragon); body.scale.setScalar(0.9);
+    // glowing wingtip trails
+    const TR = 50, tp = new Float32Array(TR * 2 * 3), tc = new Float32Array(TR * 2 * 3), hist = [[], []];
+    for (let k = 0; k < TR; k++) for (let e = 0; e < 2; e++) { const f = 1 - k / TR, c = new THREE.Color().setHSL(0.01 + 0.07 * (k / TR), 0.95, 0.6); tc.set([c.r * f, c.g * f, c.b * f], (e * TR + k) * 3); }
+    const tg = new THREE.BufferGeometry(); tg.setAttribute("position", new THREE.BufferAttribute(tp, 3)); tg.setAttribute("color", new THREE.BufferAttribute(tc, 3));
+    const idx = []; for (let e = 0; e < 2; e++) for (let k = 0; k < TR - 1; k++) idx.push(e * TR + k, e * TR + k + 1); tg.setIndex(idx);
+    const tmat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    const trails = new THREE.LineSegments(tg, tmat); trails.frustumCulled = false;
+    const grp = new THREE.Group(); grp.add(body);
+    const all = new THREE.Group(); all.add(grp); all.add(trails);
+    addL(brain, "reddragon", all); grp.userData.tap = true; LAYERS.reddragon.push(grp);   // tap the dragon itself
+    // flash of red light where it vanishes and where it reappears
+    const fc = document.createElement("canvas"); fc.width = fc.height = 64; const fx = fc.getContext("2d");
+    const fg = fx.createRadialGradient(32, 32, 0, 32, 32, 32); fg.addColorStop(0, "rgba(255,220,180,1)"); fg.addColorStop(0.3, "rgba(255,70,40,0.55)"); fg.addColorStop(1, "rgba(200,0,0,0)");
+    fx.fillStyle = fg; fx.fillRect(0, 0, 64, 64);
+    const flashes = [0, 1].map(function () { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(fc), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 })); all.add(sp); return sp; });
+    // pick a spot inside the brain, far from where it just was
+    const pick = function (prev) { let best = null, bd = -1; for (let k = 0; k < 14; k++) { const c = new THREE.Vector3().fromArray(brainSurface(randDir(), 0.3 + 0.32 * Math.random())); const d = prev ? c.distanceTo(prev) : 1; if (d > bd) { bd = d; best = c; } } return best; };
+    const IN = 0.45, OUT = 0.45, GAP = 0.35;
+    let home = pick(null), last = home.clone(), ts = -1, stay = 2.5, dir = 1, ang = Math.random() * 6.28, flap = 0, lastT = 0, started = false;
+    const P0 = new THREE.Vector3(), P1 = new THREE.Vector3(), dummy = new THREE.Object3D(), tmpV = new THREE.Vector3();
+    const posAt = function (tt, out) { const k = tt - ts, a = ang + dir * k * 0.9; return out.set(home.x + Math.cos(a) * 0.14, home.y + Math.sin(k * 1.4) * 0.03, home.z + Math.sin(a) * 0.14); };
+    extras.list.push(function (t, on) {
+      if (ts < 0) ts = t;
+      if (t - ts > stay + GAP) { last.copy(P0); home = pick(home); ts = t; stay = 2 + Math.random(); dir = Math.random() < 0.5 ? -1 : 1; ang = Math.random() * 6.28; started = false; hist[0].length = 0; hist[1].length = 0; }
+      const k = t - ts;
+      const f = k < IN ? k / IN : k < stay - OUT ? 1 : k < stay ? (stay - k) / OUT : 0, fade = f * f * (3 - 2 * f);
+      u.uOn.value = on * fade; tmat.opacity = on * 0.6 * fade;
+      grp.visible = fade > 0.01;
+      // flash: one where it appears, one where it vanished
+      const fa = k < 0.5 ? 1 - k / 0.5 : 0, fb = k > stay - 0.15 && k < stay + 0.4 ? 1 - Math.abs(k - stay - 0.05) / 0.35 : 0;
+      flashes[0].position.copy(home); flashes[0].material.opacity = on * 0.8 * Math.max(0, fa); flashes[0].scale.setScalar(0.12 + 0.25 * (1 - fa));
+      flashes[1].position.copy(P0); flashes[1].material.opacity = on * 0.8 * Math.max(0, fb); flashes[1].scale.setScalar(0.1 + 0.3 * Math.max(0, fb));
+      if (!all.visible || on < 0.01 || !grp.visible) return;
+      posAt(t, P0); posAt(t + 0.25, P1);
+      const dt = Math.min(0.1, Math.max(0, t - lastT)); lastT = t;
+      flap += dt * 3.6; u.uFlap.value = flap;                            // slow, floating wingbeats
+      dummy.position.copy(P0); dummy.up.set(0, 1, 0); faceTo(dummy, P1); dummy.rotateZ(-dir * 0.35);   // leans into its circle
+      grp.position.copy(P0);
+      if (!started) { grp.quaternion.copy(dummy.quaternion); started = true; } else grp.quaternion.slerp(dummy.quaternion, 0.08);
+      for (let e = 0; e < 2; e++) {
+        tmpV.set(e ? 0.31 : -0.31, 0.05, -0.04).multiplyScalar(0.9).applyQuaternion(grp.quaternion).add(grp.position);
+        const h = hist[e]; h.unshift(tmpV.x, tmpV.y, tmpV.z); if (h.length > TR * 3) h.length = TR * 3;
+        for (let q = 0; q < TR; q++) { const j = Math.min(q, h.length / 3 - 1) * 3, o = (e * TR + q) * 3; tp[o] = h[j]; tp[o + 1] = h[j + 1]; tp[o + 2] = h[j + 2]; }
+      }
+      tg.attributes.position.needsUpdate = true;
+    });
+  })();
+
   /* ---- A classic computer built entirely out of glowing binary code: monitor, system unit, keyboard and mouse, floating through the brain ---- */
   (function () {
     const mats = [];
@@ -12114,7 +12265,7 @@
     tree: "Tree of Life: 10 spheres and 22 paths, swaying through 4D.", lightning: "Lightning: electric arcs between atoms.",
     storm: "Neural storm: a burst of lightning and sparks now and then.", fireworks: "Fireworks: double tap the brain.",
     trails: "Trails: everything leaves light trails while you turn it.", daynight: "Day & night: warm by day, cool by night.",
-    sound: "Sound: soft hum and chimes. Tap the brain to start it.", hexwalls: "Hexagon shell: one honeycomb shell with patches that vibrate on their own.", train: "Steam locomotive: an engine, tender and coach chugging round an oval track, wheels and rods turning, smoke puffing.", clock: "Steampunk clock: brass gears turning behind a Roman-numeral face showing the real time, with a swinging pendulum and steam.", typewriter: "Typewriter: a detailed vintage machine with key levers, a fan of typebars striking, spinning ribbon spools and a carriage that rings at each line, typing a short poem.", bees: "Honeycomb and bees: a golden comb slowly filling with glowing honey while a swarm of tiny bees buzzes around it.", maya: "Sun stone calendar: the great calendar stone as a clear neon HUD hologram, with the sun god's face, 20 day signs, sun rays and fire serpents, and today's real day sign locked on.", dicetower: "Rolling dice: three glowing dice tossed in the air, tumbling and bouncing until they settle on a new roll.", kaleido: "Kaleidoscope: a brass-rimmed window of mirrored jewel-coloured glass shards that keep shifting into new patterns.", pendulum: "Double pendulum: a real chaos simulation, two arms swinging wildly and never repeating, drawing a glowing trail.", tesla: "Tesla coil: copper coils under a glowing ring that crackles with purple lightning.", cube: "Self-solving cube: a 3x3 puzzle cube that scrambles itself, then solves itself face by face.", davinci: "Da Vinci flyer: Leonardo's ornithopter in glowing wood and parchment, flapping its bat wings.", piano: "Self-playing piano: a grand piano of light playing Beethoven's Ode to Joy by itself, notes floating up.", vinyl: "Record player: a spinning record with a tonearm drifting inward and sound bars dancing around it.", chess: "Chess game: a glowing board replaying the famous Opera Game (Morphy, Paris 1858) to checkmate.", qchip: "Quantum computer: the golden chandelier of a quantum fridge, with signals racing down to 16 pulsing qubits.", hudspeaker: "Neon speaker: a round glowing speaker cone that punches with the bass, with sound waves rippling out and four neon playing cards spinning around it.", huddna: "DNA scanner: a turning double helix whose base pairs light up as a scan ring passes.", hudship: "Starship blueprint: an original ship in glowing schematic lines, scanned part by part.", hudbh: "Black hole analyzer: a dark centre with a photon ring, a swirling hot disk, jets and gravity readouts.", hudsolar: "Neon solar map: six planets on dashed orbits, with a lock-on hopping from planet to planet.", hudfly: "Cyber butterfly: circuit-board wings flapping as it flutters in a figure-eight.", hudhour: "Chrono hourglass: data bits pour through neon glass with a countdown, then it flips.", hud600: "HUD 600-cell: a huge 4D shape with 120 lock-on corners and data racing along its 720 edges.", hudclif: "Clifford scanner: the flat 4D donut with a gold laser plane sweeping through it.", hudhopf: "Hypersphere radar: a 4D sphere drawn as 40 linked rings of light (the Hopf fibration).", hudheart: "Human heart: a big anatomical neon heart with its aorta, veins and coronary arteries, beating lub-dub with a live heartbeat trace.", hudreactor: "Reactor core: boiling plasma in three spinning gyroscope rings, with lightning and a containment cage.", hudglobe: "Holo globe: Earth in grid lines and land dots, with satellites, flight routes and lock-on markers.", hudtess: "HUD tesseract: a neon 4D hypercube turning through the 4th dimension, with racing data pulses, lock-on corners and a sci-fi targeting display.", flow: "Great flow: every object swirls around the brain, spinning and flowing past each other. Turn it off to let them settle.", eye: "Cyborg eye: a futuristic neon lens with a mechanical shutter iris, a spinning HUD, circuit glass and a scanning beam. It scans in every direction.", cradle: "Newton's cradle: a clear 4D hologram of five balls of light clicking back and forth forever.", computer: "Classic computer: a whole desktop computer made of flipping 0s and 1s, floating in its own spot.", wyvern: "Flying dragon: a winged dragon of light soaring around the brain on flapping bat wings.", trex: "Hologram T-Rex: a detailed dinosaur of light that walks a slow circle and roars every few seconds.", ufo: "Alien spaceship: a blue flying saucer with white lights that darts around, hovers and beams light down.", holoship: "Hologram ship: a sleek starship flying around the brain, leaving a trail of blue light.", spiralplanet: "Golden spiral planet: a big Jupiter circling the 4D cube on a Fibonacci path.", bigsolar: "Huge solar system: eight big planets orbiting inside the brain.", hourglass: "4D hourglass: sand runs through, then it flips through the 4th dimension.", interact: "Interactions: threads of light when atoms touch the 4D shapes.", cell120: "120-cell: the most complex regular 4D shape.", cell600: "600-cell: built from 600 tiny 4D pyramids.", clifford: "Clifford torus: a flat donut that only exists in 4D.", duocyl: "Duocylinder: two cylinders woven through 4D.", unfold: "Tesseract net: a 4D cube unfolding into 8 cubes and back.", penteract: "Penteract: a 5D cube.", julia: "4D fractal: a slice of a quaternion Julia set.", calabi: "Calabi–Yau: extra dimensions from string theory.", boy: "Boy's surface: a one-sided surface.", knots: "4D knots: knots that untie through the 4th dimension.", duoprisms: "Duoprisms: two polygons combined in 4D.", lattice: "4D lattices: five windows drifting through grids of tesseracts, each in its own colours.", schlegel: "Schlegel diagrams: 4D shapes seen from just outside one cell.", ships: "Spaceships: four original futuristic ships cruising through the brain.", perf: "Performance mode: lighter and smoother on any device."
+    sound: "Sound: soft hum and chimes. Tap the brain to start it.", hexwalls: "Hexagon shell: one honeycomb shell with patches that vibrate on their own.", train: "Steam locomotive: an engine, tender and coach chugging round an oval track, wheels and rods turning, smoke puffing.", clock: "Steampunk clock: brass gears turning behind a Roman-numeral face showing the real time, with a swinging pendulum and steam.", typewriter: "Typewriter: a detailed vintage machine with key levers, a fan of typebars striking, spinning ribbon spools and a carriage that rings at each line, typing a short poem.", bees: "Honeycomb and bees: a golden comb slowly filling with glowing honey while a swarm of tiny bees buzzes around it.", maya: "Sun stone calendar: the great calendar stone as a clear neon HUD hologram, with the sun god's face, 20 day signs, sun rays and fire serpents, and today's real day sign locked on.", dicetower: "Rolling dice: three glowing dice tossed in the air, tumbling and bouncing until they settle on a new roll.", kaleido: "Kaleidoscope: a brass-rimmed window of mirrored jewel-coloured glass shards that keep shifting into new patterns.", pendulum: "Double pendulum: a real chaos simulation, two arms swinging wildly and never repeating, drawing a glowing trail.", tesla: "Tesla coil: copper coils under a glowing ring that crackles with purple lightning.", cube: "Self-solving cube: a 3x3 puzzle cube that scrambles itself, then solves itself face by face.", davinci: "Da Vinci flyer: Leonardo's ornithopter in glowing wood and parchment, flapping its bat wings.", piano: "Self-playing piano: a grand piano of light playing Beethoven's Ode to Joy by itself, notes floating up.", vinyl: "Record player: a spinning record with a tonearm drifting inward and sound bars dancing around it.", chess: "Chess game: a glowing board replaying the famous Opera Game (Morphy, Paris 1858) to checkmate.", qchip: "Quantum computer: the golden chandelier of a quantum fridge, with signals racing down to 16 pulsing qubits.", hudspeaker: "Neon speaker: a round glowing speaker cone that punches with the bass, with sound waves rippling out and four neon playing cards spinning around it.", huddna: "DNA scanner: a turning double helix whose base pairs light up as a scan ring passes.", hudship: "Starship blueprint: an original ship in glowing schematic lines, scanned part by part.", hudbh: "Black hole analyzer: a dark centre with a photon ring, a swirling hot disk, jets and gravity readouts.", hudsolar: "Neon solar map: six planets on dashed orbits, with a lock-on hopping from planet to planet.", hudfly: "Cyber butterfly: circuit-board wings flapping as it flutters in a figure-eight.", hudhour: "Chrono hourglass: data bits pour through neon glass with a countdown, then it flips.", hud600: "HUD 600-cell: a huge 4D shape with 120 lock-on corners and data racing along its 720 edges.", hudclif: "Clifford scanner: the flat 4D donut with a gold laser plane sweeping through it.", hudhopf: "Hypersphere radar: a 4D sphere drawn as 40 linked rings of light (the Hopf fibration).", hudheart: "Human heart: a big anatomical neon heart with its aorta, veins and coronary arteries, beating lub-dub with a live heartbeat trace.", hudreactor: "Reactor core: boiling plasma in three spinning gyroscope rings, with lightning and a containment cage.", hudglobe: "Holo globe: Earth in grid lines and land dots, with satellites, flight routes and lock-on markers.", hudtess: "HUD tesseract: a neon 4D hypercube turning through the 4th dimension, with racing data pulses, lock-on corners and a sci-fi targeting display.", flow: "Great flow: every object swirls around the brain, spinning and flowing past each other. Turn it off to let them settle.", eye: "Cyborg eye: a futuristic neon lens with a mechanical shutter iris, a spinning HUD, circuit glass and a scanning beam. It scans in every direction.", cradle: "Newton's cradle: a clear 4D hologram of five balls of light clicking back and forth forever.", computer: "Classic computer: a whole desktop computer made of flipping 0s and 1s, floating in its own spot.", wyvern: "Flying dragon: a winged dragon of light soaring around the brain on flapping bat wings.", reddragon: "Red dragon: a winged dragon of red light that floats in one spot for a few seconds, vanishes in a flash, and reappears in a different part of the brain.", trex: "Hologram T-Rex: a detailed dinosaur of light that walks a slow circle and roars every few seconds.", ufo: "Alien spaceship: a blue flying saucer with white lights that darts around, hovers and beams light down.", holoship: "Hologram ship: a sleek starship flying around the brain, leaving a trail of blue light.", spiralplanet: "Golden spiral planet: a big Jupiter circling the 4D cube on a Fibonacci path.", bigsolar: "Huge solar system: eight big planets orbiting inside the brain.", hourglass: "4D hourglass: sand runs through, then it flips through the 4th dimension.", interact: "Interactions: threads of light when atoms touch the 4D shapes.", cell120: "120-cell: the most complex regular 4D shape.", cell600: "600-cell: built from 600 tiny 4D pyramids.", clifford: "Clifford torus: a flat donut that only exists in 4D.", duocyl: "Duocylinder: two cylinders woven through 4D.", unfold: "Tesseract net: a 4D cube unfolding into 8 cubes and back.", penteract: "Penteract: a 5D cube.", julia: "4D fractal: a slice of a quaternion Julia set.", calabi: "Calabi–Yau: extra dimensions from string theory.", boy: "Boy's surface: a one-sided surface.", knots: "4D knots: knots that untie through the 4th dimension.", duoprisms: "Duoprisms: two polygons combined in 4D.", lattice: "4D lattices: five windows drifting through grids of tesseracts, each in its own colours.", schlegel: "Schlegel diagrams: 4D shapes seen from just outside one cell.", ships: "Spaceships: four original futuristic ships cruising through the brain.", perf: "Performance mode: lighter and smoother on any device."
   };
   const info = document.getElementById("info");
   function setLayer(btn, on) {
@@ -12130,7 +12281,7 @@
   });
   const PRESETS = {
     calm: ["dolphins", "seaturtle", "gramophone", "atoms", "jellyfish", "cortex", "lotus", "book", "hummingbird", "butterflies", "hexagons", "dna", "fibonacci", "brainwaves", "breathing", "constellations", "tesseract", "timecrystals", "tree", "origami", "daynight", "circuits"],
-    cosmic: ["astronaut", "flow", "hummingbird", "eye", "hudtess", "hud600", "hudclif", "hudhopf", "hudheart", "hudreactor", "hudglobe", "hudspeaker", "huddna", "hudship", "hudbh", "hudsolar", "hudfly", "hudhour", "pendulum", "tesla", "cube", "davinci", "piano", "vinyl", "chess", "qchip", "train", "clock", "typewriter", "bees", "maya", "dicetower", "kaleido", "cradle", "computer", "wyvern", "trex", "planets", "jupiters", "ufo", "jellyfish", "cortex", "casino", "guitar", "lotus", "bincube", "butterflies", "dragon", "pyramids", "coderings", "dyson", "comets", "supernova", "blackhole", "wormhole", "galaxies", "mirror", "code", "constellations", "cities", "daynight"],
+    cosmic: ["astronaut", "flow", "hummingbird", "eye", "hudtess", "hud600", "hudclif", "hudhopf", "hudheart", "hudreactor", "hudglobe", "hudspeaker", "huddna", "hudship", "hudbh", "hudsolar", "hudfly", "hudhour", "pendulum", "tesla", "cube", "davinci", "piano", "vinyl", "chess", "qchip", "train", "clock", "typewriter", "bees", "maya", "dicetower", "kaleido", "cradle", "computer", "wyvern", "reddragon", "trex", "planets", "jupiters", "ufo", "jellyfish", "cortex", "casino", "guitar", "lotus", "bincube", "butterflies", "dragon", "pyramids", "coderings", "dyson", "comets", "supernova", "blackhole", "wormhole", "galaxies", "mirror", "code", "constellations", "cities", "daynight"],
     science: ["microscope", "atoms", "engine", "cradle", "flow", "cortex", "bincube", "dna", "hexagons", "shapes", "entangle", "sparks", "microverse", "tesseract", "timecrystals", "hyperspheres", "klein", "mobius", "crystals", "fractal", "penrose", "foam", "lightning", "nanobots", "brainwaves", "rising"]
   };
   layersPanel.querySelectorAll("[data-preset]").forEach(function (pb) {
