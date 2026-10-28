@@ -415,6 +415,9 @@
   /* preview eye on cards */
   .agent { position:relative; }
   .fx-eye { position:absolute; top:10px; right:10px; width:30px; height:30px; display:grid; place-items:center; border-radius:50%; border:1px solid #ffffff2a; background:#ffffff0d; color:#cfe3ff; z-index:2; }
+  .glyph.has-eye { padding:0; overflow:hidden; } /* EYE IN CIRCLE (TEST) */
+  .glyph .fx-eye { position:static; width:100%; height:100%; border:0; background:none; color:var(--team,var(--eb2)); cursor:pointer; }
+  .glyph .fx-eye svg { width:18px; height:18px; }
   .fx-eye:hover, .fx-eye:focus-visible { border-color:var(--team,var(--eb2)); outline:none; }
   .fx-eye svg { width:15px; height:15px; }
   /* sheet */
@@ -512,7 +515,8 @@
         function go(e) { e.preventDefault(); e.stopPropagation(); preview(info(c)); }
         eye.addEventListener("click", go);
         eye.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") go(e); });
-        c.appendChild(eye);
+        var gl = c.querySelector(".glyph"); /* EYE IN CIRCLE (TEST): eye replaces the letter */
+        if (gl) { gl.textContent = ""; gl.classList.add("has-eye"); gl.appendChild(eye); } else c.appendChild(eye);
       });
 
       // ---------- action area ----------
