@@ -554,7 +554,7 @@
         panel.classList.add("fx-spin");
         var tilt = document.createElement("span"); tilt.className = "fx-tilt";
         var img = core.querySelector("img"); core.insertBefore(tilt, img); tilt.appendChild(img);
-        var hint = document.createElement("span"); hint.className = "fx-hint"; hint.textContent = "drag or tap"; core.appendChild(hint);
+        var hint = document.createElement("span"); /* "drag or tap" label removed (TEST) */
         var sx = 0, sy = 0, dragging = false, moved = false, turns = 0;
         core.addEventListener("pointerdown", function (e) { dragging = true; moved = false; sx = e.clientX; sy = e.clientY; core.classList.add("drag"); try { core.setPointerCapture(e.pointerId); } catch (x) {} });
         core.addEventListener("pointermove", function (e) {
