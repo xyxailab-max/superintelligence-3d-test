@@ -195,7 +195,7 @@
   <p class="eyebrow">Free · No sign-up</p>
   <h1>The Agent <em>Hub</em></h1>
   <p class="lede"><span class="count">100 AI agents</span> for work, school, money and everyday life. Pick one and start talking.</p>
-  <!-- CIRCUIT BOARD v3 (TEST): glowing cube + fiber-optic strands + module chips. Delete from here to "END CIRCUIT BOARD" to undo. -->
+  <!-- CIRCUIT BOARD v4 (TEST, glass modules): glowing cube + fiber-optic strands + module chips. Delete from here to "END CIRCUIT BOARD" to undo. -->
   <style>
   .cb { position:relative; margin:8px 0 34px; padding:20px 16px 22px; border:1px solid transparent; border-radius:8px;
     background:
@@ -210,10 +210,6 @@
   .cb-led { width:7px; height:7px; border-radius:50%; background:var(--c,#3ddc97); flex:none; animation:cbBlink 2.4s ease-in-out infinite; }
   @keyframes cbBlink { 50% { opacity:.3; } }
 
-  /* test-only shape switcher */
-  .cb-shapes { position:relative; z-index:2; display:flex; gap:6px; align-items:center; margin:-4px 0 16px; font:600 .7rem/1 var(--mono); letter-spacing:.06em; color:#5f6b85; text-transform:uppercase; }
-  .cb-shapes button { font:600 .7rem/1 var(--mono); letter-spacing:.04em; padding:7px 10px; border:1px solid var(--edge); border-radius:4px; background:#0E1220; color:#9AA3B8; cursor:pointer; }
-  .cb-shapes button[aria-pressed="true"] { border-color:var(--eb2); color:#E9EDFF; background:#16213a; }
 
   .cb-board { position:relative; display:grid; grid-template-columns:1fr minmax(180px,240px) 1fr; gap:14px 48px; align-items:center; }
   .cb-col { display:flex; flex-direction:column; gap:14px; position:relative; z-index:2; }
@@ -258,27 +254,14 @@
   .cb-chip.zap .skin { animation:cbZap .55s ease-out; }
   @keyframes cbZap { 0% { box-shadow:0 0 0 0 color-mix(in srgb, var(--c) 70%, transparent); } 100% { box-shadow:0 0 0 18px transparent; } }
 
-  /* shape A: cut-corner hardware module with a color edge bar */
-  .shape-a .cb-chip .skin { border:1px solid var(--edge); background:linear-gradient(180deg,#121a2c,#0a0f1b);
-    clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px); }
-  .shape-a .cb-chip::before { content:""; position:absolute; z-index:1; left:0; top:12px; bottom:0; width:3px; background:var(--c); opacity:.55; transition:opacity .3s; }
-  .shape-a .cb-chip.on::before { opacity:1; }
-  .shape-a .cb-chip .skin::after { content:""; position:absolute; right:10px; bottom:6px; width:26px; height:1px; background:#3a4459; box-shadow:0 -3px 0 #3a4459; }
 
-  /* shape B: frosted glass capsule with a fiber port */
+  /* glass capsule modules with a fiber port */
   .shape-b .cb-chip { padding:11px 18px 11px 22px; }
   .shape-b .cb-chip .skin { border:1px solid #ffffff1f; border-radius:999px; background:linear-gradient(180deg,#ffffff12,#ffffff05); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
     box-shadow:inset 0 1px 0 #ffffff1a; }
   .shape-b .cb-chip::after { content:""; position:absolute; z-index:1; top:50%; width:7px; height:7px; margin-top:-3.5px; border-radius:50%; background:var(--c); box-shadow:0 0 6px var(--c); }
   .shape-b #cbLeft .cb-chip::after { right:-3px; } .shape-b #cbRight .cb-chip::after { left:-3px; }
 
-  /* shape C: HUD frame, corner brackets only */
-  .shape-c .cb-chip .skin { border:1px solid transparent; background:
-      linear-gradient(var(--c),var(--c)) 0 0/14px 1px no-repeat, linear-gradient(var(--c),var(--c)) 0 0/1px 14px no-repeat,
-      linear-gradient(var(--c),var(--c)) 100% 100%/14px 1px no-repeat, linear-gradient(var(--c),var(--c)) 100% 100%/1px 14px no-repeat,
-      linear-gradient(90deg,#0d1424ee,#0b1020cc); opacity:.95; }
-  .shape-c .cb-chip:not(.on) .skin { filter:saturate(.35) brightness(.9); }
-  .shape-c .cb-row b { letter-spacing:.02em; text-transform:uppercase; font-size:.8rem; }
 
   @media (max-width:760px) {
     .cb-board { grid-template-columns:1fr 1fr; gap:14px 14px; }
@@ -287,15 +270,10 @@
   }
   @media (prefers-reduced-motion:reduce) { .cb-led, .cb-svg .lt, .cb-core img, .cb-core .halo, .cb-core .ring { animation:none !important; } .cb-svg .lt { display:none; } }
   </style>
-  <section class="cb shape-a" id="cbWrap" aria-label="Agent circuit board">
+  <section class="cb shape-b" id="cbWrap" aria-label="Agent circuit board">
     <div class="cb-head">
       <div><h2>The Agent Core</h2><p>One core. Ten fibers. Tap a module to power up that team.</p></div>
       <span class="cb-live"><span class="cb-led"></span><span id="cbTotal">100</span> agents online</span>
-    </div>
-    <div class="cb-shapes" role="group" aria-label="Try a module shape (test only)">Shape
-      <button type="button" data-s="a" aria-pressed="true">A · Module</button>
-      <button type="button" data-s="b" aria-pressed="false">B · Glass</button>
-      <button type="button" data-s="c" aria-pressed="false">C · HUD</button>
     </div>
     <div class="cb-board" id="cbBoard">
       <svg class="cb-svg" id="cbSvg" aria-hidden="true"></svg>
@@ -336,13 +314,6 @@
       });
       if (total) document.getElementById("cbTotal").textContent = total;
 
-      document.querySelectorAll(".cb-shapes button").forEach(function (s) {
-        s.addEventListener("click", function () {
-          document.querySelectorAll(".cb-shapes button").forEach(function (x) { x.setAttribute("aria-pressed", x === s ? "true" : "false"); });
-          wrap.classList.remove("shape-a", "shape-b", "shape-c"); wrap.classList.add("shape-" + s.dataset.s);
-          setTimeout(draw, 50);
-        });
-      });
 
       function route(o, c, i) {
         var B = board.getBoundingClientRect(), C = core.querySelector("img").getBoundingClientRect();
