@@ -113,6 +113,61 @@
   .pal-list button:hover, .pal-list button.sel { background:#16213a; }
   .pal-list small { margin-left:auto; color:var(--mist); font:600 .64rem/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
 
+
+  /* ===== VIBRANT VISUAL LAYER ===== */
+  @property --ang { syntax:"<angle>"; initial-value:0deg; inherits:false; }
+  :root { --v1:#22d3ee; --v2:#a78bfa; --v3:#f472b6; --v4:#34d399; --v5:#fb923c; --v6:#5aa2ff; }
+  .aur { position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+  .aur i { position:absolute; width:55vmax; height:55vmax; border-radius:50%; filter:blur(90px); opacity:.22; animation:float 22s ease-in-out infinite alternate; }
+  .aur i:nth-child(1) { left:-15vmax; top:-20vmax; background:var(--v2); }
+  .aur i:nth-child(2) { right:-18vmax; top:10vmax; background:var(--v1); animation-delay:-7s; }
+  .aur i:nth-child(3) { left:20vmax; bottom:-30vmax; background:var(--v3); animation-delay:-14s; opacity:.16; }
+  @keyframes float { to { transform:translate(6vmax,4vmax) scale(1.1); } }
+  .bar a, .bar button { background:#0b1020cc; }
+  .bar .cmd { border-color:transparent; background:linear-gradient(#0b1020,#0b1020) padding-box, linear-gradient(90deg,var(--v1),var(--v2),var(--v3)) border-box; }
+  /* tiles: each its own color */
+  .tile { --a:var(--v6); position:relative; overflow:hidden; border-color:transparent; background:linear-gradient(180deg,#0f1528,#0a0e1b) padding-box, linear-gradient(135deg, var(--a), transparent 60%) border-box; }
+  .tile::before { content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--a), transparent); animation:sweep 3s ease-in-out infinite; }
+  @keyframes sweep { 0%,100% { transform:translateX(-60%); } 50% { transform:translateX(60%); } }
+  .tile:nth-child(1) { --a:var(--v4); } .tile:nth-child(2) { --a:var(--v1); } .tile:nth-child(3) { --a:var(--v5); } .tile:nth-child(4) { --a:var(--v3); }
+  .tile b { color:var(--a); text-shadow:0 0 18px color-mix(in srgb, var(--a) 45%, transparent); }
+  .tile .live { color:var(--a); } .tile .live i { background:var(--a); }
+  /* panels: flowing gradient borders in their own color */
+  .panel { --a:var(--v6); position:relative; z-index:1; border:1px solid transparent;
+    background:linear-gradient(180deg,#0e1427f2,#090d19f7) padding-box,
+      conic-gradient(from var(--ang), var(--a), transparent 25%, color-mix(in srgb, var(--a) 60%, #fff) 50%, transparent 75%, var(--a)) border-box;
+    animation:angle 8s linear infinite; box-shadow:0 20px 40px -24px #000, 0 0 30px -12px color-mix(in srgb, var(--a) 40%, transparent); }
+  @keyframes angle { to { --ang:360deg; } }
+  .ph { border-bottom-color:color-mix(in srgb, var(--a) 25%, #232c45); }
+  .ph h2 { display:flex; align-items:center; gap:8px; } .ph h2::before { content:""; width:8px; height:8px; border-radius:2px; background:var(--a); box-shadow:0 0 10px var(--a); }
+  .ph .k { color:color-mix(in srgb, var(--a) 80%, #fff); }
+  .badge { background:linear-gradient(135deg, var(--v1), var(--v2) 50%, var(--v3)); color:#fff; text-shadow:0 1px 6px #0006; box-shadow:0 0 26px color-mix(in srgb, var(--v2) 50%, transparent); }
+  .who .k { color:var(--v2); }
+  .owns li::before { color:var(--v4); }
+  .st .g { color:var(--v4); }
+  .mate:nth-child(1) i { color:var(--v1); border-color:color-mix(in srgb, var(--v1) 50%, transparent); }
+  .mate:nth-child(2) i { color:var(--v4); border-color:color-mix(in srgb, var(--v4) 50%, transparent); }
+  .mate:nth-child(3) i { color:var(--v5); border-color:color-mix(in srgb, var(--v5) 50%, transparent); }
+  .mate:nth-child(4) i { color:var(--v3); border-color:color-mix(in srgb, var(--v3) 50%, transparent); }
+  .mate:hover { border-color:var(--v3); background:color-mix(in srgb, var(--v3) 10%, #0b1020); } .mate .go { color:var(--v3); }
+  .msg.you { background:linear-gradient(135deg, color-mix(in srgb, var(--v2) 30%, #0b1020), color-mix(in srgb, var(--v6) 22%, #0b1020)); border-color:color-mix(in srgb, var(--v2) 50%, transparent); }
+  .msg.bot { border-left:0; border-color:transparent; background:linear-gradient(#0f1730,#0f1730) padding-box, linear-gradient(135deg, var(--v1), transparent 55%) border-box; }
+  .msg.bot::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:2px; background:linear-gradient(var(--v1), var(--v2)); }
+  .starters button:nth-child(1) { border-color:color-mix(in srgb, var(--v2) 55%, transparent); } .starters button:nth-child(2) { border-color:color-mix(in srgb, var(--v1) 55%, transparent); } .starters button:nth-child(3) { border-color:color-mix(in srgb, var(--v3) 55%, transparent); }
+  .ask button { background:linear-gradient(135deg, var(--v1), var(--v2)); color:#fff; }
+  .ask input:focus { border-color:var(--v1); }
+  .steps::before { background:linear-gradient(var(--v4), var(--v1), var(--v2), var(--v3)); opacity:.35; }
+  .steps li:nth-child(1) { --s:var(--v4); } .steps li:nth-child(2) { --s:var(--v1); } .steps li:nth-child(3) { --s:var(--v2); } .steps li:nth-child(4) { --s:var(--v3); }
+  .steps li.done i { border-color:var(--s); background:var(--s); box-shadow:0 0 14px var(--s); } .steps li.now i { border-color:var(--s); }
+  .note::before { background:linear-gradient(var(--v5), var(--v3)); }
+  .pal-box { border-color:transparent; background:linear-gradient(#0b1020,#0b1020) padding-box, linear-gradient(135deg,var(--v1),var(--v2),var(--v3)) border-box; }
+  /* wires between panels */
+  .grid { position:relative; }
+  .wires { position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; overflow:visible; }
+  .wires .w { fill:none; stroke-width:1.5; stroke-opacity:.5; }
+  .wires .p { fill:none; stroke-width:2.5; stroke-linecap:round; stroke-dasharray:14 260; animation:flow 2.4s linear infinite; }
+  .wires .n { stroke-width:0; }
+  @keyframes flow { from { stroke-dashoffset:274; } to { stroke-dashoffset:0; } }
   @media (max-width:1060px) { .grid { grid-template-columns:minmax(0,1fr) 300px; } .left { grid-column:1 / -1; order:3; } }
   @media (max-width:760px) {
     .grid { grid-template-columns:1fr; } .left { order:3; } .right { order:2; }
@@ -123,6 +178,7 @@
 </style>
 </head>
 <body>
+<div class="aur" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="wrap">
   <div class="bar">
     <a href="agent-hub-circuit-test.html">← All agents</a>
@@ -137,10 +193,10 @@
     <div class="tile"><span class="k">Cost</span><b>Free</b><small>No sign-up</small></div>
   </div>
 
-  <div class="grid">
+  <div class="grid" id="grid"><svg class="wires" id="wires" aria-hidden="true"></svg>
     <!-- LEFT: the agent's job card + teammates (like FounderOS agent roster) -->
     <aside class="left">
-      <div class="panel">
+      <div class="panel" id="pJob" style="--a:#a78bfa">
         <div class="ph"><h2>Job card</h2><span class="k">Free</span></div>
         <div class="pb">
           <div class="who"><div class="badge" id="badge">T</div><div><span class="k">Fun department</span><h1 id="aName">Text Adventure</h1></div></div>
@@ -154,14 +210,14 @@
           </div>
         </div>
       </div>
-      <div class="panel" style="margin-top:14px">
+      <div class="panel" id="pTeam" style="margin-top:14px;--a:#f472b6">
         <div class="ph"><h2>Teammates</h2><span class="k">Hand off</span></div>
         <div class="pb team" id="team"></div>
       </div>
     </aside>
 
     <!-- CENTER: chat -->
-    <main class="panel chat">
+    <main class="panel chat" id="pChat" style="--a:#22d3ee">
       <div class="ph"><h2>Session</h2><span class="k" id="sessState">Waiting for you</span></div>
       <div class="log" id="log"><div class="hint"><b>What do you want to play?</b>Tap an idea or type your own.</div></div>
       <div class="starters" id="starters"></div>
@@ -170,11 +226,11 @@
 
     <!-- RIGHT: progress + pinned board (like FounderOS task board) -->
     <aside class="right">
-      <div class="panel">
+      <div class="panel" id="pProg" style="--a:#34d399">
         <div class="ph"><h2>Progress</h2><span class="k" id="stepTxt">Step 1 of 4</span></div>
         <div class="pb"><ul class="steps" id="steps"><li class="now"><i></i>Start</li><li><i></i>Explore</li><li><i></i>Decide</li><li><i></i>Finish</li></ul></div>
       </div>
-      <div class="panel" style="margin-top:14px">
+      <div class="panel" id="pBoard" style="margin-top:14px;--a:#fb923c">
         <div class="ph"><h2>My board</h2><span class="k">Pin replies</span></div>
         <div class="pb board" id="board"><div class="empty">Tap "📌 Pin" on any reply to save it here.</div></div>
       </div>
@@ -257,6 +313,39 @@
     else if (e.key === "ArrowUp") { e.preventDefault(); selI = Math.max(selI - 1, 0); renderPal(); }
     else if (e.key === "Enter" && btns[selI]) { e.preventDefault(); btns[selI].click(); }
   });
+
+  // ===== wires: glowing lines that connect the panels, redrawn for any screen size =====
+  var NS = "http://www.w3.org/2000/svg", wires = $("wires"), grid = $("grid");
+  var LINKS = [["pJob", "pChat", "#a78bfa", "#22d3ee"], ["pChat", "pProg", "#22d3ee", "#34d399"], ["pChat", "pBoard", "#22d3ee", "#fb923c"], ["pJob", "pTeam", "#a78bfa", "#f472b6"], ["pProg", "pBoard", "#34d399", "#fb923c"], ["pTeam", "pChat", "#f472b6", "#22d3ee"]];
+  function drawWires() {
+    while (wires.firstChild) wires.removeChild(wires.firstChild);
+    var G = grid.getBoundingClientRect(), defs = document.createElementNS(NS, "defs"); wires.appendChild(defs);
+    LINKS.forEach(function (L, k) {
+      var A = $(L[0]).getBoundingClientRect(), B = $(L[1]).getBoundingClientRect(), x1, y1, x2, y2, d;
+      if (B.left >= A.right - 2 || A.left >= B.right - 2) {
+        var lr = B.left >= A.right - 2; x1 = (lr ? A.right : A.left) - G.left; x2 = (lr ? B.left : B.right) - G.left;
+        y1 = Math.max(A.top, Math.min(A.bottom, B.top + 40)) - G.top + (k % 3) * 18 + 30; y2 = Math.max(B.top + 30, Math.min(B.bottom - 30, y1 + G.top)) - G.top;
+        if (y1 + G.top > A.bottom - 20) y1 = A.top + A.height / 2 - G.top;
+        var mx = (x1 + x2) / 2; d = "M" + x1 + " " + y1 + " C" + mx + " " + y1 + " " + mx + " " + y2 + " " + x2 + " " + y2;
+      } else {
+        var dn = B.top >= A.bottom - 2; y1 = (dn ? A.bottom : A.top) - G.top; y2 = (dn ? B.top : B.bottom) - G.top;
+        x1 = A.left + A.width * (0.3 + (k % 3) * 0.2) - G.left; x2 = B.left + B.width * (0.3 + (k % 3) * 0.2) - G.left;
+        var my = (y1 + y2) / 2; d = "M" + x1 + " " + y1 + " C" + x1 + " " + my + " " + x2 + " " + my + " " + x2 + " " + y2;
+      }
+      var gid = "wg" + k, g = document.createElementNS(NS, "linearGradient"); g.setAttribute("id", gid); g.setAttribute("gradientUnits", "userSpaceOnUse");
+      g.setAttribute("x1", x1); g.setAttribute("y1", y1); g.setAttribute("x2", x2); g.setAttribute("y2", y2);
+      [[0, L[2]], [1, L[3]]].forEach(function (st) { var s = document.createElementNS(NS, "stop"); s.setAttribute("offset", st[0]); s.setAttribute("stop-color", st[1]); g.appendChild(s); });
+      defs.appendChild(g);
+      var w = document.createElementNS(NS, "path"); w.setAttribute("class", "w"); w.setAttribute("d", d); w.setAttribute("stroke", "url(#" + gid + ")"); wires.appendChild(w);
+      var p = document.createElementNS(NS, "path"); p.setAttribute("class", "p"); p.setAttribute("d", d); p.setAttribute("stroke", "url(#" + gid + ")");
+      p.style.animationDelay = (-k * 0.4) + "s"; p.style.filter = "drop-shadow(0 0 4px " + L[3] + ")"; wires.appendChild(p);
+      [[x1, y1, L[2]], [x2, y2, L[3]]].forEach(function (c) { var n = document.createElementNS(NS, "circle"); n.setAttribute("cx", c[0]); n.setAttribute("cy", c[1]); n.setAttribute("r", 3.5); n.setAttribute("fill", c[2]); n.style.filter = "drop-shadow(0 0 5px " + c[2] + ")"; wires.appendChild(n); });
+    });
+  }
+  drawWires();
+  var wt; window.addEventListener("resize", function () { clearTimeout(wt); wt = setTimeout(drawWires, 120); });
+  if (window.ResizeObserver) new ResizeObserver(function () { clearTimeout(wt); wt = setTimeout(drawWires, 60); }).observe(grid);
+  window.addEventListener("load", drawWires);
   document.addEventListener("keydown", function (e) { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); pal.classList.contains("open") ? closePal() : openPal(); } else if (e.key === "Escape") closePal(); });
 })();
 </script>
