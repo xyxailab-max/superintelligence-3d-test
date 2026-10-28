@@ -168,6 +168,19 @@
   .wires .p { fill:none; stroke-width:2.5; stroke-linecap:round; stroke-dasharray:14 260; animation:flow 2.4s linear infinite; }
   .wires .n { stroke-width:0; }
   @keyframes flow { from { stroke-dashoffset:274; } to { stroke-dashoffset:0; } }
+
+  /* ===== more space between boxes so the connection lines show, bigger lines, smaller icons ===== */
+  .grid { column-gap:56px !important; row-gap:44px !important; }
+  #pTeam, #pBoard { margin-top:44px !important; }
+  .pulse { gap:16px; margin-bottom:34px; }
+  .wires .w { stroke-width:3.5 !important; stroke-opacity:.75 !important; }
+  .wires .p { stroke-width:5 !important; stroke-dasharray:20 240 !important; }
+  .badge { width:40px !important; height:40px !important; border-radius:11px !important; font-size:1.1rem !important; }
+  .mate i { width:22px !important; height:22px !important; border-radius:6px !important; font-size:.66rem !important; }
+  .mate { padding:7px 9px !important; }
+  .steps li i { width:18px !important; height:18px !important; } .steps::before { left:8px !important; }
+  .owns li { font-size:.8rem; }
+  @media (max-width:760px) { .grid { row-gap:40px !important; } #pTeam, #pBoard { margin-top:40px !important; } }
   @media (max-width:1060px) { .grid { grid-template-columns:minmax(0,1fr) 300px; } .left { grid-column:1 / -1; order:3; } }
   @media (max-width:760px) {
     .grid { grid-template-columns:1fr; } .left { order:3; } .right { order:2; }
@@ -339,7 +352,7 @@
       var w = document.createElementNS(NS, "path"); w.setAttribute("class", "w"); w.setAttribute("d", d); w.setAttribute("stroke", "url(#" + gid + ")"); wires.appendChild(w);
       var p = document.createElementNS(NS, "path"); p.setAttribute("class", "p"); p.setAttribute("d", d); p.setAttribute("stroke", "url(#" + gid + ")");
       p.style.animationDelay = (-k * 0.4) + "s"; p.style.filter = "drop-shadow(0 0 4px " + L[3] + ")"; wires.appendChild(p);
-      [[x1, y1, L[2]], [x2, y2, L[3]]].forEach(function (c) { var n = document.createElementNS(NS, "circle"); n.setAttribute("cx", c[0]); n.setAttribute("cy", c[1]); n.setAttribute("r", 3.5); n.setAttribute("fill", c[2]); n.style.filter = "drop-shadow(0 0 5px " + c[2] + ")"; wires.appendChild(n); });
+      [[x1, y1, L[2]], [x2, y2, L[3]]].forEach(function (c) { var n = document.createElementNS(NS, "circle"); n.setAttribute("cx", c[0]); n.setAttribute("cy", c[1]); n.setAttribute("r", 6); n.setAttribute("fill", c[2]); n.style.filter = "drop-shadow(0 0 5px " + c[2] + ")"; wires.appendChild(n); });
     });
   }
   drawWires();
