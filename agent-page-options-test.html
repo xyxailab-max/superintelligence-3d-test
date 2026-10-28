@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Agent Page Options | Use Superintelligence</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --c:#ffd84d; --bg:#070914; --ink:#E9EDFF; --mist:#9AA3B8; --edge:#2a3550; --eb:#2F6BFF; --eb2:#5aa2ff;
+    --sans:"Manrope","Segoe UI",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace; color-scheme:dark; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; }
+  body { background:var(--bg); color:var(--ink); font:400 1rem/1.5 var(--sans); -webkit-text-size-adjust:100%; min-height:100vh; }
+  a { color:inherit; }
+  button { font:inherit; color:inherit; cursor:pointer; }
+
+  /* test switcher */
+  .sw { position:sticky; top:0; z-index:50; display:flex; justify-content:center; gap:6px; padding:10px 12px; background:#05070fe6; border-bottom:1px solid #1a2238; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+  .sw span { align-self:center; margin-right:4px; font:600 .64rem/1 var(--mono); letter-spacing:.12em; color:#5f6b85; text-transform:uppercase; }
+  .sw button { padding:8px 12px; font:700 .78rem/1 var(--sans); border:1px solid var(--edge); border-radius:999px; background:#0E1220; color:var(--mist); }
+  .sw button[aria-pressed="true"] { color:#06101f; background:var(--c); border-color:var(--c); }
+  .opt { display:none; } .opt.on { display:block; }
+
+  /* shared bits */
+  .nav { display:flex; align-items:center; justify-content:space-between; gap:10px; max-width:1180px; margin:0 auto; padding:16px; }
+  .brand { display:flex; align-items:center; gap:8px; text-decoration:none; font:800 .78rem/1 var(--sans); letter-spacing:.2em; }
+  .brand img { width:30px; height:30px; object-fit:contain; }
+  .links { display:flex; gap:4px; } .links a { padding:8px 12px; border-radius:999px; text-decoration:none; font:600 .8rem/1 var(--sans); color:var(--mist); border:1px solid transparent; }
+  .links a:hover { color:var(--ink); border-color:var(--edge); }
+  .k { font:600 .68rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--c); }
+  .msg { max-width:88%; padding:11px 14px; border-radius:16px; white-space:pre-wrap; animation:mIn .3s ease-out; }
+  @keyframes mIn { from { opacity:0; transform:translateY(6px); } }
+  .msg.you { align-self:flex-end; background:#16213a; border:1px solid #2F6BFF66; border-bottom-right-radius:4px; }
+  .msg.bot { align-self:flex-start; background:color-mix(in srgb, var(--c) 8%, #0c111e); border:1px solid color-mix(in srgb, var(--c) 30%, transparent); border-bottom-left-radius:4px; }
+  .msg.bot.typing::after { content:"▍"; color:var(--c); animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .log { display:flex; flex-direction:column; gap:10px; overflow-y:auto; }
+  .hint { margin:auto; text-align:center; color:var(--mist); font-size:.92rem; }
+  .starters { display:flex; flex-wrap:wrap; gap:8px; }
+  .starters button { padding:9px 14px; font:600 .84rem/1.2 var(--sans); background:#ffffff0a; border:1px solid #ffffff22; border-radius:999px; transition:border-color .2s, transform .2s; }
+  .starters button:hover { border-color:var(--c); transform:translateY(-2px); }
+  .ask { display:flex; gap:8px; }
+  .ask input { flex:1; min-width:0; padding:13px 16px; font:500 1rem/1.2 var(--sans); color:var(--ink); background:#ffffff0d; border:1px solid #ffffff26; border-radius:999px; }
+  .ask input:focus { outline:none; border-color:var(--c); }
+  .ask button { padding:0 20px; font:800 .85rem/1 var(--sans); color:#06101f; background:var(--c); border:0; border-radius:999px; }
+  .rel { display:flex; flex-direction:column; gap:3px; padding:14px; border-radius:16px; text-decoration:none; background:#ffffff08; border:1px solid #ffffff1a; transition:border-color .2s, transform .2s; }
+  .rel:hover { border-color:var(--c); transform:translateY(-2px); }
+  .rel b { font:700 .95rem/1.2 var(--sans); } .rel small { color:var(--mist); font-size:.8rem; line-height:1.35; }
+  .nl { margin-top:18px; padding:16px; border-radius:16px; border:1px solid #ffffff1a; background:#ffffff06; }
+  .nl b { display:block; margin:6px 0 10px; } .nl .ask input { font-size:.9rem; padding:11px 14px; }
+
+  /* ===== A · COMMAND DECK ===== */
+  #A { background:radial-gradient(900px 500px at 50% -10%, color-mix(in srgb, var(--c) 14%, transparent), transparent 70%),
+       linear-gradient(#1a223633 1px, transparent 1px) 0 0/24px 24px, linear-gradient(90deg, #1a223633 1px, transparent 1px) 0 0/24px 24px; }
+  .a-wrap { max-width:860px; margin:0 auto; padding:8px 16px 40px; }
+  .a-hero { text-align:center; padding:10px 0 18px; }
+  .orb { position:relative; width:120px; height:120px; margin:0 auto 14px; display:grid; place-items:center; }
+  .orb .core { position:relative; z-index:2; width:84px; height:84px; display:grid; place-items:center; border-radius:50%; font:800 2.2rem/1 var(--sans); color:#06101f;
+    background:radial-gradient(circle at 35% 30%, #fff, var(--c) 55%, color-mix(in srgb, var(--c) 50%, #000)); box-shadow:0 0 30px color-mix(in srgb, var(--c) 45%, transparent); }
+  .orb .ring { position:absolute; inset:0; border-radius:50%; border:1px dashed color-mix(in srgb, var(--c) 60%, transparent); animation:spin 14s linear infinite; }
+  .orb .ring.r2 { inset:12px; border-style:solid; border-color:transparent; border-top-color:var(--c); animation-duration:3s; }
+  .orb.talk .core { animation:pulse .5s ease-in-out infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes pulse { 50% { transform:scale(1.07); box-shadow:0 0 46px color-mix(in srgb, var(--c) 70%, transparent); } }
+  .a-hero h1 { margin:8px 0 6px; font:800 clamp(2rem,6vw,3.2rem)/1.05 var(--sans); letter-spacing:-.02em; }
+  .a-hero p { margin:0 auto; max-width:520px; color:var(--mist); }
+  .status { display:inline-flex; align-items:center; gap:7px; margin-top:12px; padding:7px 12px; border-radius:999px; border:1px solid #ffffff1f; font:600 .7rem/1 var(--mono); letter-spacing:.08em; color:#3ddc97; text-transform:uppercase; }
+  .status i { width:7px; height:7px; border-radius:50%; background:#3ddc97; animation:blink 2s ease-in-out infinite; }
+  .fiber { width:2px; height:34px; margin:0 auto; background:linear-gradient(var(--c), transparent); position:relative; overflow:hidden; }
+  .fiber::after { content:""; position:absolute; left:0; width:2px; height:10px; background:#fff; animation:drop 1.4s linear infinite; }
+  @keyframes drop { from { top:-10px; } to { top:34px; } }
+  .a-chat { border-radius:22px; padding:16px; border:1px solid color-mix(in srgb, var(--c) 35%, #ffffff1a); background:linear-gradient(180deg, #0d1324ee, #080b16f2); box-shadow:0 30px 60px -30px #000; }
+  .a-chat .log { height:min(52vh,440px); padding:6px 2px 14px; }
+  .a-chat .starters { margin:4px 0 12px; justify-content:center; }
+  .a-more { margin-top:30px; } .a-more h2 { margin:0 0 12px; font:700 1.2rem/1.2 var(--sans); }
+  .rail { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(200px,1fr); gap:10px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x mandatory; }
+  .rail .rel { scroll-snap-align:start; }
+
+  /* ===== B · HOLO CONSOLE ===== */
+  #B { background:linear-gradient(135deg, color-mix(in srgb, var(--c) 9%, #070914), #070914 45%); }
+  .b-grid { max-width:1180px; margin:0 auto; padding:6px 16px 40px; display:grid; grid-template-columns:minmax(0,5fr) minmax(0,6fr); gap:20px; align-items:start; }
+  .idcard { position:relative; overflow:hidden; padding:24px; border-radius:22px; border:1px solid #ffffff1f; background:linear-gradient(160deg, #ffffff10, #ffffff03); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+  .idcard::before { content:""; position:absolute; inset:-40% -40% auto auto; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, color-mix(in srgb, var(--c) 30%, transparent), transparent 65%); }
+  .scan { position:absolute; left:0; right:0; height:60px; background:linear-gradient(transparent, color-mix(in srgb, var(--c) 10%, transparent), transparent); animation:scan 4s linear infinite; pointer-events:none; }
+  @keyframes scan { from { top:-60px; } to { top:100%; } }
+  .id-top { position:relative; display:flex; gap:16px; align-items:center; }
+  .hex { flex:none; width:74px; height:84px; display:grid; place-items:center; font:800 2rem/1 var(--sans); color:#06101f; background:var(--c); clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
+  .id-top h1 { margin:6px 0 0; font:800 clamp(1.8rem,4vw,2.5rem)/1.05 var(--sans); letter-spacing:-.02em; }
+  .idcard > p { position:relative; color:var(--mist); margin:16px 0; }
+  .stats { position:relative; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:0 0 18px; }
+  .stats div { padding:10px; border-radius:12px; border:1px solid #ffffff1a; background:#00000033; text-align:center; }
+  .stats b { display:block; font:800 1.05rem/1.1 var(--sans); color:var(--c); } .stats small { font:600 .62rem/1 var(--mono); letter-spacing:.1em; color:var(--mist); text-transform:uppercase; }
+  .can { position:relative; list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+  .can li { display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:12px; background:#ffffff08; border:1px solid #ffffff14; cursor:pointer; transition:border-color .2s; }
+  .can li:hover { border-color:var(--c); }
+  .can li::before { content:"▶"; font-size:.65rem; color:var(--c); }
+  .b-side h2 { margin:22px 0 10px; font:700 1.05rem/1.2 var(--sans); }
+  .b-rel { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .term { border-radius:22px; overflow:hidden; border:1px solid #ffffff1f; background:#05070dee; position:sticky; top:70px; }
+  .term-bar { display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid #ffffff14; font:600 .72rem/1 var(--mono); color:var(--mist); letter-spacing:.06em; }
+  .term-bar i { width:10px; height:10px; border-radius:50%; background:#ff6b6b; } .term-bar i:nth-child(2) { background:#ffd84d; } .term-bar i:nth-child(3) { background:#3ddc97; }
+  .term-bar span { margin-left:auto; color:var(--c); }
+  .term .log { height:min(62vh,560px); padding:16px; }
+  .term .msg.bot { font-family:var(--mono); font-size:.9rem; background:transparent; border:0; border-left:2px solid var(--c); border-radius:0; padding:4px 0 4px 12px; }
+  .term .msg.you { font-family:var(--mono); font-size:.9rem; }
+  .term .msg.you::before { content:"> "; color:var(--c); }
+  .term form { padding:12px 16px 16px; border-top:1px solid #ffffff14; }
+  .term .ask input { border-radius:12px; font-family:var(--mono); font-size:.92rem; } .term .ask button { border-radius:12px; }
+  @media (max-width:860px) { .b-grid { grid-template-columns:1fr; } .term { position:static; } .term .log { height:60vh; } }
+
+  /* ===== C · IMMERSIVE FOCUS ===== */
+  #C { position:relative; min-height:calc(100vh - 50px); overflow:hidden; }
+  .aurora { position:absolute; inset:-20%; z-index:0; pointer-events:none; filter:blur(60px); opacity:.55;
+    background:radial-gradient(40% 35% at 20% 20%, color-mix(in srgb, var(--c) 45%, transparent), transparent 70%),
+               radial-gradient(35% 30% at 80% 30%, #2F6BFF55, transparent 70%),
+               radial-gradient(40% 30% at 50% 90%, color-mix(in srgb, var(--c) 25%, transparent), transparent 70%); animation:drift 18s ease-in-out infinite alternate; }
+  @keyframes drift { to { transform:translate(4%, -3%) rotate(8deg); } }
+  .c-in { position:relative; z-index:1; display:flex; flex-direction:column; min-height:calc(100vh - 50px); max-width:760px; margin:0 auto; padding:0 16px; }
+  .c-top { display:flex; justify-content:space-between; align-items:center; padding:14px 0; }
+  .c-top a, .c-top button { padding:8px 12px; font:600 .8rem/1 var(--sans); text-decoration:none; border-radius:999px; border:1px solid #ffffff22; background:#ffffff0a; color:var(--ink); }
+  .c-head { text-align:center; padding:10px 0 6px; transition:all .5s; }
+  .bubbleorb { width:96px; height:96px; margin:0 auto 12px; border-radius:50%; display:grid; place-items:center; font:800 2.4rem/1 var(--sans); color:#06101f;
+    background:conic-gradient(from 0deg, var(--c), #fff, var(--c), #2F6BFF, var(--c)); animation:spin 8s linear infinite; position:relative; }
+  .bubbleorb span { position:absolute; inset:6px; border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle at 35% 30%, #fff, var(--c) 60%); animation:spin 8s linear infinite reverse; }
+  .bubbleorb.talk { animation-duration:1.2s; } .bubbleorb.talk span { animation-duration:1.2s; }
+  .c-head h1 { margin:0; font:800 clamp(1.9rem,6vw,2.8rem)/1.05 var(--sans); letter-spacing:-.02em; }
+  .c-head p { margin:6px auto 0; max-width:440px; color:var(--mist); }
+  #C.started .c-head { padding:0; } #C.started .bubbleorb { width:56px; height:56px; font-size:1.4rem; margin-bottom:6px; } #C.started .c-head p, #C.started .c-cards { display:none; } #C.started .c-head h1 { font-size:1.3rem; }
+  .c-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:22px 0 10px; }
+  .c-cards button { text-align:left; padding:16px; min-height:96px; border-radius:18px; border:1px solid #ffffff22; background:#ffffff0b; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); font:700 .92rem/1.3 var(--sans); transition:transform .25s, border-color .25s; }
+  .c-cards button:hover { transform:translateY(-4px); border-color:var(--c); }
+  .c-cards button small { display:block; margin-bottom:8px; font:600 .62rem/1 var(--mono); letter-spacing:.12em; color:var(--c); text-transform:uppercase; }
+  #C .log { flex:1; padding:14px 0; }
+  .c-form { position:sticky; bottom:0; padding:12px 0 calc(16px + env(safe-area-inset-bottom)); background:linear-gradient(transparent, var(--bg) 40%); }
+  .c-form .ask { padding:6px; border-radius:999px; border:1px solid #ffffff26; background:#0b1020e6; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+  .c-form .ask input { border:0; background:transparent; }
+  .drawer { position:fixed; inset:auto 0 0 0; z-index:60; max-height:70vh; overflow:auto; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:22px 22px 0 0; border:1px solid #ffffff22; background:#0a0e1af7; transform:translateY(105%); transition:transform .4s cubic-bezier(.2,1,.3,1); }
+  .drawer.open { transform:none; }
+  .drawer h2 { margin:0 0 12px; font:700 1.1rem/1.2 var(--sans); }
+  .drawer .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; max-width:900px; margin:0 auto; }
+  @media (max-width:640px) { .c-cards { grid-template-columns:1fr; } .c-cards button { min-height:0; } .links a:not(:first-child) { display:none; } }
+  @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; } }
+</style>
+</head>
+<body>
+<div class="sw" role="group" aria-label="Design option (test only)"><span>Option</span>
+  <button type="button" data-o="A" aria-pressed="true">A · Command Deck</button>
+  <button type="button" data-o="B" aria-pressed="false">B · Holo Console</button>
+  <button type="button" data-o="C" aria-pressed="false">C · Immersive</button>
+</div>
+
+<!-- A · COMMAND DECK: centered, glowing agent orb wired by a fiber into the chat -->
+<section class="opt on" id="A">
+  <div class="nav"><a class="brand" href="index.html"><img src="brand/logo-cube-v2.png" alt="">USE SI</a>
+    <div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
+  <div class="a-wrap">
+    <div class="a-hero">
+      <div class="orb" data-orb><span class="ring"></span><span class="ring r2"></span><span class="core" data-letter></span></div>
+      <span class="k" data-cat></span>
+      <h1 data-name></h1>
+      <p data-blurb></p>
+      <span class="status"><i></i>Online · Free · No sign-up</span>
+    </div>
+    <div class="fiber"></div>
+    <div class="a-chat" data-chat>
+      <div class="log" data-log></div>
+      <div class="starters" data-starters></div>
+      <form class="ask" data-form><input type="text" placeholder="Type your move…" aria-label="Message"><button type="submit">Send</button></form>
+    </div>
+    <div class="a-more"><h2>More <span data-catname></span> agents</h2><div class="rail" data-rel></div></div>
+    <div class="nl"><span class="k">Free guide</span><b>Get "50 AI prompts that save you hours" free</b><form class="ask" onsubmit="return false"><input type="email" placeholder="Your email" aria-label="Email"><button type="submit">Send it to me</button></form></div>
+  </div>
+</section>
+
+<!-- B · HOLO CONSOLE: glass ID card on the left, terminal chat on the right -->
+<section class="opt" id="B">
+  <div class="nav"><a class="brand" href="index.html"><img src="brand/logo-cube-v2.png" alt="">USE SI</a>
+    <div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
+  <div class="b-grid">
+    <div class="b-side">
+      <div class="idcard">
+        <div class="scan"></div>
+        <div class="id-top"><div class="hex" data-letter></div><div><span class="k" data-cat></span><h1 data-name></h1></div></div>
+        <p data-blurb></p>
+        <div class="stats"><div><b>Free</b><small>Price</small></div><div><b>0 sec</b><small>Sign-up</small></div><div><b>24/7</b><small>Online</small></div></div>
+        <span class="k">Tap to start</span>
+        <ul class="can" data-can style="margin-top:10px"></ul>
+      </div>
+      <h2>More <span data-catname></span> agents</h2>
+      <div class="b-rel" data-rel></div>
+    </div>
+    <div class="term" data-chat>
+      <div class="term-bar"><i></i><i></i><i></i>&nbsp; session://<span data-id></span><span>● LIVE</span></div>
+      <div class="log" data-log></div>
+      <form class="ask" data-form><input type="text" placeholder="Type a command or a message…" aria-label="Message"><button type="submit">Run</button></form>
+    </div>
+  </div>
+</section>
+
+<!-- C · IMMERSIVE: full-screen chat-first, aurora backdrop, spinning orb, switch-agent drawer -->
+<section class="opt" id="C">
+  <div class="aurora"></div>
+  <div class="c-in">
+    <div class="c-top"><a href="agent-hub-circuit-test.html">← Agents</a><button type="button" data-drawer>Switch agent ↑</button></div>
+    <div class="c-head">
+      <div class="bubbleorb" data-orb><span data-letter></span></div>
+      <h1 data-name></h1>
+      <p data-blurb></p>
+    </div>
+    <div class="c-cards" data-cards></div>
+    <div class="log" data-log></div>
+    <div class="c-form"><form class="ask" data-form><input type="text" placeholder="What happens next?" aria-label="Message"><button type="submit">Send</button></form></div>
+  </div>
+  <div class="drawer" id="drawer"><h2>More <span data-catname></span> agents</h2><div class="grid" data-rel></div></div>
+</section>
+
+<script>
+(function () {
+  var A = { id: "text-adventure", name: "Text Adventure", cat: "Fun", blurb: "An interactive story game where you choose what happens.",
+    starters: ["Start a fantasy adventure", "Space survival game", "Mystery in a haunted house"],
+    more: [["Brain Guide", "Explains the science behind everything in the 3D brain."], ["Quiz Master", "Runs quizzes on any topic and keeps score."], ["Riddle Master", "Riddles and brain teasers to test your wits."],
+           ["Joke Writer", "Clean, clever jokes for any topic."], ["Debate Partner", "Argues the other side to sharpen your thinking."], ["Name Generator", "Names for pets, babies, characters, teams and more."]] };
+
+  function fill(root) {
+    root.querySelectorAll("[data-name]").forEach(function (e) { e.textContent = A.name; });
+    root.querySelectorAll("[data-cat]").forEach(function (e) { e.textContent = A.cat + " · Free AI agent"; });
+    root.querySelectorAll("[data-catname]").forEach(function (e) { e.textContent = A.cat; });
+    root.querySelectorAll("[data-blurb]").forEach(function (e) { e.textContent = A.blurb; });
+    root.querySelectorAll("[data-letter]").forEach(function (e) { e.textContent = A.name.charAt(0); });
+    root.querySelectorAll("[data-id]").forEach(function (e) { e.textContent = A.id; });
+    root.querySelectorAll("[data-rel]").forEach(function (box) { A.more.forEach(function (m) { var a = document.createElement("a"); a.className = "rel"; a.href = "#"; a.innerHTML = "<b></b><small></small>"; a.firstChild.textContent = m[0]; a.lastChild.textContent = m[1]; box.appendChild(a); }); });
+  }
+
+  function chat(root) {
+    var log = root.querySelector("[data-log]"), form = root.querySelector("[data-form]"), input = form.querySelector("input");
+    var orb = root.querySelector("[data-orb]"), busy = false;
+    function hint() { log.innerHTML = '<p class="hint">Say hi, or tap an idea to begin.</p>'; }
+    hint();
+    function add(kind, text) { var h = log.querySelector(".hint"); if (h) h.remove(); var d = document.createElement("div"); d.className = "msg " + kind; d.textContent = text; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; }
+    function send(t) {
+      t = String(t || "").trim(); if (!t || busy) return; busy = true; root.classList.add("started");
+      add("you", t); input.value = "";
+      if (orb) orb.classList.add("talk");
+      var reply = "(Preview) " + A.name + " would answer here. Real answers appear on the live site.\n\nYou wrote: “" + t + "”", d = add("bot typing", ""), i = 0;
+      var iv = setInterval(function () { i += 2; d.textContent = reply.slice(0, i); log.scrollTop = log.scrollHeight; if (i >= reply.length) { clearInterval(iv); d.classList.remove("typing"); busy = false; if (orb) orb.classList.remove("talk"); } }, 18);
+    }
+    form.addEventListener("submit", function (e) { e.preventDefault(); send(input.value); });
+    var st = root.querySelector("[data-starters]");
+    if (st) A.starters.forEach(function (s) { var b = document.createElement("button"); b.type = "button"; b.textContent = s; b.onclick = function () { send(s); }; st.appendChild(b); });
+    var can = root.querySelector("[data-can]");
+    if (can) A.starters.forEach(function (s) { var li = document.createElement("li"); li.textContent = s; li.onclick = function () { send(s); }; can.appendChild(li); });
+    var cards = root.querySelector("[data-cards]");
+    if (cards) A.starters.forEach(function (s, i) { var b = document.createElement("button"); b.type = "button"; b.innerHTML = "<small>Idea " + (i + 1) + "</small>"; b.appendChild(document.createTextNode(s)); b.onclick = function () { send(s); }; cards.appendChild(b); });
+  }
+
+  ["A", "B", "C"].forEach(function (k) { var r = document.getElementById(k); fill(r); chat(r); });
+
+  var dr = document.getElementById("drawer");
+  document.querySelector("[data-drawer]").addEventListener("click", function () { dr.classList.toggle("open"); });
+  document.addEventListener("click", function (e) { if (dr.classList.contains("open") && !dr.contains(e.target) && !e.target.closest("[data-drawer]")) dr.classList.remove("open"); });
+
+  document.querySelectorAll(".sw button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".sw button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      document.querySelectorAll(".opt").forEach(function (o) { o.classList.toggle("on", o.id === b.dataset.o); });
+      dr.classList.remove("open"); window.scrollTo(0, 0);
+    });
+  });
+})();
+</script>
+</body>
+</html>
