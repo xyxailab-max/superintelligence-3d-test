@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --c:#ffd84d; --bg:#070914; --ink:#E9EDFF; --mist:#9AA3B8; --edge:#2a3550; --eb:#2F6BFF; --eb2:#5aa2ff;
+  :root { --c:#5aa2ff; --bg:#070914; --ink:#E9EDFF; --mist:#9AA3B8; --edge:#2a3550; --eb:#2F6BFF; --eb2:#5aa2ff;
     --sans:"Manrope","Segoe UI",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace; color-scheme:dark; }
   * { box-sizing:border-box; }
   html, body { margin:0; }
@@ -200,6 +200,28 @@
   .e-chat .log { height:min(44vh,380px); } .e-chat .starters { justify-content:center; margin:10px 0; }
   .e-tip { text-align:center; margin:8px 0 0; font:600 .66rem/1 var(--mono); letter-spacing:.12em; color:#5f6b85; text-transform:uppercase; }
   @media (max-width:560px) { .sky { height:300px; } .star { max-width:122px; padding:5px 10px 5px 5px; font-size:.68rem; gap:6px; } .star .ico { width:26px; height:26px; } .star .ico svg { width:14px; height:14px; } .sun { width:66px; height:66px; } .sun img { width:56px; height:56px; } .e-info { border-radius:18px; flex-wrap:wrap; } }
+
+  /* color picker (test only) */
+  .colors { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:4px 0 6px; }
+  .colors button { display:inline-flex; align-items:center; gap:6px; padding:6px 10px 6px 6px; border-radius:999px; border:1px solid #ffffff22; background:#ffffff08; font:600 .72rem/1 var(--sans); color:var(--mist); }
+  .colors button i { width:18px; height:18px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff, var(--d) 55%, color-mix(in srgb, var(--d) 50%, #000)); box-shadow:0 0 8px var(--d); }
+  .colors button[aria-pressed="true"] { color:#fff; border-color:var(--d); background:color-mix(in srgb, var(--d) 16%, transparent); }
+  /* 3D stage */
+  .stage { perspective:900px; perspective-origin:50% 30%; }
+  .sky { transform-style:preserve-3d; transform:rotateX(16deg) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg)); transition:transform .25s ease-out; }
+  .sky::before { content:""; position:absolute; left:50%; top:50%; width:86%; height:86%; transform:translate(-50%,-50%) translateZ(-40px); border-radius:50%;
+    border:1px solid color-mix(in srgb, var(--c) 22%, transparent); box-shadow:0 0 60px color-mix(in srgb, var(--c) 12%, transparent) inset; }
+  .sky::after { content:""; position:absolute; left:50%; top:50%; width:56%; height:56%; transform:translate(-50%,-50%) translateZ(-20px); border-radius:50%; border:1px dashed color-mix(in srgb, var(--c) 18%, transparent); animation:spin 40s linear infinite; }
+  .star { transform:translate(-50%,-50%) translateZ(34px);
+    background:linear-gradient(180deg, #ffffff2e, #ffffff0a 55%, #0000002e) !important;
+    box-shadow:inset 0 1px 0 #ffffff4a, inset 0 -2px 0 #00000066, 0 3px 0 color-mix(in srgb, var(--c) 35%, #05070d), 0 14px 22px -10px #000 !important; }
+  .star:hover { transform:translate(-50%,-50%) translateZ(44px) scale(1.06); }
+  .star.on { transform:translate(-50%,-50%) translateZ(60px) scale(1.14);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--c) 45%, #ffffff10), color-mix(in srgb, var(--c) 18%, #0b1020) 60%, #00000040) !important;
+    box-shadow:inset 0 1px 0 #ffffff66, inset 0 -2px 0 #00000066, 0 4px 0 color-mix(in srgb, var(--c) 55%, #000), 0 0 30px color-mix(in srgb, var(--c) 55%, transparent) !important; }
+  .star .ico { background:radial-gradient(circle at 35% 28%, #ffffff55, color-mix(in srgb, var(--c) 35%, #0b1020) 60%, #05070d) !important; box-shadow:inset 0 -2px 3px #00000088; }
+  .star.on .ico { background:radial-gradient(circle at 35% 28%, #fff, var(--c) 55%, color-mix(in srgb, var(--c) 45%, #000)) !important; }
+  .sun { transform:translate(-50%,-50%) translateZ(50px); }
   @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; } }
 </style>
 </head>
@@ -295,7 +317,8 @@
 <section class="opt" id="E">
   <div class="nav"><div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
   <div class="e-in">
-    <div class="sky" id="sky"><svg id="skyLines" aria-hidden="true"></svg><div class="sun" data-orb><span class="halo"></span><img src="brand/logo-cube-v2.png" alt="" width="70" height="70"></div></div>
+    <div class="colors" id="colors" role="group" aria-label="Try a color (test only)"></div>
+    <div class="stage"><div class="sky" id="sky"><svg id="skyLines" aria-hidden="true"></svg><div class="sun" data-orb><span class="halo"></span><img src="brand/logo-cube-v2.png" alt="" width="70" height="70"></div></div></div>
     <div class="e-info" id="eInfo"><span class="tip">Tap a pill to meet another agent</span></div>
     <div class="e-head"><span class="k" data-cat></span><h1 data-name></h1><p data-blurb></p></div>
     <div class="e-chat">
@@ -393,6 +416,22 @@
   }
   sky.addEventListener("click", function () { if (picked >= 0) pick(-1); });
   window.addEventListener("resize", stars);
+  // E: color picker (test only) + gentle 3D tilt that follows finger / mouse
+  var THEMES = [["Electric Blue", "#5aa2ff"], ["Violet", "#b48cff"], ["Emerald", "#3ddc97"], ["Rose", "#ff6b9d"], ["Ice Cyan", "#4fd1ff"], ["Sunset", "#ff8a4c"]];
+  var cbox = document.getElementById("colors");
+  THEMES.forEach(function (t, i) {
+    var b = document.createElement("button"); b.type = "button"; b.style.setProperty("--d", t[1]); b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+    b.innerHTML = "<i></i>"; b.appendChild(document.createTextNode(t[0]));
+    b.onclick = function () { document.documentElement.style.setProperty("--c", t[1]); cbox.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); };
+    cbox.appendChild(b);
+  });
+  var stage = document.querySelector("#E .stage");
+  stage.addEventListener("pointermove", function (e) {
+    var r = stage.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+    sky.style.setProperty("--ry", (px * 14).toFixed(1) + "deg"); sky.style.setProperty("--rx", (-py * 10).toFixed(1) + "deg");
+  });
+  stage.addEventListener("pointerleave", function () { sky.style.setProperty("--ry", "0deg"); sky.style.setProperty("--rx", "0deg"); });
+
 
   var dr = document.getElementById("drawer");
   document.querySelector("[data-drawer]").addEventListener("click", function () { dr.classList.toggle("open"); });
