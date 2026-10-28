@@ -470,7 +470,7 @@
       // ---------- team (4) ----------
       var team = []; try { team = JSON.parse(localStorage.getItem("usi_team") || "[]") || []; } catch (e) { team = []; }
       team = team.filter(function (h) { return cards.some(function (c) { return c.getAttribute("href") === h; }); }).slice(0, 3);
-      function saveTeam() { try { localStorage.setItem("usi_team", JSON.stringify(team)); } catch (e) {} renderSlots(); }
+      function saveTeam() { try { localStorage.setItem("usi_team", JSON.stringify(team)); localStorage.setItem("usi_team_info", JSON.stringify(team.map(byHref).filter(Boolean))); } catch (e) {} renderSlots(); }
       function byHref(h) { for (var i = 0; i < cards.length; i++) if (cards[i].getAttribute("href") === h) return info(cards[i]); return null; }
       function addToTeam(a) { if (team.indexOf(a.href) !== -1) return "in"; if (team.length >= 3) return "full"; team.push(a.href); saveTeam(); return "ok"; }
 
@@ -503,7 +503,7 @@
       extra.innerHTML = html;
 
       function renderSlots() { var s = document.getElementById("fxSlots"); if (!s) return; s.querySelectorAll("i").forEach(function (dot, i) { var a = team[i] && byHref(team[i]); dot.className = a ? "f" : ""; if (a) dot.style.setProperty("--c", a.col); }); }
-      renderSlots();
+      renderSlots(); try { localStorage.setItem("usi_team_info", JSON.stringify(team.map(byHref).filter(Boolean))); } catch (e) {}
 
       // ---------- ask the core (1) ----------
       var STOP = " i a an the to for of and or my me im i'm need want help with can you how do please some is it on in at be get make".split(" ");
@@ -554,7 +554,7 @@
         var rows = team.map(function (h, i) { var a = byHref(h); return a ? '<div style="--c:' + a.col + '"><span><small>' + esc(a.cat) + '</small><br><b>' + esc(a.name) + '</b></span><button type="button" data-i="' + i + '" aria-label="Remove ' + esc(a.name) + '">×</button></div>' : ""; }).join("");
         for (var k = team.length; k < 3; k++) rows += '<div class="fx-empty">Empty slot: tap the 👁 on any agent, then "Add to My Team"</div>';
         openSheet('<span class="fx-k">Your squad</span><h3>My AI Team (' + team.length + '/3)</h3><div class="fx-team">' + rows + '</div><div class="fx-row">' +
-          (team.length ? '<button class="fx-go" type="button" id="fxShare">Make my share card</button>' : "") + '</div>', team[0] && byHref(team[0]) ? byHref(team[0]).col : "#5aa2ff");
+          (team.length ? '<a class="fx-go" href="team-room-test.html">Open Team Room →</a><button class="fx-alt" type="button" id="fxShare">Make share card</button>' : "") + '</div>', team[0] && byHref(team[0]) ? byHref(team[0]).col : "#5aa2ff");
         card.querySelectorAll(".fx-team button").forEach(function (b) { b.onclick = function () { team.splice(+b.dataset.i, 1); saveTeam(); openTeam(); }; });
         var sh = document.getElementById("fxShare"); if (sh) sh.onclick = makeCard;
       }
