@@ -699,5 +699,19 @@
   });
 })();
 </script>
+<!-- LIVE DOTS (TEST): green "Ready" tag on every agent card. Delete from here to END LIVE DOTS to undo. -->
+<style>
+  .agent { position:relative; }
+  .live-tag { position:absolute; top:12px; right:12px; display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; border:1px solid #3ddc9744; background:#3ddc9712; font:700 .58rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:#7CF0BE; pointer-events:none; }
+  .live-tag i { width:7px; height:7px; border-radius:50%; background:#3ddc97; box-shadow:0 0 8px #3ddc97; animation:liveBlink 2.4s ease-in-out infinite; }
+  .agent:nth-child(3n+2) .live-tag i { animation-delay:.8s; } .agent:nth-child(3n) .live-tag i { animation-delay:1.6s; }
+  .agent .row { padding-right:70px; }
+  @keyframes liveBlink { 50% { opacity:.3; box-shadow:none; } }
+  @media (prefers-reduced-motion:reduce) { .live-tag i { animation:none; } }
+</style>
+<script>
+document.querySelectorAll("a.agent").forEach(function (c) { var t = document.createElement("span"); t.className = "live-tag"; t.setAttribute("aria-hidden", "true"); t.innerHTML = "<i></i>Ready"; c.appendChild(t); });
+</script>
+<!-- END LIVE DOTS -->
 </body>
 </html>
