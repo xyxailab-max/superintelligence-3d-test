@@ -169,16 +169,29 @@
   .sky svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
   .sky line { stroke:color-mix(in srgb, var(--c) 45%, #2a3550); stroke-width:1; stroke-dasharray:3 5; animation:dash 3s linear infinite; }
   @keyframes dash { to { stroke-dashoffset:-32; } }
-  .star { position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; font:600 .72rem/1.1 var(--sans); color:var(--mist); text-align:center; width:96px; }
-  .star .ico { width:48px; height:48px; display:grid; place-items:center; border-radius:50%; border:1px solid color-mix(in srgb, var(--c) 55%, transparent);
-    background:radial-gradient(circle at 35% 30%, #ffffff1f, #0b1020ee 70%); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
-    box-shadow:0 0 14px color-mix(in srgb, var(--c) 25%, transparent); animation:bob 4s ease-in-out infinite; transition:transform .25s, box-shadow .25s, background .25s; }
-  .star .ico svg { width:22px; height:22px; fill:none; stroke:var(--c); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-  .star:hover { color:var(--ink); } .star:hover .ico { transform:scale(1.15); background:color-mix(in srgb, var(--c) 22%, #0b1020); box-shadow:0 0 22px color-mix(in srgb, var(--c) 55%, transparent); }
-  @keyframes bob { 50% { translate:0 -4px; box-shadow:0 0 20px color-mix(in srgb, var(--c) 40%, transparent); } }
-  .sun { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:130px; height:130px; display:grid; place-items:center; }
-  .sun img { position:relative; z-index:2; width:110px; height:110px; object-fit:contain; animation:cubePulse 4s ease-in-out infinite; }
-  .sun .halo { position:absolute; inset:-14px; border-radius:50%; background:radial-gradient(circle, color-mix(in srgb, var(--c) 26%, transparent), transparent 65%); animation:haloPulse 4s ease-in-out infinite; }
+  .star { position:absolute; transform:translate(-50%,-50%); z-index:2; display:inline-flex; align-items:center; gap:8px; padding:6px 14px 6px 6px; max-width:150px;
+    text-decoration:none; font:700 .78rem/1.15 var(--sans); color:#dfe6ff; border-radius:999px; border:1px solid #ffffff24;
+    background:linear-gradient(180deg,#ffffff14,#ffffff05); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); box-shadow:inset 0 1px 0 #ffffff1c, 0 8px 20px -10px #000;
+    animation:bob 4.5s ease-in-out infinite; transition:transform .35s cubic-bezier(.2,1.5,.4,1), border-color .3s, background .3s, box-shadow .3s, opacity .3s; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .star .ico { flex:none; width:32px; height:32px; display:grid; place-items:center; border-radius:50%; background:color-mix(in srgb, var(--c) 16%, #0b1020); border:1px solid color-mix(in srgb, var(--c) 45%, transparent); transition:background .3s; }
+  .star .ico svg { width:17px; height:17px; fill:none; stroke:var(--c); stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; transition:stroke .3s; }
+  .star:hover { transform:translate(-50%,-50%) scale(1.06); border-color:color-mix(in srgb, var(--c) 60%, transparent); }
+  .star.on { transform:translate(-50%,-50%) scale(1.12); z-index:3; border-color:var(--c); background:linear-gradient(180deg, color-mix(in srgb, var(--c) 28%, #0b1020), #0b1020cc);
+    box-shadow:0 0 0 1px var(--c), 0 0 26px color-mix(in srgb, var(--c) 45%, transparent); animation:none; }
+  .star.on .ico { background:var(--c); } .star.on .ico svg { stroke:#06101f; }
+  .sky.picked .star:not(.on) { opacity:.45; }
+  .sky line.on { stroke:var(--c); stroke-width:2; stroke-dasharray:6 6; animation-duration:.6s; filter:drop-shadow(0 0 3px var(--c)); }
+  .sky.picked line:not(.on) { opacity:.3; }
+  @keyframes bob { 50% { translate:0 -4px; } }
+  .e-info { max-width:520px; margin:12px auto 0; min-height:58px; display:flex; align-items:center; justify-content:center; gap:12px; padding:12px 16px; border-radius:999px;
+    border:1px solid transparent; text-align:left; transition:border-color .3s, background .3s; }
+  .e-info.on { border-color:color-mix(in srgb, var(--c) 50%, transparent); background:color-mix(in srgb, var(--c) 9%, #0b1020); animation:mIn .3s ease-out; }
+  .e-info p { margin:0; flex:1; font:500 .86rem/1.35 var(--sans); color:var(--mist); } .e-info b { color:var(--ink); }
+  .e-info a { flex:none; padding:10px 16px; border-radius:999px; background:var(--c); color:#06101f; font:800 .8rem/1 var(--sans); text-decoration:none; }
+  .e-info .tip { font:600 .66rem/1 var(--mono); letter-spacing:.12em; color:#5f6b85; text-transform:uppercase; }
+  .sun { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:84px; height:84px; display:grid; place-items:center; }
+  .sun img { position:relative; z-index:2; width:70px; height:70px; object-fit:contain; animation:cubePulse 4s ease-in-out infinite; }
+  .sun .halo { position:absolute; inset:-12px; border-radius:50%; background:radial-gradient(circle, color-mix(in srgb, var(--c) 26%, transparent), transparent 65%); animation:haloPulse 4s ease-in-out infinite; }
   .sun.talk img { animation-duration:1s; } .sun.talk .halo { animation-duration:1s; }
   @keyframes cubePulse { 0%,100% { transform:scale(1); filter:drop-shadow(0 0 6px #2F6BFF88); } 50% { transform:scale(1.06); filter:drop-shadow(0 0 16px color-mix(in srgb, var(--c) 70%, #2F6BFF)); } }
   @keyframes haloPulse { 0%,100% { transform:scale(.9); opacity:.6; } 50% { transform:scale(1.15); opacity:1; } }
@@ -186,7 +199,7 @@
   .e-chat { max-width:720px; margin:0 auto; border-radius:22px; padding:16px; border:1px solid #ffffff1f; background:#0b1020e6; }
   .e-chat .log { height:min(44vh,380px); } .e-chat .starters { justify-content:center; margin:10px 0; }
   .e-tip { text-align:center; margin:8px 0 0; font:600 .66rem/1 var(--mono); letter-spacing:.12em; color:#5f6b85; text-transform:uppercase; }
-  @media (max-width:560px) { .sky { height:270px; } .star { width:76px; font-size:.64rem; } .star .ico { width:40px; height:40px; } .star .ico svg { width:19px; height:19px; } .sun { width:104px; height:104px; } .sun img { width:88px; height:88px; } }
+  @media (max-width:560px) { .sky { height:300px; } .star { max-width:122px; padding:5px 10px 5px 5px; font-size:.68rem; gap:6px; } .star .ico { width:26px; height:26px; } .star .ico svg { width:14px; height:14px; } .sun { width:66px; height:66px; } .sun img { width:56px; height:56px; } .e-info { border-radius:18px; flex-wrap:wrap; } }
   @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; } }
 </style>
 </head>
@@ -282,8 +295,8 @@
 <section class="opt" id="E">
   <div class="nav"><div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
   <div class="e-in">
-    <div class="sky" id="sky"><svg id="skyLines" aria-hidden="true"></svg><div class="sun" data-orb><span class="halo"></span><img src="brand/logo-cube-v2.png" alt="" width="110" height="110"></div></div>
-    <p class="e-tip">Tap a star to switch agent</p>
+    <div class="sky" id="sky"><svg id="skyLines" aria-hidden="true"></svg><div class="sun" data-orb><span class="halo"></span><img src="brand/logo-cube-v2.png" alt="" width="70" height="70"></div></div>
+    <div class="e-info" id="eInfo"><span class="tip">Tap a pill to meet another agent</span></div>
     <div class="e-head"><span class="k" data-cat></span><h1 data-name></h1><p data-blurb></p></div>
     <div class="e-chat">
       <div class="log" data-log></div>
@@ -351,17 +364,34 @@
     "Name Generator": '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/>',
     def: '<circle cx="12" cy="12" r="4"/>'
   };
+  var picked = -1, info = document.getElementById("eInfo");
+  function pick(i) {
+    picked = i;
+    sky.classList.toggle("picked", i >= 0);
+    sky.querySelectorAll(".star").forEach(function (st, k) { st.classList.toggle("on", k === i); });
+    lines.querySelectorAll("line").forEach(function (ln, k) { ln.classList.toggle("on", k === i); });
+    var sun = sky.querySelector(".sun"); sun.classList.add("talk"); clearTimeout(pick.t); pick.t = setTimeout(function () { sun.classList.remove("talk"); }, 900);
+    if (i < 0) { info.classList.remove("on"); info.innerHTML = '<span class="tip">Tap a pill to meet another agent</span>'; return; }
+    var m = A.more[i];
+    info.classList.add("on");
+    info.innerHTML = "<p><b></b><br></p><a href=\"#\">Open →</a>";
+    info.querySelector("b").textContent = m[0]; info.querySelector("p").appendChild(document.createTextNode(m[1]));
+  }
   function stars() {
     sky.querySelectorAll(".star").forEach(function (s) { s.remove(); }); lines.innerHTML = "";
-    var W = sky.clientWidth, H = sky.clientHeight, cx = W / 2, cy = H / 2, rx = Math.min(W / 2 - 50, 270), ry = H / 2 - 30;
+    var W = sky.clientWidth, H = sky.clientHeight, cx = W / 2, cy = H / 2, small = W < 520;
+    var rx = small ? W / 2 - 62 : Math.min(W / 2 - 80, 250), ry = H / 2 - 28;
     A.more.forEach(function (m, i) {
-      var ang = -Math.PI / 2 + i * (2 * Math.PI / A.more.length) + 0.3, x = cx + Math.cos(ang) * rx, y = cy + Math.sin(ang) * ry;
+      var ang = (-60 + i * 60) * Math.PI / 180, x = cx + Math.cos(ang) * rx, y = cy + Math.sin(ang) * ry;
       var l = document.createElementNS("http://www.w3.org/2000/svg", "line"); l.setAttribute("x1", cx); l.setAttribute("y1", cy); l.setAttribute("x2", x); l.setAttribute("y2", y); lines.appendChild(l);
-      var a = document.createElement("a"); a.className = "star"; a.href = "#"; a.style.left = x + "px"; a.style.top = y + "px";
+      var a = document.createElement("button"); a.type = "button"; a.className = "star"; a.style.left = x + "px"; a.style.top = y + "px"; a.style.animationDelay = (i * -0.75) + "s";
       a.innerHTML = '<span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[m[0]] || ICONS.def) + '</svg></span>'; a.appendChild(document.createTextNode(m[0]));
-      a.querySelector(".ico").style.animationDelay = (i * -0.65) + "s"; sky.appendChild(a);
+      a.addEventListener("click", function (e) { e.stopPropagation(); pick(picked === i ? -1 : i); });
+      sky.appendChild(a);
     });
+    if (picked >= 0) pick(picked);
   }
+  sky.addEventListener("click", function () { if (picked >= 0) pick(-1); });
   window.addEventListener("resize", stars);
 
   var dr = document.getElementById("drawer");
