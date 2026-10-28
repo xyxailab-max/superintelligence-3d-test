@@ -195,7 +195,7 @@
   <p class="eyebrow">Free · No sign-up</p>
   <h1>The Agent <em>Hub</em></h1>
   <p class="lede"><span class="count">100 AI agents</span> for work, school, money and everyday life. Pick one and start talking.</p>
-  <!-- CIRCUIT BOARD v4 (TEST, glass modules): glowing cube + fiber-optic strands + module chips. Delete from here to "END CIRCUIT BOARD" to undo. -->
+  <!-- CIRCUIT BOARD v5 (TEST, glass modules + team-colored list): glowing cube + fiber-optic strands + module chips. Delete from here to "END CIRCUIT BOARD" to undo. -->
   <style>
   .cb { position:relative; margin:8px 0 34px; padding:20px 16px 22px; border:1px solid transparent; border-radius:8px;
     background:
@@ -263,6 +263,14 @@
   .shape-b #cbLeft .cb-chip::after { right:-3px; } .shape-b #cbRight .cb-chip::after { left:-3px; }
 
 
+  /* the agent list below takes the chosen team's color */
+  .wrap .agent, .wrap .glyph, .wrap .agent .cat, .wrap .chips button, .wrap .cat-block h2 { transition:background .45s, border-color .45s, color .45s, box-shadow .45s; }
+  .wrap.teamed .agent { background:linear-gradient(180deg, color-mix(in srgb, var(--team) 15%, #0b101c), #0a0e19) padding-box, linear-gradient(180deg, var(--team), color-mix(in srgb, var(--team) 30%, #3a4459)) border-box; }
+  .wrap.teamed .agent:hover { box-shadow:inset 0 0 0 1px var(--team), 0 0 20px color-mix(in srgb, var(--team) 28%, transparent); }
+  .wrap.teamed .glyph { border-color:var(--team); color:var(--team); background:color-mix(in srgb, var(--team) 10%, #0E1220); }
+  .wrap.teamed .agent .cat { color:var(--team); }
+  .wrap.teamed .chips button[aria-pressed="true"] { border-color:var(--team); color:#fff; background:color-mix(in srgb, var(--team) 24%, #0E1220); }
+  .wrap.teamed .cat-block h2 { color:var(--team); }
   @media (max-width:760px) {
     .cb-board { grid-template-columns:1fr 1fr; gap:14px 14px; }
     .cb-core { grid-column:1 / -1; grid-row:1; margin:10px auto 34px; }
@@ -301,7 +309,6 @@
           chips.forEach(function (c) { c.el.classList.remove("on", "zap"); if (c.g) c.g.classList.remove("on"); });
           void b.offsetWidth;
           b.classList.add("on", "zap"); if (chips[i].g) chips[i].g.classList.add("on");
-          core.style.setProperty("--glow", col);
           var chip = document.querySelector('#chips button[data-c="' + name + '"]');
           if (chip) chip.click();
           clearTimeout(window.__cbT);
@@ -310,9 +317,24 @@
           }, 1600);
         });
         (i < Math.ceil(blocks.length / 2) ? left : right).appendChild(b);
-        chips.push({ el: b, g: null, col: col });
+        chips.push({ el: b, g: null, col: col, name: name });
       });
       if (total) document.getElementById("cbTotal").textContent = total;
+
+      // any category pick (module or filter chip) recolors the list below; "All" resets
+      var pageWrap = document.querySelector(".wrap"), filters = document.getElementById("chips");
+      if (filters) filters.addEventListener("click", function (e) {
+        var f = e.target.closest("button"); if (!f) return;
+        var hit = null; chips.forEach(function (c) { if (c.name === f.dataset.c) hit = c; });
+        if (hit) {
+          pageWrap.classList.add("teamed"); pageWrap.style.setProperty("--team", hit.col);
+          core.style.setProperty("--glow", hit.col);
+          chips.forEach(function (c) { var on = c === hit; c.el.classList.toggle("on", on); if (c.g) c.g.classList.toggle("on", on); });
+        } else {
+          pageWrap.classList.remove("teamed"); core.style.removeProperty("--glow");
+          chips.forEach(function (c) { c.el.classList.remove("on"); if (c.g) c.g.classList.remove("on"); });
+        }
+      });
 
 
       function route(o, c, i) {
