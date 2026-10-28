@@ -192,10 +192,7 @@
 <body>
 <div class="wrap">
   <style>@media (max-width:1200px){header.top{flex-direction:column;justify-content:center;gap:18px;margin:6px 0 30px}header.top .si-logo{align-self:center}.wrap>.eyebrow,.wrap>h1,.wrap>.lede{text-align:center;margin-left:auto;margin-right:auto}.wrap>.lede{margin-bottom:26px}}</style><header class="top"><a class="si-logo" href="/" aria-label="Use Superintelligence, back to the brain"><img class="si-star" src="brand/logo-cube-v2.png" alt="" aria-hidden="true"><span class="si-w"><span class="si-use">USE</span><span class="si-name">SUPERINTELLIGENCE</span></span></a><nav class="crumbs"><a href="/">3D Brain</a><a href="marketplace-usi-slider.html">Marketplace</a><a href="creators-usi.html">For creators</a></nav></header>
-  <p class="eyebrow">Free · No sign-up</p>
-  <h1>The Agent <em>Hub</em></h1>
-  <p class="lede"><span class="count">100 AI agents</span> for work, school, money and everyday life. Pick one and start talking.</p>
-  <!-- CIRCUIT BOARD v5 (TEST, glass modules + team-colored list): glowing cube + fiber-optic strands + module chips. Delete from here to "END CIRCUIT BOARD" to undo. -->
+  <!-- CIRCUIT BOARD v6 (TEST, merged title + phone layout): glowing cube + fiber-optic strands + module chips. Delete from here to "END CIRCUIT BOARD" to undo. -->
   <style>
   .cb { position:relative; margin:8px 0 34px; padding:20px 16px 22px; border:1px solid transparent; border-radius:8px;
     background:
@@ -204,8 +201,7 @@
       linear-gradient(180deg,#0b1020,#070a14) padding-box,
       var(--sil) border-box; }
   .cb-head { position:relative; z-index:2; display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
-  .cb-head h2 { margin:0; font:600 1.25rem/1.2 var(--sans); color:#E9EDFF; }
-  .cb-head p { margin:2px 0 0; font:500 .8rem/1.4 var(--sans); color:#9AA3B8; }
+  .cb-head h1 { margin:0; font:700 clamp(1.6rem,4vw,2.3rem)/1.1 var(--sans); letter-spacing:-.01em; color:#E9EDFF; text-align:left; }
   .cb-live { display:inline-flex; align-items:center; gap:6px; font:600 .72rem/1 var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--eb2); }
   .cb-led { width:7px; height:7px; border-radius:50%; background:var(--c,#3ddc97); flex:none; animation:cbBlink 2.4s ease-in-out infinite; }
   @keyframes cbBlink { 50% { opacity:.3; } }
@@ -272,16 +268,25 @@
   .wrap.teamed .chips button[aria-pressed="true"] { border-color:var(--team); color:#fff; background:color-mix(in srgb, var(--team) 24%, #0E1220); }
   .wrap.teamed .cat-block h2 { color:var(--team); }
   @media (max-width:760px) {
-    .cb-board { grid-template-columns:1fr 1fr; gap:14px 14px; }
-    .cb-core { grid-column:1 / -1; grid-row:1; margin:10px auto 34px; }
-    .cb-col { grid-row:2; }
+    .cb { padding:16px 10px 18px; margin-top:0; }
+    .cb-head { flex-direction:column; align-items:center; gap:8px; margin-bottom:6px; text-align:center; }
+    .cb-head h1 { text-align:center; }
+    .cb-live { font-size:.64rem; }
+    .cb-board { grid-template-columns:1fr 1fr; gap:12px 30px; }
+    .cb-core { grid-column:1 / -1; grid-row:1; width:120px; height:120px; margin:6px auto 18px; }
+    .cb-core img { width:104px; height:104px; }
+    .cb-col { grid-row:2; gap:12px; }
+    .cb-chip, .shape-b .cb-chip { padding:9px 12px 9px 14px; }
+    .cb-id { display:none; }
+    .cb-row b { font-size:.82rem; }
+    .cb-meta { font-size:.68rem; }
   }
   @media (prefers-reduced-motion:reduce) { .cb-led, .cb-svg .lt, .cb-core img, .cb-core .halo, .cb-core .ring { animation:none !important; } .cb-svg .lt { display:none; } }
   </style>
   <section class="cb shape-b" id="cbWrap" aria-label="Agent circuit board">
     <div class="cb-head">
-      <div><h2>The Agent Core</h2><p>One core. Ten fibers. Tap a module to power up that team.</p></div>
-      <span class="cb-live"><span class="cb-led"></span><span id="cbTotal">100</span> agents online</span>
+      <h1>The Agent <em>Hub</em></h1>
+      <span class="cb-live"><span class="cb-led"></span>Free · No sign-up · <span id="cbTotal">100</span> agents online</span>
     </div>
     <div class="cb-board" id="cbBoard">
       <svg class="cb-svg" id="cbSvg" aria-hidden="true"></svg>
@@ -344,9 +349,8 @@
         var R = c.el.getBoundingClientRect(), s = c.el.classList.contains("on") ? 1.1 : 1;
         var w = R.width / s, h = R.height / s, x = R.left - B.left + (R.width - w) / 2, y = R.top - B.top + (R.height - h) / 2, d, ex, ey;
         if (!(x + w < cL) && !(x > cR)) {
-          var busY = cBot + 16 + o;
-          ex = x + w / 2 + o; ey = y;
-          d = "M" + (cx + o) + " " + (cBot - 10) + " V" + busY + " H" + ex + " V" + ey;
+          ex = (x + w / 2 < cx) ? x + w : x; ey = y + h / 2 + o;
+          d = "M" + (cx + o * 0.7) + " " + (cBot - 8) + " V" + ey + " H" + ex;
         } else if (x + w < cL) {
           ex = x + w; ey = y + h / 2 + o;
           var mx = ex + (cL - ex) * (0.3 + (i % 5) * 0.1) - o;
