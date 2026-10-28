@@ -19,14 +19,14 @@
   button { font:inherit; color:inherit; cursor:pointer; }
 
   /* test switcher */
-  .sw { position:sticky; top:0; z-index:50; display:flex; justify-content:center; gap:6px; padding:10px 12px; background:#05070fe6; border-bottom:1px solid #1a2238; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+  .sw { position:sticky; top:0; z-index:50; display:flex; flex-wrap:wrap; justify-content:center; gap:6px; padding:10px 12px; background:#05070fe6; border-bottom:1px solid #1a2238; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
   .sw span { align-self:center; margin-right:4px; font:600 .64rem/1 var(--mono); letter-spacing:.12em; color:#5f6b85; text-transform:uppercase; }
   .sw button { padding:8px 12px; font:700 .78rem/1 var(--sans); border:1px solid var(--edge); border-radius:999px; background:#0E1220; color:var(--mist); }
   .sw button[aria-pressed="true"] { color:#06101f; background:var(--c); border-color:var(--c); }
   .opt { display:none; } .opt.on { display:block; }
 
   /* shared bits */
-  .nav { display:flex; align-items:center; justify-content:space-between; gap:10px; max-width:1180px; margin:0 auto; padding:16px; }
+  .nav { display:flex; align-items:center; justify-content:flex-end; gap:10px; max-width:1180px; margin:0 auto; padding:16px; }
   .brand { display:flex; align-items:center; gap:8px; text-decoration:none; font:800 .78rem/1 var(--sans); letter-spacing:.2em; }
   .brand img { width:30px; height:30px; object-fit:contain; }
   .links { display:flex; gap:4px; } .links a { padding:8px 12px; border-radius:999px; text-decoration:none; font:600 .8rem/1 var(--sans); color:var(--mist); border:1px solid transparent; }
@@ -143,6 +143,44 @@
   .drawer h2 { margin:0 0 12px; font:700 1.1rem/1.2 var(--sans); }
   .drawer .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; max-width:900px; margin:0 auto; }
   @media (max-width:640px) { .c-cards { grid-template-columns:1fr; } .c-cards button { min-height:0; } .links a:not(:first-child) { display:none; } }
+
+  /* ===== D · SIGNAL WAVE ===== */
+  #D { background:linear-gradient(180deg, #070914, color-mix(in srgb, var(--c) 7%, #070914)); min-height:calc(100vh - 50px); }
+  .d-in { max-width:760px; margin:0 auto; padding:0 16px 40px; }
+  .d-head { text-align:center; padding:6px 0 8px; }
+  .d-head h1 { margin:6px 0 4px; font:800 clamp(1.9rem,6vw,2.8rem)/1.05 var(--sans); letter-spacing:-.02em; }
+  .d-head p { margin:0 auto; max-width:460px; color:var(--mist); }
+  .wave { display:flex; align-items:center; justify-content:center; gap:5px; height:90px; margin:18px 0 6px; }
+  .wave i { width:6px; height:14px; border-radius:6px; background:var(--c); opacity:.75; animation:bar 1.6s ease-in-out infinite; }
+  .wave.talk i { animation-duration:.45s; opacity:1; box-shadow:0 0 10px color-mix(in srgb, var(--c) 60%, transparent); }
+  @keyframes bar { 0%,100% { height:10px; } 50% { height:var(--h,40px); } }
+  .d-state { text-align:center; font:600 .68rem/1 var(--mono); letter-spacing:.14em; color:var(--mist); text-transform:uppercase; margin-bottom:16px; }
+  .d-chat { border-top:1px solid #ffffff1a; border-bottom:1px solid #ffffff1a; padding:14px 0; }
+  .d-chat .log { height:min(46vh,400px); }
+  .d-chat .starters { justify-content:center; margin:10px 0; }
+  .d-more { margin-top:26px; } .d-more h2 { margin:0 0 10px; font:700 1.1rem/1.2 var(--sans); }
+  .d-list { display:grid; gap:6px; } .d-list .rel { flex-direction:row; justify-content:space-between; align-items:center; border-radius:999px; padding:12px 18px; }
+  .d-list .rel small { display:none; } .d-list .rel::after { content:"→"; color:var(--c); }
+
+  /* ===== E · CONSTELLATION ===== */
+  #E { background:radial-gradient(700px 400px at 50% 20%, color-mix(in srgb, var(--c) 12%, transparent), transparent 70%), #070914; min-height:calc(100vh - 50px); }
+  .e-in { max-width:900px; margin:0 auto; padding:0 16px 40px; }
+  .sky { position:relative; height:300px; margin:0 auto 10px; max-width:640px; }
+  .sky svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .sky line { stroke:color-mix(in srgb, var(--c) 45%, #2a3550); stroke-width:1; stroke-dasharray:3 5; animation:dash 3s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset:-32; } }
+  .star { position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; font:600 .72rem/1.1 var(--sans); color:var(--mist); text-align:center; width:96px; }
+  .star i { width:12px; height:12px; border-radius:50%; background:#cfd8ff; box-shadow:0 0 10px #9fd2ff; animation:twinkle 3s ease-in-out infinite; }
+  .star:hover { color:var(--ink); } .star:hover i { background:var(--c); box-shadow:0 0 14px var(--c); }
+  @keyframes twinkle { 50% { opacity:.45; transform:scale(.8); } }
+  .sun { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:92px; height:92px; border-radius:50%; display:grid; place-items:center; font:800 2.2rem/1 var(--sans); color:#06101f;
+    background:radial-gradient(circle at 35% 30%, #fff, var(--c) 60%); box-shadow:0 0 0 10px color-mix(in srgb, var(--c) 12%, transparent), 0 0 40px color-mix(in srgb, var(--c) 45%, transparent); }
+  .sun.talk { animation:pulse .5s ease-in-out infinite; }
+  .e-head { text-align:center; } .e-head h1 { margin:6px 0 4px; font:800 clamp(1.8rem,5vw,2.6rem)/1.05 var(--sans); letter-spacing:-.02em; } .e-head p { margin:0 auto 16px; max-width:460px; color:var(--mist); }
+  .e-chat { max-width:720px; margin:0 auto; border-radius:22px; padding:16px; border:1px solid #ffffff1f; background:#0b1020e6; }
+  .e-chat .log { height:min(44vh,380px); } .e-chat .starters { justify-content:center; margin:10px 0; }
+  .e-tip { text-align:center; margin:8px 0 0; font:600 .66rem/1 var(--mono); letter-spacing:.12em; color:#5f6b85; text-transform:uppercase; }
+  @media (max-width:560px) { .sky { height:250px; } .star { width:76px; font-size:.64rem; } }
   @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; } }
 </style>
 </head>
@@ -151,12 +189,13 @@
   <button type="button" data-o="A" aria-pressed="true">A · Command Deck</button>
   <button type="button" data-o="B" aria-pressed="false">B · Holo Console</button>
   <button type="button" data-o="C" aria-pressed="false">C · Immersive</button>
+  <button type="button" data-o="D" aria-pressed="false">D · Signal Wave</button>
+  <button type="button" data-o="E" aria-pressed="false">E · Constellation</button>
 </div>
 
 <!-- A · COMMAND DECK: centered, glowing agent orb wired by a fiber into the chat -->
 <section class="opt on" id="A">
-  <div class="nav"><a class="brand" href="index.html"><img src="brand/logo-cube-v2.png" alt="">USE SI</a>
-    <div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
+  <div class="nav"><div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
   <div class="a-wrap">
     <div class="a-hero">
       <div class="orb" data-orb><span class="ring"></span><span class="ring r2"></span><span class="core" data-letter></span></div>
@@ -178,8 +217,7 @@
 
 <!-- B · HOLO CONSOLE: glass ID card on the left, terminal chat on the right -->
 <section class="opt" id="B">
-  <div class="nav"><a class="brand" href="index.html"><img src="brand/logo-cube-v2.png" alt="">USE SI</a>
-    <div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
+  <div class="nav"><div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
   <div class="b-grid">
     <div class="b-side">
       <div class="idcard">
@@ -216,6 +254,37 @@
     <div class="c-form"><form class="ask" data-form><input type="text" placeholder="What happens next?" aria-label="Message"><button type="submit">Send</button></form></div>
   </div>
   <div class="drawer" id="drawer"><h2>More <span data-catname></span> agents</h2><div class="grid" data-rel></div></div>
+</section>
+
+<!-- D · SIGNAL WAVE: the agent is a living sound wave that moves when it talks; calm, minimal -->
+<section class="opt" id="D">
+  <div class="nav"><div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
+  <div class="d-in">
+    <div class="d-head"><span class="k" data-cat></span><h1 data-name></h1><p data-blurb></p></div>
+    <div class="wave" data-orb data-wave></div>
+    <p class="d-state">● Listening</p>
+    <div class="d-chat">
+      <div class="log" data-log></div>
+      <div class="starters" data-starters></div>
+      <form class="ask" data-form><input type="text" placeholder="Speak your move…" aria-label="Message"><button type="submit">Send</button></form>
+    </div>
+    <div class="d-more"><h2>More <span data-catname></span> agents</h2><div class="d-list" data-rel></div></div>
+  </div>
+</section>
+
+<!-- E · CONSTELLATION: the agent is a sun, related agents are stars wired to it; tap a star to switch -->
+<section class="opt" id="E">
+  <div class="nav"><div class="links"><a href="agent-hub-circuit-test.html">← All 100 agents</a><a href="index.html">3D Brain</a><a href="marketplace.html">Marketplace</a></div></div>
+  <div class="e-in">
+    <div class="sky" id="sky"><svg id="skyLines" aria-hidden="true"></svg><div class="sun" data-orb data-letter></div></div>
+    <p class="e-tip">Tap a star to switch agent</p>
+    <div class="e-head"><span class="k" data-cat></span><h1 data-name></h1><p data-blurb></p></div>
+    <div class="e-chat">
+      <div class="log" data-log></div>
+      <div class="starters" data-starters></div>
+      <form class="ask" data-form><input type="text" placeholder="Type your move…" aria-label="Message"><button type="submit">Send</button></form>
+    </div>
+  </div>
 </section>
 
 <script>
@@ -257,7 +326,27 @@
     if (cards) A.starters.forEach(function (s, i) { var b = document.createElement("button"); b.type = "button"; b.innerHTML = "<small>Idea " + (i + 1) + "</small>"; b.appendChild(document.createTextNode(s)); b.onclick = function () { send(s); }; cards.appendChild(b); });
   }
 
-  ["A", "B", "C"].forEach(function (k) { var r = document.getElementById(k); fill(r); chat(r); });
+  ["A", "B", "C", "D", "E"].forEach(function (k) { var r = document.getElementById(k); fill(r); chat(r); });
+
+  // D: build the wave bars
+  var wave = document.querySelector("[data-wave]");
+  for (var w = 0; w < 28; w++) { var bar = document.createElement("i"); bar.style.setProperty("--h", (18 + Math.round(Math.abs(Math.sin(w * 0.7)) * 62)) + "px"); bar.style.animationDelay = (w * -0.09) + "s"; wave.appendChild(bar); }
+  var dState = document.querySelector(".d-state");
+  new MutationObserver(function () { dState.textContent = wave.classList.contains("talk") ? "● Speaking" : "● Listening"; }).observe(wave, { attributes: true });
+
+  // E: place related agents as stars around the sun
+  var sky = document.getElementById("sky"), lines = document.getElementById("skyLines");
+  function stars() {
+    sky.querySelectorAll(".star").forEach(function (s) { s.remove(); }); lines.innerHTML = "";
+    var W = sky.clientWidth, H = sky.clientHeight, cx = W / 2, cy = H / 2, rx = Math.min(W / 2 - 50, 270), ry = H / 2 - 30;
+    A.more.forEach(function (m, i) {
+      var ang = -Math.PI / 2 + i * (2 * Math.PI / A.more.length) + 0.3, x = cx + Math.cos(ang) * rx, y = cy + Math.sin(ang) * ry;
+      var l = document.createElementNS("http://www.w3.org/2000/svg", "line"); l.setAttribute("x1", cx); l.setAttribute("y1", cy); l.setAttribute("x2", x); l.setAttribute("y2", y); lines.appendChild(l);
+      var a = document.createElement("a"); a.className = "star"; a.href = "#"; a.style.left = x + "px"; a.style.top = y + "px";
+      a.innerHTML = "<i></i>"; a.appendChild(document.createTextNode(m[0])); a.querySelector("i").style.animationDelay = (i * -0.5) + "s"; sky.appendChild(a);
+    });
+  }
+  window.addEventListener("resize", stars);
 
   var dr = document.getElementById("drawer");
   document.querySelector("[data-drawer]").addEventListener("click", function () { dr.classList.toggle("open"); });
@@ -268,6 +357,7 @@
       document.querySelectorAll(".sw button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       document.querySelectorAll(".opt").forEach(function (o) { o.classList.toggle("on", o.id === b.dataset.o); });
       dr.classList.remove("open"); window.scrollTo(0, 0);
+      if (b.dataset.o === "E") stars();
     });
   });
 })();
