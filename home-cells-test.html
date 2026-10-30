@@ -12799,19 +12799,15 @@
 <!-- ===== Cell to Singularity add-on (TEST): 1 tap sparks, 2 evolution path, 3 thoughts counter, 4 singularity moment ===== -->
 <style>
   #evoHud { position: fixed; z-index: 6; left: 12px; top: calc(78px + env(safe-area-inset-top, 0px)); pointer-events: none;
-    font: 600 12px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif; color: #e8ecff; padding: 10px 12px; border-radius: 14px;
-    background: rgba(8, 12, 30, 0.6); border: 1px solid rgba(127, 224, 255, 0.25); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-  #evoHud .cnt { font-size: 15px; letter-spacing: .02em; }
-  #evoHud .cnt b { color: #7fe0ff; font-variant-numeric: tabular-nums; }
-  #evoHud .path { display: flex; align-items: center; gap: 3px; margin-top: 8px; }
-  #evoHud .step { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 13px;
-    filter: grayscale(1); opacity: .3; transition: all .5s; }
-  #evoHud .step.on { filter: none; opacity: 1; background: rgba(127, 224, 255, 0.16); box-shadow: 0 0 10px rgba(127, 224, 255, .55); }
-  #evoHud .link { width: 6px; height: 2px; background: rgba(127, 224, 255, .2); transition: background .5s; }
-  #evoHud .link.on { background: #7fe0ff; }
-  #evoHud .now { margin-top: 7px; font-size: 11px; color: rgba(200, 210, 240, .8); }
-  #evoHud .bar { margin-top: 5px; height: 3px; border-radius: 3px; background: rgba(255,255,255,.1); overflow: hidden; }
-  #evoHud .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #4aa8ff, #7fe0ff); transition: width .3s; }
+    display: flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border-radius: 999px;
+    font: 600 11px/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .06em; color: #cfe9ff;
+    background: rgba(8, 12, 30, 0.55); border: 1px solid rgba(127, 224, 255, 0.22); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  #evoHud .ico { font-size: 14px; line-height: 1; }
+  #evoHud .txt { display: flex; flex-direction: column; gap: 4px; }
+  #evoHud .bar { width: 86px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.12); overflow: hidden; }
+  #evoHud .bar i { display: block; height: 100%; width: 0; background: #7fe0ff; box-shadow: 0 0 6px #7fe0ff; transition: width .3s; }
+  #evoHud .dots::after { content: ""; animation: evoDots 1.5s steps(4) infinite; }
+  @keyframes evoDots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
   .evoSpark { position: fixed; z-index: 7; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; pointer-events: none;
     background: #fff; box-shadow: 0 0 8px 2px var(--c, #7fe0ff); transition: transform .7s ease-out, opacity .7s ease-out; }
   .evoPlus { position: fixed; z-index: 7; pointer-events: none; font: 700 14px/1 system-ui, sans-serif; color: #7fe0ff;
@@ -12833,10 +12829,8 @@
   #evoSing button { background: transparent; color: #e8ecff; border: 1px solid rgba(127,224,255,.4); }
 </style>
 <div id="evoHud" aria-live="polite">
-  <div class="cnt">🧠 <b id="evoN">0</b> thoughts</div>
-  <div class="path" id="evoPath"></div>
-  <div class="now" id="evoNow"></div>
-  <div class="bar"><i id="evoBar"></i></div>
+  <span class="ico" id="evoIco">🦠</span>
+  <span class="txt"><span>PROCESSING<span class="dots"></span> <b id="evoPct">0%</b></span><span class="bar"><i id="evoBar"></i></span></span>
 </div>
 <div class="evoToast" id="evoToast"></div>
 <div id="evoSing" role="dialog" aria-label="Singularity">
@@ -12865,30 +12859,17 @@
   const save = (v) => { try { localStorage.setItem(KEY, String(v)); } catch (e) {} };
 
   let n = get(), level = -1, done = false;
-  const elN = document.getElementById("evoN"), elPath = document.getElementById("evoPath"),
-        elNow = document.getElementById("evoNow"), elBar = document.getElementById("evoBar"),
+  const elIco = document.getElementById("evoIco"), elPct = document.getElementById("evoPct"), elBar = document.getElementById("evoBar"),
         toast = document.getElementById("evoToast"), sing = document.getElementById("evoSing");
-
-  STEPS.forEach((s, i) => {
-    if (i) { const l = document.createElement("span"); l.className = "link"; elPath.appendChild(l); }
-    const d = document.createElement("span"); d.className = "step"; d.textContent = s.icon; d.title = s.name; elPath.appendChild(d);
-  });
-  const dots = elPath.querySelectorAll(".step"), links = elPath.querySelectorAll(".link");
 
   function levelFor(v) { let L = 0; STEPS.forEach((s, i) => { if (v >= s.at) L = i; }); return L; }
   function showToast(t) { toast.textContent = t; toast.classList.add("show"); clearTimeout(showToast.t); showToast.t = setTimeout(() => toast.classList.remove("show"), 1600); }
 
   function render(announce) {
-    elN.textContent = n;
-    const L = levelFor(n);
-    dots.forEach((d, i) => d.classList.toggle("on", i <= L));
-    links.forEach((l, i) => l.classList.toggle("on", i < L));
-    const next = STEPS[L + 1];
-    if (next) {
-      const prev = STEPS[L].at;
-      elNow.textContent = "Now: " + STEPS[L].name + " · next: " + next.name;
-      elBar.style.width = Math.round((n - prev) / (next.at - prev) * 100) + "%";
-    } else { elNow.textContent = "Superintelligence!"; elBar.style.width = "100%"; }
+    const L = levelFor(n), next = STEPS[L + 1];
+    elIco.textContent = STEPS[L].icon;
+    const pct = next ? Math.floor((n - STEPS[L].at) / (next.at - STEPS[L].at) * 100) : 100;
+    elPct.textContent = pct + "%"; elBar.style.width = pct + "%";
     if (announce && L > level && L > 0) showToast(STEPS[L].icon + " " + STEPS[L].name + " unlocked!");
     level = L;
     if (!next && announce && !done) { done = true; setTimeout(() => sing.classList.add("show"), 700); }
