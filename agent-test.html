@@ -187,6 +187,23 @@
 (function () {
   "use strict";
   var A = {"id":"resume","name":"Resume Helper","blurb":"Turns your experience into a strong, results-focused resume.","starters":["Make this stronger: I helped customers","What skills should I list for data entry?","Review my resume summary"]};
+  // TEST ONLY: chats go to the separate TEST Worker (never the live site).
+  var AGENT_API = "https://usi-agents-test.fancy-sound-69b6.workers.dev/api/agent";
+  // TEST ONLY: pick one of the 5 featured agents with ?agent=coach | resume | business | tutor | social
+  var FIVE = {"coach":{"id":"coach","name":"AI Coach","cat":"Productivity","blurb":"Shows you practical ways to use AI in your job.","starters":["I'm a nurse. How can AI help me?","Which AI tools should a small business use?","How do I start learning AI?"]},"resume":{"id":"resume","name":"Resume Helper","cat":"Career","blurb":"Turns your experience into a strong, results-focused resume.","starters":["Make this stronger: I helped customers","What skills should I list for data entry?","Review my resume summary"]},"business":{"id":"business","name":"Business Idea Lab","cat":"Business","blurb":"Brainstorms ideas and checks if they can really work.","starters":["Give me 5 business ideas using AI","Check my idea: a dog-walking app","Low-cost businesses I can start this month"]},"tutor":{"id":"tutor","name":"Study Tutor","cat":"Learning","blurb":"Explains any school topic simply, step by step.","starters":["Explain photosynthesis simply","Help me understand fractions","What caused World War I?"]},"social":{"id":"social","name":"Social Post Writer","cat":"Marketing","blurb":"Writes scroll-stopping posts, captions and hooks.","starters":["3 Instagram captions for a bakery","A LinkedIn post about my new job","Hooks for a TikTok about saving money"]}};
+  var pick = new URLSearchParams(location.search).get("agent");
+  if (pick && FIVE[pick] && pick !== A.id) {
+    A = FIVE[pick];
+    document.title = A.name + " · TEST · Use Superintelligence";
+    var q = function (sel) { return document.querySelector(sel); };
+    if (q(".intro .eyebrow")) q(".intro .eyebrow").textContent = A.cat + " · Free AI agent";
+    if (q(".intro h1")) q(".intro h1").textContent = A.name;
+    if (q(".intro .lede")) q(".intro .lede").textContent = A.blurb;
+    if (q(".try ul")) q(".try ul").innerHTML = A.starters.map(function (t) { var li = document.createElement("li"); li.textContent = t; return li.outerHTML; }).join("");
+    if (q(".chat")) q(".chat").setAttribute("aria-label", "Chat with " + A.name);
+    if (q(".chat-head .glyph")) q(".chat-head .glyph").textContent = A.name.charAt(0);
+    if (q(".chat-head b")) q(".chat-head b").textContent = A.name;
+  }
   var $ = function (id) { return document.getElementById(id); };
   var log = $("log"), starters = $("starters"), form = $("ask"), input = $("askInput"), btn = $("askBtn"), clear = $("clear");
   var key = "si-chat-" + A.id, hist = [];
@@ -208,7 +225,7 @@
     hist.push({ role: "user", content: text }); input.value = ""; input.style.height = "auto"; render();
     setBusy(true); var out = bubble("bot wait", "Thinking…");
     try {
-      var res = await fetch("/api/agent", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ agent: A.id, messages: hist.slice(-10) }) });
+      var res = await fetch(AGENT_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ agent: A.id, messages: hist.slice(-10) }) });
       var data = await res.json().catch(function () { return {}; });
       if (!res.ok) throw new Error(data.error || "The agent couldn't answer right now. Please try again.");
       var reply = (data.text || "").trim() || "I couldn't come up with an answer. Try asking another way.";

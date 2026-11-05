@@ -1,0 +1,21 @@
+// TEST ONLY Worker for the 5 featured agents, with per-visitor limits.
+// It is NOT the live site. Live is the "usesuperintelligence" Worker in the other repo.
+{
+  "name": "usi-agents-test",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  // Keeps any settings you add in the Cloudflare dashboard (like DAILY_LIMIT) when it rebuilds.
+  "keep_vars": true,
+
+  // Same free AI as live.
+  "ai": { "binding": "AI" },
+
+  // The visitor counter. On the free plan it must be the SQLite kind ("new_sqlite_classes").
+  "durable_objects": {
+    "bindings": [{ "name": "LIMITER", "class_name": "VisitorLimiter" }]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["VisitorLimiter"] }
+  ]
+}
