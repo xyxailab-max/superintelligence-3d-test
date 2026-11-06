@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teach the Robot | Kids Learn AI | Use Superintelligence</title>
+<meta name="description" content="A free game for kids: teach a little robot to tell animals from food, then watch it guess. Learn how AI learns from examples.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070914; --panel:#111633; --panel2:#182048; --line:#2a3364;
+  --ink:#f2f5ff; --mist:#a8b1d8;
+  --sky:#5fd4ff; --sun:#ffd25a; --leaf:#5fe39a; --berry:#ff6fa5; --grape:#a98bff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{
+  font-family:"Baloo 2",ui-rounded,system-ui,sans-serif;color:var(--ink);
+  min-height:100vh;padding:16px 16px 40px;
+  background:radial-gradient(900px 500px at 50% -10%,#1a2460 0%,transparent 70%),var(--bg);
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap{max-width:720px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+header a{color:var(--mist);text-decoration:none;font-weight:600;font-size:15px}
+.stars{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 14px;font-weight:800;font-size:18px;color:var(--sun)}
+h1{font-size:clamp(28px,7vw,44px);line-height:1.05;text-align:center;font-weight:800}
+h1 span{color:var(--sky)}
+.sub{text-align:center;color:var(--mist);font-size:18px;margin:6px 0 16px}
+
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:18px;position:relative;overflow:hidden}
+.robotRow{display:flex;align-items:center;gap:14px}
+.robot{width:120px;flex:none}
+.bubble{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:12px 16px;font-size:20px;font-weight:700;line-height:1.25;position:relative;min-height:64px;display:flex;align-items:center}
+.bubble:before{content:"";position:absolute;left:-9px;top:26px;width:16px;height:16px;background:var(--panel2);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+
+.tabs{display:flex;gap:8px;margin:16px 0 12px}
+.tab{flex:1;border:2px solid var(--line);background:transparent;color:var(--mist);border-radius:16px;padding:10px;font:inherit;font-size:18px;font-weight:800;cursor:pointer}
+.tab.on{border-color:var(--sky);color:var(--ink);background:#15305a}
+.tab:disabled{opacity:.4;cursor:not-allowed}
+
+.card{margin:6px auto 14px;width:170px;height:170px;border-radius:32px;background:linear-gradient(160deg,#ffffff,#dfe6ff);display:grid;place-items:center;font-size:104px;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .25s}
+.card.pop{transform:scale(1.08) rotate(-3deg)}
+.q{text-align:center;font-size:22px;font-weight:800;margin-bottom:12px}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.big{border:none;border-radius:20px;padding:16px 10px;font:inherit;font-size:22px;font-weight:800;color:#0b0f24;cursor:pointer;transition:transform .1s}
+.big:active{transform:scale(.96)}
+.animal{background:var(--leaf)} .food{background:var(--sun)}
+.yes{background:var(--leaf)} .no{background:var(--berry)}
+.go{background:var(--sky);width:100%;margin-top:12px}
+
+.meter{margin-top:16px}
+.meter b{font-size:16px;color:var(--mist);font-weight:600}
+.bar{height:16px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--grape),var(--sky));transition:width .4s}
+
+.memory{margin-top:16px}
+.memory h3{font-size:18px;margin-bottom:6px}
+.shelf{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:10px;min-height:64px}
+.box small{display:block;color:var(--mist);font-size:14px;font-weight:700;margin-bottom:4px}
+.box div{font-size:26px;line-height:1.3;word-break:break-all}
+
+.learn{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:16px 18px}
+.learn h2{font-size:22px;color:var(--sun);margin-bottom:4px}
+.learn p{font-size:17px;color:var(--mist);line-height:1.4}
+.reset{display:block;margin:18px auto 0;background:none;border:1px solid var(--line);color:var(--mist);border-radius:999px;padding:8px 18px;font:inherit;font-size:15px;cursor:pointer}
+.hide{display:none}
+@media (max-width:420px){.robot{width:92px}.bubble{font-size:18px}.card{width:150px;height:150px;font-size:90px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html">← Use Superintelligence</a>
+    <div class="stars" id="stars">⭐ 0</div>
+  </header>
+
+  <h1>Teach the <span>Robot</span></h1>
+  <p class="sub">Show Robo pictures. The more you teach, the smarter it gets!</p>
+
+  <div class="stage">
+    <div class="robotRow">
+      <svg class="robot" id="robot" viewBox="0 0 120 130" aria-hidden="true">
+        <line x1="60" y1="8" x2="60" y2="24" stroke="#a8b1d8" stroke-width="4"/>
+        <circle id="bulb" cx="60" cy="8" r="7" fill="#ffd25a"/>
+        <rect x="14" y="24" width="92" height="66" rx="22" fill="#5fd4ff"/>
+        <rect x="26" y="36" width="68" height="40" rx="14" fill="#0b1430"/>
+        <g id="eyes">
+          <circle cx="45" cy="54" r="7" fill="#7dffb8"/>
+          <circle cx="75" cy="54" r="7" fill="#7dffb8"/>
+        </g>
+        <path id="mouth" d="M48 66 Q60 74 72 66" stroke="#7dffb8" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <rect x="32" y="94" width="56" height="30" rx="12" fill="#a98bff"/>
+        <circle cx="60" cy="109" r="6" fill="#ffd25a"/>
+        <rect x="4" y="50" width="10" height="22" rx="5" fill="#5fd4ff"/>
+        <rect x="106" y="50" width="10" height="22" rx="5" fill="#5fd4ff"/>
+      </svg>
+      <div class="bubble" id="say">Hi! I'm Robo. I don't know anything yet. Can you teach me?</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" id="tabTeach">1. Teach</button>
+      <button class="tab" id="tabTest" disabled>2. Test Robo</button>
+    </div>
+
+    <!-- TEACH -->
+    <div id="teach">
+      <div class="card" id="teachCard">🐶</div>
+      <p class="q">Is this an animal or food?</p>
+      <div class="btns">
+        <button class="big animal" data-label="animal">🐾 Animal</button>
+        <button class="big food" data-label="food">🍽️ Food</button>
+      </div>
+    </div>
+
+    <!-- TEST -->
+    <div id="test" class="hide">
+      <div class="card" id="testCard">❓</div>
+      <p class="q" id="guessText">Robo is thinking…</p>
+      <div class="btns" id="judge">
+        <button class="big yes" id="right">✅ Right</button>
+        <button class="big no" id="wrong">❌ Wrong</button>
+      </div>
+      <button class="big go hide" id="next">Next picture ➜</button>
+    </div>
+
+    <div class="meter">
+      <b id="brainText">Robo's brain: 0 examples</b>
+      <div class="bar"><i id="brainBar"></i></div>
+    </div>
+
+    <div class="memory">
+      <h3>What Robo remembers</h3>
+      <div class="shelf">
+        <div class="box"><small>🐾 Animals</small><div id="memA"></div></div>
+        <div class="box"><small>🍽️ Food</small><div id="memF"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="learn">
+    <h2>How does this work?</h2>
+    <p>Robo can't really "see" like you do. It only notices simple things, like colour, shape and size. When it meets a new picture, it looks for the picture it remembers that is most like it, and guesses the same answer. That's how a lot of real AI learns: from lots of examples! When Robo is wrong and you tell it, it learns from its mistake.</p>
+  </div>
+
+  <button class="reset" id="reset">Start over</button>
+</div>
+
+<script>
+(function(){
+  // Each picture: [emoji, answer, colour, shape, size]
+  // Robo only "sees" colour, shape and size, so it needs examples to learn.
+  var ITEMS = [
+    ["🐶","animal","brown","round","mid"],["🐱","animal","orange","round","small"],
+    ["🐮","animal","white","round","big"],["🐷","animal","pink","round","mid"],
+    ["🐸","animal","green","round","small"],["🐵","animal","brown","round","mid"],
+    ["🐔","animal","white","tall","small"],["🐟","animal","blue","long","small"],
+    ["🐰","animal","white","tall","small"],["🦁","animal","orange","round","big"],
+    ["🐘","animal","grey","round","big"],["🐢","animal","green","flat","small"],
+    ["🦒","animal","yellow","tall","big"],["🐍","animal","green","long","mid"],
+    ["🍎","food","red","round","small"],["🍌","food","yellow","long","small"],
+    ["🍕","food","orange","flat","mid"],["🍔","food","brown","round","mid"],
+    ["🥕","food","orange","long","small"],["🍩","food","pink","round","small"],
+    ["🍇","food","purple","round","small"],["🧀","food","yellow","flat","small"],
+    ["🍪","food","brown","flat","small"],["🥦","food","green","tall","small"],
+    ["🍓","food","red","round","small"],["🍞","food","brown","flat","mid"],
+    ["🍉","food","green","round","big"],["🌽","food","yellow","long","mid"]
+  ];
+  var KEY = "usi-kids-robot-v1";
+  var BRAIN_FULL = 20;
+
+  var state = {mem:[], stars:0};
+  try{ var s = JSON.parse(localStorage.getItem(KEY)); if(s && Array.isArray(s.mem)) state = s; }catch(e){}
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var byEmoji = {}; ITEMS.forEach(function(it){ byEmoji[it[0]] = it; });
+
+  function known(e){ return state.mem.some(function(m){ return m[0]===e; }); }
+  function pick(fromUnknown){
+    var pool = ITEMS.filter(function(it){ return fromUnknown ? !known(it[0]) : true; });
+    if(!pool.length) pool = ITEMS;
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
+  // How alike are two pictures? (colour counts most)
+  function alike(a,b){ return (a[2]===b[2]?2:0) + (a[3]===b[3]?1:0) + (a[4]===b[4]?1:0); }
+  function guess(item){
+    var best=null, score=-1;
+    state.mem.forEach(function(m){
+      var it = byEmoji[m[0]]; if(!it) return;
+      var s = alike(item,it) + Math.random()*0.5; // little tie-breaker
+      if(s>score){ score=s; best=m[1]; }
+    });
+    return best;
+  }
+
+  function say(t){ $("say").textContent = t; }
+  function face(mood){
+    var m = $("mouth"), e = $("eyes").children;
+    var col = mood==="sad" ? "#ff8fb8" : "#7dffb8";
+    m.setAttribute("d", mood==="sad" ? "M48 72 Q60 62 72 72" : mood==="think" ? "M50 69 L70 69" : "M48 66 Q60 74 72 66");
+    m.setAttribute("stroke", col);
+    for(var i=0;i<e.length;i++) e[i].setAttribute("fill", col);
+    $("bulb").setAttribute("fill", mood==="think" ? "#5fd4ff" : mood==="sad" ? "#ff6fa5" : "#ffd25a");
+  }
+  function pop(el){ el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
+
+  function render(){
+    $("stars").textContent = "⭐ " + state.stars;
+    var n = state.mem.length;
+    $("brainText").textContent = "Robo's brain: " + n + (n===1?" example":" examples");
+    $("brainBar").style.width = Math.min(100, n/BRAIN_FULL*100) + "%";
+    $("memA").textContent = state.mem.filter(function(m){return m[1]==="animal";}).map(function(m){return m[0];}).join(" ");
+    $("memF").textContent = state.mem.filter(function(m){return m[1]==="food";}).map(function(m){return m[0];}).join(" ");
+    var hasA = state.mem.some(function(m){return m[1]==="animal";});
+    var hasF = state.mem.some(function(m){return m[1]==="food";});
+    $("tabTest").disabled = !(n>=4 && hasA && hasF);
+  }
+
+  // TEACH
+  var teachItem = pick(true);
+  function showTeach(){ teachItem = pick(true); $("teachCard").textContent = teachItem[0]; pop($("teachCard")); }
+  document.querySelectorAll("#teach .big").forEach(function(b){
+    b.addEventListener("click", function(){
+      var label = b.getAttribute("data-label");
+      if(label !== teachItem[1]){
+        face("sad");
+        say("Hmm, are you sure? Look again! 🤔");
+        return;
+      }
+      state.mem.push([teachItem[0], label]);
+      save(); render(); face("happy");
+      var n = state.mem.length;
+      if(n<4) say("Got it! " + teachItem[0] + " is " + (label==="animal"?"an animal":"food") + ". Teach me more!");
+      else if(!$("tabTest").disabled && n===4) say("I learned 4 things! Tap \"Test Robo\" to see if I can guess. 🎉");
+      else say("Thanks! Now I know " + n + " things.");
+      showTeach();
+    });
+  });
+
+  // TEST
+  var testItem = null, robotSaid = null;
+  function showTest(){
+    testItem = pick(true);
+    $("testCard").textContent = testItem[0]; pop($("testCard"));
+    $("judge").classList.remove("hide"); $("next").classList.add("hide");
+    face("think"); say("Let me think…");
+    $("guessText").textContent = "Robo is thinking…";
+    setTimeout(function(){
+      robotSaid = guess(testItem);
+      var w = robotSaid==="animal" ? "an ANIMAL 🐾" : "FOOD 🍽️";
+      $("guessText").textContent = "Robo thinks it's " + w;
+      face("happy"); say("I think " + testItem[0] + " is " + w + "! Am I right?");
+    }, 700);
+  }
+  $("right").addEventListener("click", function(){
+    if(!robotSaid) return;
+    if(robotSaid !== testItem[1]){ say("Hmm, look again! Is it really " + robotSaid + "? 🤔"); return; }
+    state.stars++; state.mem.push([testItem[0], testItem[1]]);
+    save(); render(); face("happy");
+    say("Yay! I got it right! You earned a star! ⭐");
+    $("judge").classList.add("hide"); $("next").classList.remove("hide"); robotSaid=null;
+  });
+  $("wrong").addEventListener("click", function(){
+    if(!robotSaid) return;
+    if(robotSaid === testItem[1]){ say("Wait… I think I was right! Look again. 🙂"); return; }
+    state.stars++; state.mem.push([testItem[0], testItem[1]]);
+    save(); render(); face("sad");
+    say("Oops! Thanks for fixing me. Now I know " + testItem[0] + " is " + (testItem[1]==="animal"?"an animal":"food") + ". ⭐");
+    $("judge").classList.add("hide"); $("next").classList.remove("hide"); robotSaid=null;
+  });
+  $("next").addEventListener("click", showTest);
+
+  function mode(m){
+    $("teach").classList.toggle("hide", m!=="teach");
+    $("test").classList.toggle("hide", m!=="test");
+    $("tabTeach").classList.toggle("on", m==="teach");
+    $("tabTest").classList.toggle("on", m==="test");
+    if(m==="test") showTest(); else { face("happy"); say("Show me more pictures!"); showTeach(); }
+  }
+  $("tabTeach").addEventListener("click", function(){ mode("teach"); });
+  $("tabTest").addEventListener("click", function(){ if(!this.disabled) mode("test"); });
+
+  $("reset").addEventListener("click", function(){
+    state = {mem:[], stars:0}; save(); render(); mode("teach");
+    say("I forgot everything! Can you teach me again?");
+  });
+
+  render();
+  $("teachCard").textContent = teachItem[0];
+  if(state.mem.length){ say("Welcome back! I still remember " + state.mem.length + " things. 😊"); }
+})();
+</script>
+</body>
+</html>
