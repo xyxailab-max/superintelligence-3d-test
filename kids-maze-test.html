@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Robot Maze | Kids Learn AI | Use Superintelligence</title>
+<meta name="description" content="A free game for kids: give Robo step-by-step directions to reach the star. Learn how computers follow instructions.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070914; --panel:#111633; --panel2:#182048; --line:#2a3364;
+  --ink:#f2f5ff; --mist:#a8b1d8;
+  --sky:#5fd4ff; --sun:#ffd25a; --leaf:#5fe39a; --berry:#ff6fa5; --grape:#a98bff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{
+  font-family:"Baloo 2",ui-rounded,system-ui,sans-serif;color:var(--ink);
+  min-height:100vh;padding:16px 16px 40px;
+  background:radial-gradient(900px 500px at 50% -10%,#1a2460 0%,transparent 70%),var(--bg);
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;
+}
+.wrap{max-width:560px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+header a{color:var(--mist);text-decoration:none;font-weight:600;font-size:15px}
+.stars{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 14px;font-weight:800;font-size:18px;color:var(--sun)}
+h1{font-size:clamp(28px,7vw,44px);line-height:1.05;text-align:center;font-weight:800}
+h1 span{color:var(--sky)}
+.sub{text-align:center;color:var(--mist);font-size:18px;margin:6px 0 14px}
+
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.lvl{font-size:20px;font-weight:800}
+.lvls{display:flex;gap:6px}
+.dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--mist);font:inherit;font-weight:800;font-size:15px;cursor:pointer}
+.dot.done{background:var(--leaf);border-color:var(--leaf);color:#0b0f24}
+.dot.on{border-color:var(--sky);color:var(--ink)}
+.dot:disabled{opacity:.35;cursor:not-allowed}
+
+.say{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-size:19px;font-weight:700;line-height:1.25;margin-bottom:12px;min-height:50px}
+
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;width:100%;max-width:420px;margin:0 auto;aspect-ratio:1/1}
+.cell{border-radius:12px;background:#1c2656;display:grid;place-items:center;font-size:clamp(24px,7vw,38px);line-height:1}
+.cell.wall{background:#2b2f45}
+.cell.trail{background:#23407a}
+.bump{animation:bump .35s}
+@keyframes bump{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.win{animation:win .6s}
+@keyframes win{50%{transform:scale(1.35) rotate(10deg)}}
+
+.prog{margin-top:14px}
+.prog h3{font-size:17px;color:var(--mist);font-weight:700;margin-bottom:6px}
+.steps{display:flex;flex-wrap:wrap;gap:6px;min-height:50px;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:8px}
+.steps:empty:before{content:"Tap the arrows to add steps 👇";color:var(--mist);font-size:16px;padding:4px}
+.chip{width:40px;height:40px;border-radius:10px;border:none;background:var(--grape);color:#0b0f24;font-size:22px;font-weight:800;cursor:pointer}
+.chip.now{background:var(--sun);transform:scale(1.12)}
+
+.pad{display:grid;grid-template-columns:repeat(3,72px);grid-template-rows:repeat(2,64px);gap:8px;justify-content:center;margin-top:14px}
+.arrow{border:none;border-radius:18px;background:var(--sky);color:#0b0f24;font-size:30px;font-weight:800;cursor:pointer}
+.arrow:active,.act:active{transform:scale(.95)}
+.up{grid-column:2}.left{grid-column:1;grid-row:2}.down{grid-column:2;grid-row:2}.right{grid-column:3;grid-row:2}
+.acts{display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;margin-top:14px}
+.act{border:none;border-radius:16px;padding:14px 8px;font:inherit;font-size:19px;font-weight:800;cursor:pointer;color:#0b0f24}
+.undo{background:#cfd6f5}.clear{background:var(--berry)}.go{background:var(--leaf);font-size:22px}
+button:disabled{opacity:.45;cursor:not-allowed}
+
+.learn{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:16px 18px}
+.learn h2{font-size:22px;color:var(--sun);margin-bottom:4px}
+.learn p{font-size:17px;color:var(--mist);line-height:1.4}
+.more{display:block;text-align:center;margin-top:14px;color:var(--sky);font-weight:700;font-size:17px;text-decoration:none}
+.reset{display:block;margin:14px auto 0;background:none;border:1px solid var(--line);color:var(--mist);border-radius:999px;padding:8px 18px;font:inherit;font-size:15px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html">← Use Superintelligence</a>
+    <div class="stars" id="stars">⭐ 0</div>
+  </header>
+
+  <h1>Robot <span>Maze</span></h1>
+  <p class="sub">Plan Robo's steps, then press Go to help it reach the star!</p>
+
+  <div class="stage">
+    <div class="top">
+      <div class="lvl" id="lvlName">Level 1</div>
+      <div class="lvls" id="lvls"></div>
+    </div>
+    <div class="say" id="say">Hi! I'm Robo 🤖. Tell me which way to go, one step at a time.</div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="prog">
+      <h3>Robo's steps (tap a step to remove it)</h3>
+      <div class="steps" id="steps"></div>
+    </div>
+
+    <div class="pad">
+      <button class="arrow up" data-d="U" aria-label="Up">⬆️</button>
+      <button class="arrow left" data-d="L" aria-label="Left">⬅️</button>
+      <button class="arrow down" data-d="D" aria-label="Down">⬇️</button>
+      <button class="arrow right" data-d="R" aria-label="Right">➡️</button>
+    </div>
+    <div class="acts">
+      <button class="act undo" id="undo">↩ Undo</button>
+      <button class="act clear" id="clear">🗑 Clear</button>
+      <button class="act go" id="go">▶ Go!</button>
+    </div>
+  </div>
+
+  <div class="learn">
+    <h2>How does this work?</h2>
+    <p>A computer can't guess what you mean. It only does exactly what you tell it, one step at a time, in the right order. A list of steps like this is called a <b>program</b>, and writing one is called <b>coding</b>. If Robo bumps into a rock, the steps have a mistake (a "bug"). Fixing it is called <b>debugging</b>!</p>
+  </div>
+
+  <a class="more" href="kids-robot-test.html">🧠 Play "Teach the Robot" too →</a>
+  <button class="reset" id="reset">Start over</button>
+</div>
+
+<script>
+(function(){
+  // S = Robo, G = star, # = rock
+  var LEVELS = [
+    ["......","......","S....G","......","......","......"],
+    ["S.....","####..","......","......","......",".....G"],
+    ["S.#...","..#.#.","..#.#.","....#G","###...","......"],
+    ["......",".####.",".#G.#.",".#..#.",".##.#.","S....."],
+    ["S#....",".#.##.",".#..#.",".##.#G","....#.","#....."]
+  ];
+  var MOVE = {U:[-1,0],D:[1,0],L:[0,-1],R:[0,1]};
+  var ICON = {U:"⬆",D:"⬇",L:"⬅",R:"➡"};
+  var MAX_STEPS = 20, KEY = "usi-kids-maze-v1";
+
+  var save = {done:[], stars:0};
+  try{ var s = JSON.parse(localStorage.getItem(KEY)); if(s && Array.isArray(s.done)) save = s; }catch(e){}
+  function store(){ try{ localStorage.setItem(KEY, JSON.stringify(save)); }catch(e){} }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var lvl = 0, steps = [], running = false, cells = [], start, goal, pos;
+  // open the first level not finished yet
+  while(lvl < LEVELS.length-1 && save.done.indexOf(lvl) > -1) lvl++;
+
+  function unlocked(i){ return i===0 || save.done.indexOf(i-1) > -1; }
+  function say(t){ $("say").textContent = t; }
+
+  function drawDots(){
+    var box = $("lvls"); box.innerHTML = "";
+    LEVELS.forEach(function(_, i){
+      var b = document.createElement("button");
+      b.className = "dot" + (save.done.indexOf(i)>-1 ? " done" : "") + (i===lvl ? " on" : "");
+      b.textContent = i+1; b.disabled = !unlocked(i) || running;
+      b.addEventListener("click", function(){ if(!running){ lvl = i; load(); } });
+      box.appendChild(b);
+    });
+    $("stars").textContent = "⭐ " + save.stars;
+  }
+
+  function load(){
+    var map = LEVELS[lvl], g = $("grid"); g.innerHTML = ""; cells = [];
+    for(var r=0;r<6;r++){ cells[r]=[]; for(var c=0;c<6;c++){
+      var ch = map[r][c], d = document.createElement("div");
+      d.className = "cell" + (ch==="#" ? " wall" : "");
+      d.textContent = ch==="#" ? "🪨" : "";
+      if(ch==="S") start=[r,c];
+      if(ch==="G") goal=[r,c];
+      g.appendChild(d); cells[r][c]=d;
+    }}
+    steps = []; drawSteps(); place(start);
+    $("lvlName").textContent = "Level " + (lvl+1);
+    say(lvl===0 ? "Hi! I'm Robo 🤖. Tell me which way to go, one step at a time." : "Level " + (lvl+1) + "! Plan my steps to reach the ⭐.");
+    drawDots();
+  }
+
+  function place(p){
+    for(var r=0;r<6;r++) for(var c=0;c<6;c++){
+      var d = cells[r][c];
+      if(d.classList.contains("wall")) continue;
+      d.textContent = ""; d.classList.remove("trail","bump","win");
+    }
+    cells[goal[0]][goal[1]].textContent = "⭐";
+    pos = p.slice(); cells[pos[0]][pos[1]].textContent = "🤖";
+  }
+
+  function drawSteps(now){
+    var box = $("steps"); box.innerHTML = "";
+    steps.forEach(function(d, i){
+      var b = document.createElement("button");
+      b.className = "chip" + (i===now ? " now" : "");
+      b.textContent = ICON[d];
+      b.addEventListener("click", function(){ if(!running){ steps.splice(i,1); drawSteps(); } });
+      box.appendChild(b);
+    });
+    $("go").disabled = running || !steps.length;
+    $("undo").disabled = running || !steps.length;
+    $("clear").disabled = running || !steps.length;
+  }
+
+  document.querySelectorAll(".arrow").forEach(function(b){
+    b.addEventListener("click", function(){
+      if(running) return;
+      if(steps.length >= MAX_STEPS){ say("That's a lot of steps! Try pressing Go."); return; }
+      if(pos[0]!==start[0] || pos[1]!==start[1]) place(start);
+      steps.push(b.getAttribute("data-d")); drawSteps();
+    });
+  });
+  $("undo").addEventListener("click", function(){ if(!running){ steps.pop(); drawSteps(); } });
+  $("clear").addEventListener("click", function(){ if(!running){ steps = []; drawSteps(); place(start); say("All clear! Plan new steps."); } });
+
+  $("go").addEventListener("click", function(){
+    if(running || !steps.length) return;
+    running = true; place(start); drawSteps(); drawDots(); say("Here I go! 🚀");
+    var i = 0;
+    function next(){
+      if(i >= steps.length){ return finish(false); }
+      drawSteps(i);
+      var m = MOVE[steps[i]], r = pos[0]+m[0], c = pos[1]+m[1];
+      var blocked = r<0 || r>5 || c<0 || c>5 || LEVELS[lvl][r][c]==="#";
+      if(blocked){
+        var me = cells[pos[0]][pos[1]];
+        me.classList.remove("bump"); void me.offsetWidth; me.classList.add("bump");
+        say((r<0||r>5||c<0||c>5) ? "Bonk! That's the edge. Step " + (i+1) + " has a bug. 🐞" : "Bonk! A rock is in the way. Step " + (i+1) + " has a bug. 🐞");
+        return stop();
+      }
+      cells[pos[0]][pos[1]].textContent = ""; cells[pos[0]][pos[1]].classList.add("trail");
+      pos = [r,c];
+      if(r===goal[0] && c===goal[1]){ cells[r][c].textContent = "🤖"; return finish(true); }
+      cells[r][c].textContent = "🤖";
+      i++; setTimeout(next, 420);
+    }
+    setTimeout(next, 300);
+  });
+
+  function stop(){ running = false; drawSteps(); drawDots(); }
+  function finish(won){
+    if(!won){ say("I followed all the steps, but I'm not at the ⭐ yet. Add more steps!"); return stop(); }
+    var me = cells[pos[0]][pos[1]]; me.classList.add("win");
+    var first = save.done.indexOf(lvl) === -1;
+    if(first){ save.done.push(lvl); save.stars++; store(); }
+    running = false; drawSteps(); drawDots();
+    if(lvl < LEVELS.length-1){
+      say("I made it! 🎉 " + (first ? "You earned a star! ⭐ " : "") + "Tap level " + (lvl+2) + " to keep going.");
+    } else {
+      say("WOW! You finished every level! You're a real coder! 🏆");
+    }
+  }
+
+  $("reset").addEventListener("click", function(){
+    if(running) return;
+    save = {done:[], stars:0}; store(); lvl = 0; load();
+    say("Fresh start! Let's begin at level 1.");
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
