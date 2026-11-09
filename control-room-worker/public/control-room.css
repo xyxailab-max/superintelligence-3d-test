@@ -132,8 +132,8 @@ button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-c
 .chip span { margin-left: 6px; font: 600 .7rem/1 var(--mono); opacity: .7; }
 
 /* board */
-.board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: start; }
-.col { border-radius: var(--r); border: 1px solid var(--edge); background: #0a1024b3; padding: 11px; min-height: 110px; }
+.board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: stretch; }
+.col { border-radius: var(--r); border: 1px solid var(--edge); background: #0a1024b3; padding: 11px; min-height: 260px; }
 .col h3 { display: flex; justify-content: space-between; margin: 0 0 10px; }
 .col h3 .n { color: var(--ink); }
 .col.waiting h3 .k:first-child { color: var(--gold); }
@@ -196,7 +196,7 @@ button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-c
 .ev .s { color: var(--mist); font-size: .8rem; white-space: nowrap; }
 
 /* iPad portrait and smaller */
-@media (max-width: 1200px) {
+@media (max-width: 760px) {
   .board { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 860px) {
