@@ -19,3 +19,5 @@ Private founder dashboard. **TEST only.** Not the live site (live Worker = `uses
 `node --test control-room-worker/test/security.test.mjs`
 
 No AI, no expenses (V2.1), no delete routes.
+
+First TEST deploy triggered from branch control-room-deploy on 2026-11-09 (reviewed code from commit 4d2edc0, unchanged).
