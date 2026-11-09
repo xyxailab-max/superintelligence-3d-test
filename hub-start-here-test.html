@@ -667,14 +667,63 @@
   <style>
   .start { margin:6px 0 30px; }
   .start .sk { margin:0 0 6px; font:600 .7rem/1 var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--eb2); }
-  .start h2 { font:400 1.7rem/1.1 var(--serif); margin:0 0 12px; }
-  .start .grid { grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+  .start h2 { font:400 1.7rem/1.1 var(--serif); margin:0 0 14px; }
+  .lp-row { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; }
+  @media (max-width:900px) { .lp-row { grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:minmax(220px,62%); overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px; scrollbar-width:none; } .lp { scroll-snap-align:start; } }
+  .lp { --c:#5aa2ff; position:relative; overflow:hidden; display:flex; flex-direction:column; gap:10px; min-width:0; padding:14px 14px 12px; text-decoration:none; color:#E9EDFF; border-radius:10px;
+    background:linear-gradient(#ffffff08 1px,transparent 1px) 0 0/100% 4px, radial-gradient(120% 70% at 50% 0%, color-mix(in srgb,var(--c) 22%,transparent), transparent 70%), linear-gradient(180deg,#0f1628,#080c18);
+    border:1px solid color-mix(in srgb,var(--c) 45%,#ffffff1a); box-shadow:inset 0 0 0 1px #ffffff08, 0 14px 30px -18px #000; transition:transform .25s, box-shadow .25s, border-color .25s; }
+  .lp::before, .lp::after { content:""; position:absolute; width:14px; height:14px; border:2px solid var(--c); pointer-events:none; }
+  .lp::before { top:6px; left:6px; border-right:0; border-bottom:0; }
+  .lp::after { bottom:6px; right:6px; border-left:0; border-top:0; }
+  .lp:hover, .lp:focus-visible { transform:translateY(-4px); border-color:var(--c); box-shadow:0 0 0 1px var(--c), 0 0 26px color-mix(in srgb,var(--c) 45%,transparent), 0 18px 34px -16px #000; outline:none; }
+  .lp-scan { position:absolute; left:0; right:0; top:-40%; height:40%; background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--c) 22%,transparent),transparent); opacity:0; pointer-events:none; }
+  .lp:hover .lp-scan, .lp:focus-visible .lp-scan { opacity:1; animation:lpScan 1.4s linear infinite; }
+  @keyframes lpScan { to { top:110%; } }
+  .lp-top { display:flex; justify-content:space-between; align-items:center; font:700 .6rem/1 var(--mono); letter-spacing:.16em; color:#8d97b5; }
+  .lp-st { display:inline-flex; align-items:center; gap:6px; color:#3ddc97; }
+  .lp-st i { width:7px; height:7px; border-radius:50%; background:#3ddc97; box-shadow:0 0 8px #3ddc97; animation:liveBlink 2.4s ease-in-out infinite; }
+  .lp-id { display:flex; align-items:center; gap:10px; min-width:0; }
+  .lp-ico { position:relative; flex:none; display:grid; place-items:center; width:42px; height:42px; border-radius:50%; font:700 1rem/1 var(--sans); color:#fff; background:#0b1020; }
+  .lp-ico::before { content:""; position:absolute; inset:-3px; border-radius:50%; background:conic-gradient(var(--c),transparent 40%,var(--c) 60%,transparent); z-index:-1; animation:lpSpin 4s linear infinite; }
+  .lp-ico { z-index:0; }
+  @keyframes lpSpin { to { transform:rotate(1turn); } }
+  .lp-name { display:block; font:700 1rem/1.2 var(--sans); overflow-wrap:anywhere; }
+  .lp-cat { display:block; margin-top:3px; font:600 .6rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--c); }
+  .lp-term { min-height:3.6em; padding:8px 9px; border-radius:6px; background:#04070fcc; border:1px solid #ffffff14; font:500 .74rem/1.4 var(--mono); color:#cfe6ff; overflow-wrap:anywhere; }
+  .lp-term b { color:var(--c); font-weight:700; }
+  .lp-cur { display:inline-block; width:7px; height:1em; margin-left:2px; vertical-align:-2px; background:var(--c); animation:lpBlink 1s steps(1) infinite; }
+  @keyframes lpBlink { 50% { opacity:0; } }
+  .lp-go { margin-top:auto; display:flex; justify-content:space-between; align-items:center; padding:9px 11px; border-radius:6px; font:700 .72rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:#0b1020; background:var(--c); }
+  .lp:hover .lp-go b, .lp:focus-visible .lp-go b { transform:translateX(4px); }
+  .lp-go b { transition:transform .2s; }
+  @media (prefers-reduced-motion:reduce) { .lp, .lp-go b { transition:none; } .lp-ico::before, .lp-cur, .lp-st i, .lp:hover .lp-scan { animation:none; } }
   </style>
   <section class="start" id="start" aria-labelledby="startH">
     <p class="sk">Start here</p>
     <h2 id="startH">Best agents for your first try</h2>
-    <div class="grid"><a class="agent" href="/agents/coach" data-cat="Productivity" data-q="ai coach productivity shows you practical ways to use ai in your job. i&#39;m a nurse. how can ai help me? which ai tools should a small business use? how do i start learning ai?"><div class="row"><span class="glyph" aria-hidden="true">A</span><div><h3>AI Coach</h3><span class="cat">Productivity</span></div></div><p>Shows you practical ways to use AI in your job.</p></a><a class="agent" href="/agents/resume" data-cat="Career" data-q="resume helper career turns your experience into a strong, results-focused resume. make this stronger: i helped customers what skills should i list for data entry? review my resume summary"><div class="row"><span class="glyph" aria-hidden="true">R</span><div><h3>Resume Helper</h3><span class="cat">Career</span></div></div><p>Turns your experience into a strong, results-focused resume.</p></a><a class="agent" href="/agents/business" data-cat="Business" data-q="business idea lab business brainstorms ideas and checks if they can really work. give me 5 business ideas using ai check my idea: a dog-walking app low-cost businesses i can start this month"><div class="row"><span class="glyph" aria-hidden="true">B</span><div><h3>Business Idea Lab</h3><span class="cat">Business</span></div></div><p>Brainstorms ideas and checks if they can really work.</p></a><a class="agent" href="/agents/tutor" data-cat="Learning" data-q="study tutor learning explains any school topic simply, step by step. explain photosynthesis simply help me understand fractions what caused world war i?"><div class="row"><span class="glyph" aria-hidden="true">S</span><div><h3>Study Tutor</h3><span class="cat">Learning</span></div></div><p>Explains any school topic simply, step by step.</p></a><a class="agent" href="/agents/social" data-cat="Marketing" data-q="social post writer marketing writes scroll-stopping posts, captions and hooks. 3 instagram captions for a bakery a linkedin post about my new job hooks for a tiktok about saving money"><div class="row"><span class="glyph" aria-hidden="true">S</span><div><h3>Social Post Writer</h3><span class="cat">Marketing</span></div></div><p>Writes scroll-stopping posts, captions and hooks.</p></a></div>
+    <div class="lp-row"><a class="lp" href="/agents/coach" style="--c:#ffa24c"><span class="lp-scan" aria-hidden="true"></span><span class="lp-top"><span>AGENT 01</span><span class="lp-st"><i></i>Online</span></span><span class="lp-id"><span class="lp-ico" aria-hidden="true">A</span><span><b class="lp-name">AI Coach</b><span class="lp-cat">Productivity</span></span></span><span class="lp-term" aria-hidden="true"><b>&gt;</b> <span class="lp-type" data-t="I&#39;m a nurse. How can AI help me?">I&#39;m a nurse. How can AI help me?</span><span class="lp-cur"></span></span><span class="lp-go">Launch <b aria-hidden="true">&rarr;</b></span></a><a class="lp" href="/agents/resume" style="--c:#3ddc97"><span class="lp-scan" aria-hidden="true"></span><span class="lp-top"><span>AGENT 02</span><span class="lp-st"><i></i>Online</span></span><span class="lp-id"><span class="lp-ico" aria-hidden="true">R</span><span><b class="lp-name">Resume Helper</b><span class="lp-cat">Career</span></span></span><span class="lp-term" aria-hidden="true"><b>&gt;</b> <span class="lp-type" data-t="Make this stronger: I helped customers">Make this stronger: I helped customers</span><span class="lp-cur"></span></span><span class="lp-go">Launch <b aria-hidden="true">&rarr;</b></span></a><a class="lp" href="/agents/business" style="--c:#f0c674"><span class="lp-scan" aria-hidden="true"></span><span class="lp-top"><span>AGENT 03</span><span class="lp-st"><i></i>Online</span></span><span class="lp-id"><span class="lp-ico" aria-hidden="true">B</span><span><b class="lp-name">Business Idea Lab</b><span class="lp-cat">Business</span></span></span><span class="lp-term" aria-hidden="true"><b>&gt;</b> <span class="lp-type" data-t="Give me 5 business ideas using AI">Give me 5 business ideas using AI</span><span class="lp-cur"></span></span><span class="lp-go">Launch <b aria-hidden="true">&rarr;</b></span></a><a class="lp" href="/agents/tutor" style="--c:#4fd1ff"><span class="lp-scan" aria-hidden="true"></span><span class="lp-top"><span>AGENT 04</span><span class="lp-st"><i></i>Online</span></span><span class="lp-id"><span class="lp-ico" aria-hidden="true">S</span><span><b class="lp-name">Study Tutor</b><span class="lp-cat">Learning</span></span></span><span class="lp-term" aria-hidden="true"><b>&gt;</b> <span class="lp-type" data-t="Explain photosynthesis simply">Explain photosynthesis simply</span><span class="lp-cur"></span></span><span class="lp-go">Launch <b aria-hidden="true">&rarr;</b></span></a><a class="lp" href="/agents/social" style="--c:#ff6b9d"><span class="lp-scan" aria-hidden="true"></span><span class="lp-top"><span>AGENT 05</span><span class="lp-st"><i></i>Online</span></span><span class="lp-id"><span class="lp-ico" aria-hidden="true">S</span><span><b class="lp-name">Social Post Writer</b><span class="lp-cat">Marketing</span></span></span><span class="lp-term" aria-hidden="true"><b>&gt;</b> <span class="lp-type" data-t="3 Instagram captions for a bakery">3 Instagram captions for a bakery</span><span class="lp-cur"></span></span><span class="lp-go">Launch <b aria-hidden="true">&rarr;</b></span></a></div>
   </section>
+  <script>
+  (function () {
+    try {
+      if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      document.querySelectorAll(".lp-type").forEach(function (el, k) {
+        var full = el.getAttribute("data-t") || "", n = 0, dir = 1;
+        el.textContent = "";
+        function step() {
+          n += dir; el.textContent = full.slice(0, n);
+          var wait = 45;
+          if (n >= full.length) { dir = -1; wait = 2600; }
+          else if (n <= 0) { dir = 1; wait = 700; }
+          else if (dir < 0) wait = 18;
+          setTimeout(step, wait);
+        }
+        setTimeout(step, 400 + k * 500);
+      });
+    } catch (e) {}
+  })();
+  </script>
   <!-- END START HERE -->
   <div class="tools">
     <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search agents: resume, budget, recipe…" aria-label="Search agents" autocomplete="off"></label>
