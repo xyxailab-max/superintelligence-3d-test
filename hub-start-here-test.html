@@ -698,57 +698,86 @@
   </style>
   
 <style>
-.opt { margin:6px 0 40px; }
-.opt-tag { display:inline-block; margin:0 0 10px; padding:6px 12px; border-radius:999px; font:700 .72rem/1 var(--mono); letter-spacing:.14em; color:#0b1020; background:#E9EDFF; }
-.opt .sk { margin:0 0 6px; font:600 .7rem/1 var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--eb2); }
-.opt h2 { font:400 1.7rem/1.1 var(--serif); margin:0 0 14px; }
-/* ---------- A: Holo glass ---------- */
-.ha { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; }
-.ha a { --c:#5aa2ff; position:relative; display:flex; flex-direction:column; gap:10px; padding:18px 16px 16px; text-decoration:none; color:#E9EDFF; border-radius:18px; overflow:hidden;
-  background:linear-gradient(160deg,#ffffff14,#ffffff05 45%,#ffffff0a); border:1px solid #ffffff22; -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
-  box-shadow:inset 0 1px 0 #ffffff30, 0 20px 40px -24px #000; transition:transform .25s, box-shadow .25s; }
-.ha a::before { content:""; position:absolute; left:16px; right:16px; top:0; height:2px; border-radius:2px; background:var(--c); box-shadow:0 0 14px var(--c), 0 0 30px var(--c); }
-.ha a::after { content:""; position:absolute; inset:0; background:linear-gradient(115deg,transparent 30%,#ffffff12 45%,transparent 60%); pointer-events:none; }
-.ha a:hover, .ha a:focus-visible { transform:translateY(-2px); box-shadow:inset 0 1px 0 #ffffff40, 0 0 0 1px color-mix(in srgb,var(--c) 70%,transparent), 0 0 30px color-mix(in srgb,var(--c) 30%,transparent); outline:none; }
-.ha .hx { width:46px; height:52px; display:grid; place-items:center; font:800 1.1rem/1 var(--sans); color:#0b1020; background:linear-gradient(160deg,#fff,var(--c)); clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); filter:drop-shadow(0 0 10px var(--c)); }
-.ha b { font:700 1.02rem/1.2 var(--sans); }
-.ha .ct { font:600 .6rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--c); }
-.ha p { margin:0; font-size:.86rem; color:#b9c2dc; }
-.ha .go { margin-top:auto; font:700 .72rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--c); }
-/* ---------- B: Command deck ---------- */
-.hb { border:1px solid #2a3658; border-radius:12px; overflow:hidden; background:linear-gradient(180deg,#0c1324,#070b16); box-shadow:0 0 0 1px #ffffff06 inset; }
-.hb-h { display:flex; justify-content:space-between; padding:10px 16px; font:700 .62rem/1 var(--mono); letter-spacing:.18em; color:#7d88a8; border-bottom:1px solid #1e2742; background:#0a1020; }
-.hb-h span:last-child { color:#3ddc97; }
-.hb a { --c:#5aa2ff; display:grid; grid-template-columns:54px minmax(0,1.2fr) minmax(0,2fr) auto; align-items:center; gap:16px; padding:14px 16px; text-decoration:none; color:#E9EDFF; border-bottom:1px solid #1a2238; position:relative; transition:background .2s; }
-.hb a:last-child { border-bottom:0; }
-.hb a::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:3px; background:var(--c); box-shadow:0 0 10px var(--c); }
-.hb a:hover, .hb a:focus-visible { background:linear-gradient(90deg,color-mix(in srgb,var(--c) 14%,transparent),transparent 70%); outline:none; }
-.hb .n { font:700 1.5rem/1 var(--mono); color:var(--c); text-shadow:0 0 12px color-mix(in srgb,var(--c) 60%,transparent); }
-.hb b { display:block; font:700 1rem/1.2 var(--sans); }
-.hb .ct { display:block; margin-top:4px; font:600 .6rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:#8d97b5; }
-.hb .q { font:500 .8rem/1.35 var(--mono); color:#b9d6f5; }
-.hb .q i { font-style:normal; color:var(--c); }
-.hb .go { padding:9px 14px; border-radius:8px; font:700 .7rem/1 var(--mono); letter-spacing:.12em; color:#0b1020; background:var(--c); white-space:nowrap; }
-@media (max-width:820px) { .hb a { grid-template-columns:44px minmax(0,1fr) auto; } .hb .q { display:none; } }
-/* ---------- C: Orbit pods ---------- */
-.hc { position:relative; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; padding:26px 6px 6px; }
-.hc::before { content:""; position:absolute; left:10%; right:10%; top:66px; height:2px; background:linear-gradient(90deg,#ffa24c,#3ddc97,#f0c674,#4fd1ff,#ff6b9d); opacity:.55; box-shadow:0 0 12px #5aa2ff55; }
-.hc a { --c:#5aa2ff; position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; padding:0 8px 14px; text-decoration:none; color:#E9EDFF; border-radius:16px; transition:transform .25s; }
-.hc .pod { position:relative; z-index:1; width:84px; height:84px; border-radius:50%; display:grid; place-items:center; font:800 1.4rem/1 var(--sans);
-  background:radial-gradient(circle at 35% 30%,#ffffff40,transparent 45%), radial-gradient(circle,color-mix(in srgb,var(--c) 45%,#0b1020) 0%,#0b1020 72%);
-  border:2px solid var(--c); box-shadow:0 0 0 6px #070a14, 0 0 0 7px color-mix(in srgb,var(--c) 40%,transparent), 0 0 26px color-mix(in srgb,var(--c) 45%,transparent); }
-.hc a:hover, .hc a:focus-visible { transform:translateY(-3px); outline:none; }
-.hc a:hover .pod, .hc a:focus-visible .pod { box-shadow:0 0 0 6px #070a14, 0 0 0 7px var(--c), 0 0 40px var(--c); }
-.hc b { font:700 .98rem/1.2 var(--sans); margin-top:6px; }
-.hc .ct { font:600 .6rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--c); }
-.hc p { margin:0; font-size:.82rem; color:#aab3cf; }
-.hc .go { margin-top:4px; padding:7px 12px; border-radius:999px; border:1px solid var(--c); font:700 .64rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--c); }
-@media (max-width:900px) {
-  .ha, .hc { grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:minmax(200px,58%); overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px; scrollbar-width:none; }
-  .ha a, .hc a { scroll-snap-align:start; } .hc::before { display:none; }
-}
-@media (prefers-reduced-motion:reduce) { .ha a, .hb a, .hc a { transition:none; } }
-</style><section class="opt"><span class="opt-tag">OPTION A · HOLO GLASS</span><p class="sk">Start here</p><h2>Best agents for your first try</h2><div class="ha"><a href="/agents/coach" style="--c:#ffa24c"><span class="hx">A</span><b>AI Coach</b><span class="ct">Productivity</span><p>Shows you practical ways to use AI in your job.</p><span class="go">Launch →</span></a><a href="/agents/resume" style="--c:#3ddc97"><span class="hx">R</span><b>Resume Helper</b><span class="ct">Career</span><p>Turns your experience into a strong, results-focused resume.</p><span class="go">Launch →</span></a><a href="/agents/business" style="--c:#f0c674"><span class="hx">B</span><b>Business Idea Lab</b><span class="ct">Business</span><p>Brainstorms ideas and checks if they can really work.</p><span class="go">Launch →</span></a><a href="/agents/tutor" style="--c:#4fd1ff"><span class="hx">S</span><b>Study Tutor</b><span class="ct">Learning</span><p>Explains any school topic simply, step by step.</p><span class="go">Launch →</span></a><a href="/agents/social" style="--c:#ff6b9d"><span class="hx">S</span><b>Social Post Writer</b><span class="ct">Marketing</span><p>Writes scroll-stopping posts, captions and hooks.</p><span class="go">Launch →</span></a></div></section><section class="opt"><span class="opt-tag">OPTION B · COMMAND DECK</span><p class="sk">Start here</p><h2>Best agents for your first try</h2><div class="hb"><div class="hb-h"><span>FEATURED AGENTS · 5</span><span>● ALL ONLINE</span></div><a href="/agents/coach" style="--c:#ffa24c"><span class="n">01</span><span><b>AI Coach</b><span class="ct">Productivity</span></span><span class="q"><i>&gt;</i> I&#x27;m a nurse. How can AI help me?</span><span class="go">LAUNCH →</span></a><a href="/agents/resume" style="--c:#3ddc97"><span class="n">02</span><span><b>Resume Helper</b><span class="ct">Career</span></span><span class="q"><i>&gt;</i> Make this stronger: I helped customers</span><span class="go">LAUNCH →</span></a><a href="/agents/business" style="--c:#f0c674"><span class="n">03</span><span><b>Business Idea Lab</b><span class="ct">Business</span></span><span class="q"><i>&gt;</i> Give me 5 business ideas using AI</span><span class="go">LAUNCH →</span></a><a href="/agents/tutor" style="--c:#4fd1ff"><span class="n">04</span><span><b>Study Tutor</b><span class="ct">Learning</span></span><span class="q"><i>&gt;</i> Explain photosynthesis simply</span><span class="go">LAUNCH →</span></a><a href="/agents/social" style="--c:#ff6b9d"><span class="n">05</span><span><b>Social Post Writer</b><span class="ct">Marketing</span></span><span class="q"><i>&gt;</i> 3 Instagram captions for a bakery</span><span class="go">LAUNCH →</span></a></div></section><section class="opt"><span class="opt-tag">OPTION C · ORBIT PODS</span><p class="sk">Start here</p><h2>Best agents for your first try</h2><div class="hc"><a href="/agents/coach" style="--c:#ffa24c"><span class="pod">A</span><b>AI Coach</b><span class="ct">Productivity</span><p>Shows you practical ways to use AI in your job.</p><span class="go">Launch</span></a><a href="/agents/resume" style="--c:#3ddc97"><span class="pod">R</span><b>Resume Helper</b><span class="ct">Career</span><p>Turns your experience into a strong, results-focused resume.</p><span class="go">Launch</span></a><a href="/agents/business" style="--c:#f0c674"><span class="pod">B</span><b>Business Idea Lab</b><span class="ct">Business</span><p>Brainstorms ideas and checks if they can really work.</p><span class="go">Launch</span></a><a href="/agents/tutor" style="--c:#4fd1ff"><span class="pod">S</span><b>Study Tutor</b><span class="ct">Learning</span><p>Explains any school topic simply, step by step.</p><span class="go">Launch</span></a><a href="/agents/social" style="--c:#ff6b9d"><span class="pod">S</span><b>Social Post Writer</b><span class="ct">Marketing</span><p>Writes scroll-stopping posts, captions and hooks.</p><span class="go">Launch</span></a></div></section>
+.ap { --g1:#1c1c1e; --g2:#2c2c2e; --g3:#3a3a3c; --t1:#f5f5f7; --t2:#8e8e93; --blue:#0a84ff;
+  --sf:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif; font-family:var(--sf); margin:6px 0 46px; color:var(--t1); }
+.ap-tag { display:inline-block; margin:0 0 12px; padding:6px 12px; border-radius:999px; font:600 .72rem/1 var(--sf); letter-spacing:.06em; color:#000; background:#f5f5f7; }
+.ap h2 { font:600 1.75rem/1.15 var(--sf); letter-spacing:-.02em; margin:0 0 4px; }
+.ap .sub { margin:0 0 18px; color:var(--t2); font:400 1rem/1.4 var(--sf); }
+.cur { display:inline-block; width:2px; height:1.05em; margin-left:2px; vertical-align:-3px; background:var(--blue); animation:apBlink 1s steps(1) infinite; }
+@keyframes apBlink { 50% { opacity:0; } }
+/* ---------- D: Spotlight ---------- */
+.sp { max-width:760px; margin:0 auto; }
+.sp-bar { display:flex; align-items:center; gap:12px; padding:16px 20px; border-radius:16px; background:#2c2c2ecc; -webkit-backdrop-filter:blur(30px) saturate(1.6); backdrop-filter:blur(30px) saturate(1.6); border:1px solid #ffffff1a; box-shadow:0 30px 60px -30px #000; font:400 1.25rem/1.3 var(--sf); }
+.sp-bar svg { flex:none; width:22px; height:22px; color:var(--t2); }
+.sp-list { margin-top:10px; border-radius:16px; overflow:hidden; background:#1c1c1ecc; border:1px solid #ffffff12; }
+.sp-list a { display:flex; align-items:center; gap:14px; padding:12px 18px; color:var(--t1); text-decoration:none; transition:background .35s; }
+.sp-list a + a { border-top:1px solid #ffffff0d; }
+.sp-ic { flex:none; width:36px; height:36px; border-radius:9px; display:grid; place-items:center; font:600 1rem/1 var(--sf); background:linear-gradient(180deg,#48484a,#2c2c2e); border:1px solid #ffffff14; transition:background .35s; }
+.sp-list b { display:block; font:600 1rem/1.2 var(--sf); }
+.sp-list small { display:block; color:var(--t2); font:400 .85rem/1.3 var(--sf); }
+.sp-list .chev { margin-left:auto; color:var(--t2); font-size:1.2rem; }
+.sp-list a.on { background:var(--blue); } .sp-list a.on small, .sp-list a.on .chev { color:#ffffffcc; } .sp-list a.on .sp-ic { background:#ffffff33; }
+.sp-list a:hover { background:#ffffff10; } .sp-list a.on:hover { background:var(--blue); }
+/* ---------- E: Messages ---------- */
+.ms { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:22px; align-items:center; }
+.ms-phone { border-radius:28px; padding:18px 16px 16px; background:#000; border:1px solid #ffffff1f; box-shadow:0 30px 60px -30px #000, inset 0 0 0 6px #1c1c1e; min-height:260px; display:flex; flex-direction:column; }
+.ms-top { text-align:center; padding:6px 0 12px; border-bottom:1px solid #ffffff12; margin-bottom:14px; }
+.ms-av { width:40px; height:40px; margin:0 auto 6px; border-radius:50%; display:grid; place-items:center; font:600 1rem/1 var(--sf); background:linear-gradient(180deg,#8e8e93,#636366); }
+.ms-top b { font:600 .9rem/1 var(--sf); }
+.ms-body { display:flex; flex-direction:column; gap:8px; flex:1; justify-content:flex-end; }
+.ms-me { align-self:flex-end; max-width:82%; padding:9px 14px; border-radius:20px 20px 6px 20px; background:var(--blue); font:400 1rem/1.35 var(--sf); min-height:1.35em; }
+.ms-dots { align-self:flex-start; display:none; gap:4px; padding:12px 14px; border-radius:20px 20px 20px 6px; background:#3a3a3c; }
+.ms-dots.show { display:inline-flex; }
+.ms-dots i { width:7px; height:7px; border-radius:50%; background:#8e8e93; animation:apDot 1.2s ease-in-out infinite; }
+.ms-dots i:nth-child(2) { animation-delay:.2s; } .ms-dots i:nth-child(3) { animation-delay:.4s; }
+@keyframes apDot { 0%,60%,100% { opacity:.35; transform:translateY(0); } 30% { opacity:1; transform:translateY(-3px); } }
+.ms-pick { display:flex; flex-direction:column; gap:8px; }
+.ms-pick a { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; text-decoration:none; color:var(--t1); background:#1c1c1e; border:1px solid #ffffff10; transition:background .3s, border-color .3s; }
+.ms-pick a b { font:600 .98rem/1.2 var(--sf); } .ms-pick a small { display:block; color:var(--t2); font:400 .8rem/1.2 var(--sf); }
+.ms-pick a .go { margin-left:auto; font:600 .85rem/1 var(--sf); color:var(--blue); opacity:0; transition:opacity .3s; }
+.ms-pick a.on { background:#2c2c2e; border-color:#ffffff30; } .ms-pick a.on .go, .ms-pick a:hover .go { opacity:1; }
+/* ---------- F: Widgets ---------- */
+.wg { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-rows:150px; gap:14px; }
+.wg a { position:relative; display:flex; flex-direction:column; padding:16px; border-radius:24px; text-decoration:none; color:var(--t1); background:linear-gradient(180deg,#2c2c2e,#1c1c1e); border:1px solid #ffffff12; box-shadow:0 20px 40px -26px #000; transition:transform .3s cubic-bezier(.2,.8,.2,1); overflow:hidden; }
+.wg a:hover, .wg a:focus-visible { transform:scale(1.03); outline:none; }
+.wg .big { grid-column:span 2; grid-row:span 2; padding:22px; }
+.wg-ic { width:34px; height:34px; border-radius:9px; display:grid; place-items:center; font:600 .95rem/1 var(--sf); background:#f5f5f7; color:#000; }
+.wg b { margin-top:auto; font:600 1.02rem/1.2 var(--sf); }
+.wg small { color:var(--t2); font:400 .8rem/1.3 var(--sf); margin-top:3px; }
+.wg .big .wg-ic { width:44px; height:44px; border-radius:12px; font-size:1.1rem; }
+.wg .big .lbl { margin-top:18px; color:var(--t2); font:600 .72rem/1 var(--sf); letter-spacing:.08em; text-transform:uppercase; }
+.wg .big .tq { margin-top:8px; font:600 1.5rem/1.25 var(--sf); letter-spacing:-.01em; min-height:3.8em; }
+.wg .big b { font-size:1.15rem; }
+.wg .big .open { position:absolute; right:20px; bottom:20px; padding:8px 16px; border-radius:999px; background:var(--blue); color:#fff; font:600 .9rem/1 var(--sf); }
+@media (max-width:820px) { .ms { grid-template-columns:1fr; } .wg { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (prefers-reduced-motion:reduce) { .cur, .ms-dots i { animation:none; } .wg a, .sp-list a, .ms-pick a { transition:none; } }
+</style><section class="ap"><span class="ap-tag">OPTION D · SPOTLIGHT</span><h2>Start here.</h2><p class="sub">Ask anything. The right agent lights up.</p><div class="sp" data-demo="sp"><div class="sp-bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="tt"></span><span class="cur"></span></div><div class="sp-list"><a href="/agents/coach" data-q="I&#x27;m a nurse. How can AI help me?"><span class="sp-ic">A</span><span><b>AI Coach</b><small>Shows you practical ways to use AI in your job.</small></span><span class="chev">›</span></a><a href="/agents/resume" data-q="Make this stronger: I helped customers"><span class="sp-ic">R</span><span><b>Resume Helper</b><small>Turns your experience into a strong, results-focused resume.</small></span><span class="chev">›</span></a><a href="/agents/business" data-q="Give me 5 business ideas using AI"><span class="sp-ic">B</span><span><b>Business Idea Lab</b><small>Brainstorms ideas and checks if they can really work.</small></span><span class="chev">›</span></a><a href="/agents/tutor" data-q="Explain photosynthesis simply"><span class="sp-ic">S</span><span><b>Study Tutor</b><small>Explains any school topic simply, step by step.</small></span><span class="chev">›</span></a><a href="/agents/social" data-q="3 Instagram captions for a bakery"><span class="sp-ic">S</span><span><b>Social Post Writer</b><small>Writes scroll-stopping posts, captions and hooks.</small></span><span class="chev">›</span></a></div></div></section><section class="ap"><span class="ap-tag">OPTION E · MESSAGES</span><h2>Start here.</h2><p class="sub">Five agents, ready to text back.</p><div class="ms" data-demo="ms"><div class="ms-phone"><div class="ms-top"><div class="ms-av"></div><b class="nm"></b></div><div class="ms-body"><div class="ms-me"><span class="tt"></span></div><div class="ms-dots"><i></i><i></i><i></i></div></div></div><div class="ms-pick"><a href="/agents/coach" data-q="I&#x27;m a nurse. How can AI help me?" data-n="AI Coach"><span class="sp-ic">A</span><span><b>AI Coach</b><small>Productivity</small></span><span class="go">Open</span></a><a href="/agents/resume" data-q="Make this stronger: I helped customers" data-n="Resume Helper"><span class="sp-ic">R</span><span><b>Resume Helper</b><small>Career</small></span><span class="go">Open</span></a><a href="/agents/business" data-q="Give me 5 business ideas using AI" data-n="Business Idea Lab"><span class="sp-ic">B</span><span><b>Business Idea Lab</b><small>Business</small></span><span class="go">Open</span></a><a href="/agents/tutor" data-q="Explain photosynthesis simply" data-n="Study Tutor"><span class="sp-ic">S</span><span><b>Study Tutor</b><small>Learning</small></span><span class="go">Open</span></a><a href="/agents/social" data-q="3 Instagram captions for a bakery" data-n="Social Post Writer"><span class="sp-ic">S</span><span><b>Social Post Writer</b><small>Marketing</small></span><span class="go">Open</span></a></div></div></section><section class="ap"><span class="ap-tag">OPTION F · WIDGETS</span><h2>Start here.</h2><p class="sub">Your five best agents, one tap away.</p><div class="wg" data-demo="wg"><a class="big" href="/agents/resume"><span class="wg-ic">R</span><span class="lbl">Try asking</span><span class="tq"><span class="tt"></span><span class="cur"></span></span><b>Resume Helper</b><small>Career</small><span class="open">Open</span></a><a href="/agents/coach" data-q="I&#x27;m a nurse. How can AI help me?"><span class="wg-ic">A</span><b>AI Coach</b><small>Shows you practical ways to use AI in your job.</small></a><a href="/agents/business" data-q="Give me 5 business ideas using AI"><span class="wg-ic">B</span><b>Business Idea Lab</b><small>Brainstorms ideas and checks if they can really work.</small></a><a href="/agents/tutor" data-q="Explain photosynthesis simply"><span class="wg-ic">S</span><b>Study Tutor</b><small>Explains any school topic simply, step by step.</small></a><a href="/agents/social" data-q="3 Instagram captions for a bakery"><span class="wg-ic">S</span><b>Social Post Writer</b><small>Writes scroll-stopping posts, captions and hooks.</small></a></div></section><script>
+(function () {
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function typer(el, text, done) {
+    if (calm) { el.textContent = text; setTimeout(done, 2500); return; }
+    var n = 0; el.textContent = "";
+    (function t() { n++; el.textContent = text.slice(0, n); if (n < text.length) setTimeout(t, 42); else setTimeout(done, 1600); })();
+  }
+  // D: Spotlight
+  var sp = document.querySelector('[data-demo="sp"]');
+  if (sp) { var rows = sp.querySelectorAll("a"), ttD = sp.querySelector(".tt"), iD = 0;
+    (function nextD() { rows.forEach(function (r) { r.classList.remove("on"); }); var r = rows[iD % rows.length];
+      typer(ttD, r.getAttribute("data-q"), function () { r.classList.add("on"); setTimeout(function () { iD++; nextD(); }, 1500); }); })(); }
+  // E: Messages
+  var ms = document.querySelector('[data-demo="ms"]');
+  if (ms) { var picks = ms.querySelectorAll(".ms-pick a"), ttE = ms.querySelector(".tt"), dots = ms.querySelector(".ms-dots"), nm = ms.querySelector(".nm"), av = ms.querySelector(".ms-av"), iE = 0, timer;
+    function showE(k) { clearTimeout(timer); var p = picks[k % picks.length]; picks.forEach(function (x) { x.classList.remove("on"); }); p.classList.add("on");
+      nm.textContent = p.getAttribute("data-n"); av.textContent = p.getAttribute("data-n").charAt(0); dots.classList.remove("show");
+      typer(ttE, p.getAttribute("data-q"), function () { dots.classList.add("show"); timer = setTimeout(function () { iE = k + 1; showE(iE); }, 2200); }); }
+    picks.forEach(function (p, k) { p.addEventListener("mouseenter", function () { iE = k; showE(k); }); });
+    showE(0); }
+  // F: Widgets
+  var wg = document.querySelector('[data-demo="wg"]');
+  if (wg) { var ttF = wg.querySelector(".tt"), qF = ["Make this stronger: I helped customers", "I'm a nurse. How can AI help me?", "Give me 5 business ideas using AI", "Explain photosynthesis simply", "3 Instagram captions for a bakery"], iF = 0;
+    (function nextF() { typer(ttF, qF[iF % qF.length], function () { iF++; setTimeout(nextF, 600); }); })(); }
+})();
+</script>
   <!-- END START HERE -->
   <div class="tools">
     <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search agents: resume, budget, recipe…" aria-label="Search agents" autocomplete="off"></label>
