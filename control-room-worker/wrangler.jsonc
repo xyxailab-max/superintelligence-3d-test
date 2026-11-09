@@ -1,0 +1,32 @@
+// USI Control Room V2 — TEST ONLY Worker.
+// NOT the live site. The live Worker is "usesuperintelligence" in the other repo. Never rename this one to that.
+{
+  "name": "usi-control-room-test",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+
+  // workers.dev address stays on, but it MUST have Cloudflare Access turned on (Settings > Domains & Routes).
+  "workers_dev": true,
+  // No preview addresses at all, so there is no second door to lock.
+  "preview_urls": false,
+
+  // Keeps POLICY_AUD, TEAM_DOMAIN and ALLOWED_EMAIL that you add in the dashboard when it rebuilds.
+  // Until those three exist, the Worker refuses every request (it locks itself).
+  "keep_vars": true,
+
+  // The screens. "run_worker_first" makes every page and file go through the login check first.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+
+  // TEST database only. Not connected to anything in production.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "usi-control-room-test-db",
+      "database_id": "b00c9ce1-b019-4dfd-8d94-2d4057fab3a5"
+    }
+  ]
+}
