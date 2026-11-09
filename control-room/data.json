@@ -1,8 +1,8 @@
 {
-  "_note": "SAMPLE DATA ONLY. Everything in this file is made up for the TEST prototype. Shapes match the planned Cloudflare D1 tables: tasks, approvals, costs.",
+  "_note": "SAMPLE DATA ONLY. Everything in this file is made up for the TEST prototype. Shapes match the planned Cloudflare D1 tables: tasks, approvals, activity, costs.",
   "meta": {
     "title": "USI Control Room",
-    "version": "V1 prototype",
+    "version": "V1.1 prototype",
     "updated": "2026-11-09",
     "month": "November 2026",
     "monthlyBudget": 10
@@ -34,6 +34,13 @@
     { "id": "a-204", "taskId": "t-101", "ask": "Move the slider fix from TEST to live?", "risk": "high", "status": "pending", "requested": "2026-11-09", "decided": null },
     { "id": "a-205", "taskId": "t-106", "ask": "Accept the top 5 pages list?", "risk": "low", "status": "approved", "requested": "2026-11-01", "decided": "2026-11-02" },
     { "id": "a-206", "taskId": "t-111", "ask": "Delete 12 old TEST pages?", "risk": "medium", "status": "rejected", "requested": "2026-10-31", "decided": "2026-11-01" }
+  ],
+  "activity": [
+    { "id": "e-401", "when": "2026-11-09 10:42", "area": "marketplace", "kind": "approval", "text": "Study Planner listing sent for approval (sample)" },
+    { "id": "e-402", "when": "2026-11-08 16:10", "area": "dev", "kind": "move", "text": "Slider spacing fix moved to Doing (sample)" },
+    { "id": "e-403", "when": "2026-11-08 14:05", "area": "marketing", "kind": "submit", "text": "TikTok drafts submitted for review (sample)" },
+    { "id": "e-404", "when": "2026-11-07 11:30", "area": "support", "kind": "move", "text": "FAQ answers moved to Doing (sample)" },
+    { "id": "e-405", "when": "2026-11-02 09:15", "area": "analytics", "kind": "approved", "text": "Top 5 pages list approved (sample)" }
   ],
   "costs": [
     { "id": "c-301", "month": "2026-11", "item": "Website hosting (sample)", "amount": 0 },

@@ -27,6 +27,7 @@
     task(id) { return this.db.tasks.find((t) => t.id === id); },
     approvals(status) { return this.db.approvals.filter((a) => !status || a.status === status); },
     costs() { return this.db.costs; },
+    activity() { return this.db.activity || []; },
 
     // Demo only: changes memory, not a server. Resets on reload.
     async decide(id, decision) {
@@ -34,6 +35,9 @@
       if (!a || a.status !== "pending") return;
       a.status = decision;                       // "approved" | "rejected"
       a.decided = new Date().toISOString().slice(0, 10);
+      const t = this.task(a.taskId) || {};
+      this.db.activity.unshift({ id: "e-demo-" + id, when: "just now", area: t.area, kind: decision,
+        text: "You " + decision + " (demo): " + a.ask });
       // Later: await fetch("/api/approvals/" + id, { method: "POST", body: JSON.stringify({ decision }) });
     },
   };
@@ -50,6 +54,7 @@
     { id: "done", name: "Done" },
   ];
   let filter = "";             // "" = all areas
+  let confirming = "";         // id of a high-risk approval waiting for a second tap
 
   /* ---------- 2) VIEWS ---------- */
   function renderOverview() {
@@ -83,6 +88,11 @@
       return `<div><div class="row" style="border:0;padding:4px 0 0"><span class="t">${esc(a.name)}</span><span class="s">${left} open · ${all.length} total</span></div>
               <div class="meter"><i style="width:${((all.length / max) * 100).toFixed(1)}%"></i></div></div>`;
     }).join("");
+
+    $("feed").innerHTML = Store.activity().slice(0, 6).map((e) =>
+      `<li class="ev ${esc(e.kind)}"><span class="dot" aria-hidden="true"></span>
+        <span class="tx">${esc(e.text)}</span>
+        <span class="s">${esc(Store.areaName(e.area))} · ${esc(e.when)}</span></li>`).join("") || `<li class="empty">No activity yet.</li>`;
   }
   function tile(label, value, sub, cls) {
     return `<div class="tile ${cls || ""}"><span class="k">${esc(label)}</span><b>${esc(value)}</b><small>${esc(sub)}</small></div>`;
@@ -112,15 +122,23 @@
     const pending = Store.approvals("pending");
     $("inbox").innerHTML = pending.length ? pending.map((a) => {
       const t = Store.task(a.taskId) || {};
-      return `<div class="card ap"><div class="body">
+      const acts = confirming === a.id
+        ? `<div class="confirm" role="alert">
+             <p><b>Confirm high-risk approval?</b> This is a demo. Nothing real will happen and nothing is saved.</p>
+             <div class="acts">
+               <button class="btn" data-cancel="1">Cancel</button>
+               <button class="btn yes" data-id="${esc(a.id)}" data-d="approved" data-ok="1">Yes, approve (demo)</button>
+             </div></div>`
+        : `<div class="acts">
+             <button class="btn no" data-id="${esc(a.id)}" data-d="rejected">Reject (demo)</button>
+             <button class="btn yes" data-id="${esc(a.id)}" data-d="approved">Approve (demo)</button>
+           </div>`;
+      return `<div class="card ap risk-${esc(a.risk)}${confirming === a.id ? " asking" : ""}"><div class="body">
           <div class="t">${esc(a.ask)}</div>
           <div class="s">${esc(t.title || "")} · ${esc(Store.areaName(t.area))} · asked ${esc(a.requested)}</div>
         </div>
         <span class="risk ${esc(a.risk)}">${esc(a.risk)} risk</span>
-        <div class="acts">
-          <button class="btn no" data-id="${esc(a.id)}" data-d="rejected">Reject (demo)</button>
-          <button class="btn yes" data-id="${esc(a.id)}" data-d="approved">Approve (demo)</button>
-        </div></div>`;
+        ${acts}</div>`;
     }).join("") : `<div class="card"><p class="empty">Inbox empty. Reload the page to bring the samples back.</p></div>`;
 
     const done = Store.approvals().filter((a) => a.status !== "pending");
@@ -151,7 +169,14 @@
     filter = b.dataset.area; renderTasks();
   });
   $("inbox").addEventListener("click", async (e) => {
+    if (e.target.closest("button[data-cancel]")) { confirming = ""; renderApprovals(); return; }
     const b = e.target.closest("button[data-id]"); if (!b) return;
+    const a = Store.approvals().find((x) => x.id === b.dataset.id);
+    // High-risk approvals need a second tap (demo safety step).
+    if (a && a.risk === "high" && b.dataset.d === "approved" && !b.dataset.ok) {
+      confirming = a.id; renderApprovals(); return;
+    }
+    confirming = "";
     await Store.decide(b.dataset.id, b.dataset.d);
     renderApprovals();
   });
