@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="https://usesuperintelligence.com/"><meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Business Idea Lab — Free AI Agent | Use Superintelligence</title>
+<meta name="description" content="Brainstorms ideas and checks if they can really work. Free, no sign-up. Try: &quot;Give me 5 business ideas using AI&quot;">
+<meta name="theme-color" content="#070914">
+<link rel="canonical" href="https://usesuperintelligence.com/agents/business">
+<link rel="icon" href="/favicon.ico?v=4" sizes="any">
+<link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png?v=4" sizes="48x48" type="image/png">
+<link rel="icon" href="/favicon-96.png?v=4" sizes="96x96" type="image/png">
+<link rel="icon" href="/favicon-192.png?v=4" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" sizes="180x180">
+<link rel="manifest" href="/site.webmanifest?v=3">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Use Superintelligence">
+<meta property="og:title" content="Business Idea Lab — Free AI Agent | Use Superintelligence">
+<meta property="og:description" content="Brainstorms ideas and checks if they can really work. Free, no sign-up. Try: &quot;Give me 5 business ideas using AI&quot;">
+<meta property="og:url" content="https://usesuperintelligence.com/agents/business">
+<meta property="og:image" content="https://usesuperintelligence.com/og.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Business Idea Lab — Free AI Agent | Use Superintelligence">
+<meta name="twitter:description" content="Brainstorms ideas and checks if they can really work. Free, no sign-up. Try: &quot;Give me 5 business ideas using AI&quot;">
+<meta name="twitter:image" content="https://usesuperintelligence.com/og.png?v=2">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Business Idea Lab","applicationCategory":"AI assistant","operatingSystem":"Web","description":"Brainstorms ideas and checks if they can really work.","url":"https://usesuperintelligence.com/agents/business","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --c:#5aa2ff; --bg:#070914; --s1:#0b1020; --s2:#0E1220; --edge:#232c45; --ink:#E9EDFF; --mist:#9AA3B8; --ok:#3ddc97;
+    --sans:"Manrope","Segoe UI",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace; color-scheme:dark; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; }
+  body { background:var(--bg); color:var(--ink); font:400 .95rem/1.5 var(--sans); -webkit-text-size-adjust:100%;
+    background-image:linear-gradient(#1a223630 1px, transparent 1px), linear-gradient(90deg, #1a223630 1px, transparent 1px); background-size:24px 24px; }
+  button { font:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  a { color:inherit; }
+  .k { font:600 .64rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--mist); }
+  .wrap { max-width:1240px; margin:0 auto; padding:12px 16px 40px; }
+
+  /* top bar */
+  .bar { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .bar a, .bar button { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; border:1px solid var(--edge); background:var(--s2); text-decoration:none; font:600 .8rem/1 var(--sans); color:var(--mist); }
+  .bar a:hover, .bar button:hover { color:var(--ink); border-color:var(--c); }
+  .bar .cmd { margin-left:auto; min-width:200px; justify-content:space-between; }
+  .bar kbd { font:600 .66rem/1 var(--mono); padding:3px 6px; border-radius:5px; border:1px solid var(--edge); color:var(--mist); }
+
+  /* pulse row */
+  .pulse { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+  .tile { padding:12px 14px; border-radius:14px; border:1px solid var(--edge); background:linear-gradient(180deg,#0f1528,#0a0e1b); }
+  .tile b { display:block; margin-top:6px; font:800 1.25rem/1.1 var(--sans); }
+  .tile small { color:var(--mist); font-size:.74rem; }
+  .tile .live { display:inline-flex; align-items:center; gap:6px; color:var(--ok); }
+  .tile .live i { width:7px; height:7px; border-radius:50%; background:var(--ok); animation:blink 2s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity:.3; } }
+  .tile b.bump { animation:bump .5s ease-out; } @keyframes bump { 40% { transform:scale(1.15); color:var(--c); } }
+
+  /* 3 columns */
+  .grid { display:grid; grid-template-columns:280px minmax(0,1fr) 300px; gap:14px; align-items:start; }
+  .panel { border-radius:16px; border:1px solid var(--edge); background:linear-gradient(180deg,#0e1427,#090d19); overflow:hidden; }
+  .ph { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 14px; border-bottom:1px solid var(--edge); }
+  .ph h2 { margin:0; font:700 .9rem/1.2 var(--sans); }
+  .pb { padding:14px; }
+
+  /* job card */
+  .who { display:flex; gap:12px; align-items:center; }
+  .badge { flex:none; width:52px; height:52px; display:grid; place-items:center; border-radius:14px; font:800 1.4rem/1 var(--sans); color:#06101f;
+    background:radial-gradient(circle at 35% 30%, #fff, var(--c) 60%, color-mix(in srgb, var(--c) 50%, #000)); box-shadow:0 0 22px color-mix(in srgb, var(--c) 35%, transparent); }
+  .who h1 { margin:0; font:800 1.25rem/1.15 var(--sans); }
+  .who .k { color:var(--c); }
+  .job { margin:12px 0; color:var(--mist); font-size:.88rem; }
+  .owns { list-style:none; margin:0 0 12px; padding:0; display:grid; gap:6px; }
+  .owns li { display:flex; gap:8px; align-items:flex-start; font-size:.84rem; }
+  .owns li::before { content:"✓"; color:var(--c); font-weight:800; }
+  .status { display:grid; gap:6px; }
+  .st { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:10px; background:#ffffff06; border:1px solid #ffffff10; font-size:.8rem; }
+  .st span:last-child { font:600 .68rem/1 var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+  .st .g { color:var(--ok); } .st .m { color:var(--mist); }
+
+  /* team / handoff */
+  .team { display:grid; gap:6px; }
+  .mate { display:flex; align-items:center; gap:10px; width:100%; padding:9px 10px; border-radius:12px; border:1px solid #ffffff12; background:#ffffff05; text-align:left; transition:border-color .2s, background .2s; }
+  .mate:hover { border-color:var(--c); background:#16213a; }
+  .mate i { flex:none; width:28px; height:28px; display:grid; place-items:center; border-radius:8px; font:800 .8rem/1 var(--sans); font-style:normal; background:var(--s2); border:1px solid var(--edge); color:var(--c); }
+  .mate b { display:block; font:700 .82rem/1.2 var(--sans); } .mate small { color:var(--mist); font-size:.72rem; }
+  .mate .go { margin-left:auto; font:600 .64rem/1 var(--mono); color:var(--c); letter-spacing:.08em; }
+
+  /* chat */
+  .chat .log { height:min(58vh,560px); overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:14px; }
+  .hint { margin:auto; text-align:center; color:var(--mist); }
+  .hint b { display:block; color:var(--ink); font-size:1rem; margin-bottom:4px; }
+  .log .msg { position:relative; max-width:86%; padding:11px 14px; border-radius:14px; white-space:pre-wrap; animation:mIn .3s ease-out; }
+  @keyframes mIn { from { opacity:0; transform:translateY(6px); } }
+  .log .msg.you { align-self:flex-end; background:#16213a; border:1px solid #2F6BFF66; }
+  .log .msg.bot { align-self:flex-start; background:#0f1730; border:1px solid #ffffff14; border-left:3px solid var(--c); }
+  .log .msg.sys { align-self:center; max-width:100%; padding:6px 12px; border-radius:999px; font:600 .7rem/1.3 var(--mono); color:var(--mist); background:#ffffff08; border:1px dashed #ffffff22; }
+  .pin { position:absolute; right:-6px; bottom:-10px; padding:4px 8px; border-radius:999px; border:1px solid var(--edge); background:var(--s1); font:600 .64rem/1 var(--mono); color:var(--mist); opacity:0; transition:opacity .2s; }
+  .log .msg.bot:hover .pin, .log .msg.bot:focus-within .pin { opacity:1; }
+  @media (hover:none) { .pin { opacity:1; } }
+  .starters { display:flex; flex-wrap:wrap; gap:8px; padding:0 14px 10px; }
+  .starters button { padding:8px 12px; border-radius:10px; border:1px solid var(--edge); background:var(--s2); font:600 .8rem/1.2 var(--sans); }
+  .starters button:hover { border-color:var(--c); }
+  .ask { display:flex; gap:8px; padding:12px 14px 14px; border-top:1px solid var(--edge); }
+  .ask input { flex:1; min-width:0; padding:12px 14px; font:500 .95rem/1.2 var(--sans); color:var(--ink); background:var(--s2); border:1px solid var(--edge); border-radius:12px; }
+  .ask input:focus { outline:none; border-color:var(--c); }
+  .ask button { padding:0 18px; font:800 .82rem/1 var(--sans); color:#06101f; background:var(--c); border:0; border-radius:12px; }
+
+  /* progress + board */
+  .steps { list-style:none; margin:0; padding:0; position:relative; }
+  .steps::before { content:""; position:absolute; left:10px; top:8px; bottom:8px; width:2px; background:var(--edge); }
+  .steps li { position:relative; display:flex; gap:12px; align-items:center; padding:7px 0; font:600 .84rem/1.2 var(--sans); color:var(--mist); }
+  .steps li i { position:relative; z-index:1; flex:none; width:22px; height:22px; border-radius:50%; border:2px solid var(--edge); background:var(--s1); transition:all .4s; }
+  .steps li.done { color:var(--ink); } .steps li.done i { border-color:var(--c); background:var(--c); box-shadow:0 0 12px color-mix(in srgb, var(--c) 50%, transparent); }
+  .steps li.now i { border-color:var(--c); animation:ring 1.4s ease-out infinite; } .steps li.now { color:var(--ink); }
+  @keyframes ring { 0% { box-shadow:0 0 0 0 color-mix(in srgb, var(--c) 60%, transparent); } 100% { box-shadow:0 0 0 10px transparent; } }
+  .board { display:grid; gap:8px; }
+  .note { position:relative; padding:10px 12px 10px 14px; border-radius:10px; background:#ffffff07; border:1px solid #ffffff14; font-size:.8rem; line-height:1.4; animation:mIn .3s ease-out; }
+  .note::before { content:""; position:absolute; left:0; top:8px; bottom:8px; width:3px; border-radius:2px; background:var(--c); }
+  .note button { position:absolute; top:4px; right:6px; border:0; background:none; color:var(--mist); }
+  .empty { padding:12px; border-radius:10px; border:1px dashed #ffffff22; color:var(--mist); font-size:.8rem; text-align:center; }
+
+  /* command palette */
+  .pal { position:fixed; inset:0; z-index:90; display:none; align-items:flex-start; justify-content:center; padding:12vh 16px 16px; background:#02040acc; }
+  .pal.open { display:flex; }
+  .pal-box { width:min(560px,100%); border-radius:16px; border:1px solid var(--edge); background:#0b1020; box-shadow:0 30px 80px -20px #000; overflow:hidden; animation:mIn .2s ease-out; }
+  .pal-box input { width:100%; padding:16px 18px; font:500 1rem/1.2 var(--sans); color:var(--ink); background:transparent; border:0; border-bottom:1px solid var(--edge); }
+  .pal-box input:focus { outline:none; }
+  .pal-list { max-height:50vh; overflow:auto; padding:6px; }
+  .pal-list button { display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border:0; border-radius:10px; background:none; text-align:left; }
+  .pal-list button:hover, .pal-list button.sel { background:#16213a; }
+  .pal-list small { margin-left:auto; color:var(--mist); font:600 .64rem/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+
+
+  /* ===== VIBRANT VISUAL LAYER ===== */
+  @property --ang { syntax:"<angle>"; initial-value:0deg; inherits:false; }
+  :root { --v1:#22d3ee; --v2:#a78bfa; --v3:#f472b6; --v4:#34d399; --v5:#fb923c; --v6:#5aa2ff; }
+  .aur { position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+  .aur i { position:absolute; width:55vmax; height:55vmax; border-radius:50%; filter:blur(90px); opacity:.22; animation:float 22s ease-in-out infinite alternate; }
+  .aur i:nth-child(1) { left:-15vmax; top:-20vmax; background:var(--v2); }
+  .aur i:nth-child(2) { right:-18vmax; top:10vmax; background:var(--v1); animation-delay:-7s; }
+  .aur i:nth-child(3) { left:20vmax; bottom:-30vmax; background:var(--v3); animation-delay:-14s; opacity:.16; }
+  @keyframes float { to { transform:translate(6vmax,4vmax) scale(1.1); } }
+  .bar a, .bar button { background:#0b1020cc; }
+  .bar .cmd { border-color:transparent; background:linear-gradient(#0b1020,#0b1020) padding-box, linear-gradient(90deg,var(--v1),var(--v2),var(--v3)) border-box; }
+  /* tiles: each its own color */
+  .tile { --a:var(--v6); position:relative; overflow:hidden; border-color:transparent; background:linear-gradient(180deg,#0f1528,#0a0e1b) padding-box, linear-gradient(135deg, var(--a), transparent 60%) border-box; }
+  .tile::before { content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--a), transparent); animation:sweep 3s ease-in-out infinite; }
+  @keyframes sweep { 0%,100% { transform:translateX(-60%); } 50% { transform:translateX(60%); } }
+  .tile:nth-child(1) { --a:var(--v4); } .tile:nth-child(2) { --a:var(--v1); } .tile:nth-child(3) { --a:var(--v5); } .tile:nth-child(4) { --a:var(--v3); }
+  .tile b { color:var(--a); text-shadow:0 0 18px color-mix(in srgb, var(--a) 45%, transparent); }
+  .tile .live { color:var(--a); } .tile .live i { background:var(--a); }
+  /* panels: flowing gradient borders in their own color */
+  .panel { --a:var(--v6); position:relative; z-index:1; border:1px solid transparent;
+    background:linear-gradient(180deg,#0e1427f2,#090d19f7) padding-box,
+      conic-gradient(from var(--ang), var(--a), transparent 25%, color-mix(in srgb, var(--a) 60%, #fff) 50%, transparent 75%, var(--a)) border-box;
+    animation:angle 8s linear infinite; box-shadow:0 20px 40px -24px #000, 0 0 30px -12px color-mix(in srgb, var(--a) 40%, transparent); }
+  @keyframes angle { to { --ang:360deg; } }
+  .ph { border-bottom-color:color-mix(in srgb, var(--a) 25%, #232c45); }
+  .ph h2 { display:flex; align-items:center; gap:8px; } .ph h2::before { content:""; width:8px; height:8px; border-radius:2px; background:var(--a); box-shadow:0 0 10px var(--a); }
+  .ph .k { color:color-mix(in srgb, var(--a) 80%, #fff); }
+  .badge { background:linear-gradient(135deg, var(--v1), var(--v2) 50%, var(--v3)); color:#fff; text-shadow:0 1px 6px #0006; box-shadow:0 0 26px color-mix(in srgb, var(--v2) 50%, transparent); }
+  .who .k { color:var(--v2); }
+  .owns li::before { color:var(--v4); }
+  .st .g { color:var(--v4); }
+  .mate:nth-child(1) i { color:var(--v1); border-color:color-mix(in srgb, var(--v1) 50%, transparent); }
+  .mate:nth-child(2) i { color:var(--v4); border-color:color-mix(in srgb, var(--v4) 50%, transparent); }
+  .mate:nth-child(3) i { color:var(--v5); border-color:color-mix(in srgb, var(--v5) 50%, transparent); }
+  .mate:nth-child(4) i { color:var(--v3); border-color:color-mix(in srgb, var(--v3) 50%, transparent); }
+  .mate:hover { border-color:var(--v3); background:color-mix(in srgb, var(--v3) 10%, #0b1020); } .mate .go { color:var(--v3); }
+  .log .msg.you { background:linear-gradient(135deg, color-mix(in srgb, var(--v2) 30%, #0b1020), color-mix(in srgb, var(--v6) 22%, #0b1020)); border-color:color-mix(in srgb, var(--v2) 50%, transparent); }
+  .log .msg.bot { border-left:0; border-color:transparent; background:linear-gradient(#0f1730,#0f1730) padding-box, linear-gradient(135deg, var(--v1), transparent 55%) border-box; }
+  .log .msg.bot::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:2px; background:linear-gradient(var(--v1), var(--v2)); }
+  .starters button:nth-child(1) { border-color:color-mix(in srgb, var(--v2) 55%, transparent); } .starters button:nth-child(2) { border-color:color-mix(in srgb, var(--v1) 55%, transparent); } .starters button:nth-child(3) { border-color:color-mix(in srgb, var(--v3) 55%, transparent); }
+  .ask button { background:linear-gradient(135deg, var(--v1), var(--v2)); color:#fff; }
+  .ask input:focus { border-color:var(--v1); }
+  .steps::before { background:linear-gradient(var(--v4), var(--v1), var(--v2), var(--v3)); opacity:.35; }
+  .steps li:nth-child(1) { --s:var(--v4); } .steps li:nth-child(2) { --s:var(--v1); } .steps li:nth-child(3) { --s:var(--v2); } .steps li:nth-child(4) { --s:var(--v3); }
+  .steps li.done i { border-color:var(--s); background:var(--s); box-shadow:0 0 14px var(--s); } .steps li.now i { border-color:var(--s); }
+  .note::before { background:linear-gradient(var(--v5), var(--v3)); }
+  .pal-box { border-color:transparent; background:linear-gradient(#0b1020,#0b1020) padding-box, linear-gradient(135deg,var(--v1),var(--v2),var(--v3)) border-box; }
+  /* wires between panels */
+  .grid { position:relative; }
+  .wires { position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; overflow:visible; }
+  .wires .w { fill:none; stroke-width:1.5; stroke-opacity:.5; }
+  .wires .p { fill:none; stroke-width:2.5; stroke-linecap:round; stroke-dasharray:14 260; animation:flow 2.4s linear infinite; }
+  .wires .n { stroke-width:0; }
+  @keyframes flow { from { stroke-dashoffset:274; } to { stroke-dashoffset:0; } }
+
+  /* ===== more space between boxes so the connection lines show, bigger lines, smaller icons ===== */
+  .grid { column-gap:56px !important; row-gap:44px !important; }
+  #pTeam, #pBoard { margin-top:44px !important; }
+  .pulse { gap:16px; margin-bottom:34px; }
+  .wires .w { stroke-width:3.5 !important; stroke-opacity:.75 !important; }
+  .wires .p { stroke-width:5 !important; stroke-dasharray:20 240 !important; }
+  .badge { width:40px !important; height:40px !important; border-radius:11px !important; font-size:1.1rem !important; }
+  .mate i { width:22px !important; height:22px !important; border-radius:6px !important; font-size:.66rem !important; }
+  .mate { padding:7px 9px !important; }
+  .steps li i { width:18px !important; height:18px !important; } .steps::before { left:8px !important; }
+  .owns li { font-size:.8rem; }
+  @media (max-width:760px) { .grid { row-gap:40px !important; } #pTeam, #pBoard { margin-top:40px !important; } }
+  @media (max-width:1060px) { .grid { grid-template-columns:minmax(0,1fr) 300px; } .left { grid-column:1 / -1; order:3; } }
+  @media (max-width:760px) {
+    .grid { grid-template-columns:1fr; } .left { order:3; } .right { order:2; }
+    .pulse { grid-template-columns:repeat(2,1fr); } .bar .cmd { min-width:0; } .bar kbd { display:none; }
+    .chat .log { height:56vh; }
+  }
+  @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; } }
+
+  /* newsletter + footer (live page) */
+  .nl { margin-top:44px; padding:18px; border-radius:16px; display:grid; gap:10px; border:1px solid transparent; background:linear-gradient(#0e1427,#0e1427) padding-box, linear-gradient(135deg,var(--v5),var(--v3),var(--v2)) border-box; }
+  .nl .tag { font:600 .66rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--v5); }
+  .nl b { font:700 1.05rem/1.3 var(--sans); } .nl p { margin:0; color:var(--mist); font-size:.86rem; }
+  .nl form { display:flex; gap:8px; flex-wrap:wrap; }
+  .nl input { flex:1 1 180px; min-width:0; font:.95rem/1.2 var(--sans); color:var(--ink); background:var(--s2); border:1px solid var(--edge); border-radius:10px; padding:11px 12px; }
+  .nl button { font:700 .8rem/1 var(--sans); color:#fff; background:linear-gradient(135deg,var(--v5),var(--v3)); border:0; border-radius:10px; padding:11px 16px; }
+  .nl small { color:var(--mist); font-size:.72rem; } .nl .done a { color:var(--v1); }
+  .fine { color:var(--mist); font-size:.78rem; margin:28px 0 0; text-align:center; } .fine a { color:inherit; }
+  .seo { margin-top:30px; } .seo h2 { font:700 1rem/1.2 var(--sans); margin:0 0 10px; }
+  .seo ul { list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
+  .seo a { display:inline-block; padding:8px 12px; border-radius:999px; border:1px solid var(--edge); background:#0b1020; text-decoration:none; font:600 .8rem/1 var(--sans); color:var(--mist); }
+  .seo a:hover { color:var(--ink); border-color:var(--v1); }
+
+  .pal-list a { display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border-radius:10px; text-decoration:none; color:var(--ink); }
+  .pal-list a:hover, .pal-list a.sel { background:#16213a; }
+  .pal-list a small { margin-left:auto; color:var(--mist); font:600 .64rem/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+  .log .msg.wait { align-self:flex-start; color:var(--mist); background:#0f1730; border:1px solid #ffffff14; animation:mIn .3s ease-out, blink 1.2s ease-in-out infinite; }
+  .mate { text-decoration:none; color:var(--ink); }
+  .owns li { cursor:pointer; } .owns li:hover { color:var(--ink); }
+  .newchat { margin-left:8px; padding:6px 10px; border-radius:8px; border:1px solid var(--edge); background:var(--s2); font:600 .66rem/1 var(--mono); letter-spacing:.08em; color:var(--mist); }
+  .newchat:hover { color:var(--ink); border-color:var(--v1); }
+</style>
+</head>
+<body><a href="https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-resume.html" style="position:fixed;z-index:99;right:12px;bottom:12px;padding:10px 14px;border-radius:999px;background:#2F6BFF;color:#fff;font:700 14px/1 system-ui;text-decoration:none;box-shadow:0 6px 18px #0008">TEST: switch to Resume Helper &rarr;</a>
+<div class="aur" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="wrap">
+  <div class="bar">
+    <a href="/agents.html">← All 100 agents</a>
+    <a href="/">3D Brain</a>
+    <button type="button" class="cmd" id="openPal"><span>Switch agent…</span><kbd>⌘ K</kbd></button>
+  </div>
+
+  <div class="pulse">
+    <div class="tile"><span class="k">Status</span><b class="live"><i></i>Online</b><small>Ready right now</small></div>
+    <div class="tile"><span class="k">Messages</span><b id="pMsgs">0</b><small>This chat</small></div>
+    <div class="tile"><span class="k">Pinned</span><b id="pPins">0</b><small>Saved on this device</small></div>
+    <div class="tile"><span class="k">Cost</span><b>Free</b><small>No sign-up</small></div>
+  </div>
+
+  <div class="grid" id="grid"><svg class="wires" id="wires" aria-hidden="true"></svg>
+    <aside class="left">
+      <div class="panel" id="pJob" style="--a:#a78bfa">
+        <div class="ph"><h2>Job card</h2><span class="k">Free</span></div>
+        <div class="pb">
+          <div class="who"><div class="badge" aria-hidden="true">B</div><div><span class="k">Business department</span><h1>Business Idea Lab</h1></div></div>
+          <p class="job">Brainstorms ideas and checks if they can really work.</p>
+          <span class="k">Try asking</span>
+          <ul class="owns" style="margin-top:8px"><li data-try="Give me 5 business ideas using AI">Give me 5 business ideas using AI</li><li data-try="Check my idea: a dog-walking app">Check my idea: a dog-walking app</li><li data-try="Low-cost businesses I can start this month">Low-cost businesses I can start this month</li></ul>
+          <div class="status">
+            <div class="st"><span>Answers</span><span class="g">● Connected</span></div>
+            <div class="st"><span>Memory</span><span class="m">This chat only</span></div>
+            <div class="st"><span>Account</span><span class="m">Not needed</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel" id="pTeam" style="--a:#f472b6">
+        <div class="ph"><h2>Teammates</h2><span class="k">Hand off</span></div>
+        <div class="pb team"><a class="mate" href="/agents/business-plan" data-handoff="business-plan"><i>B</i><span><b>Business Plan Builder</b><small>Creates a clear one-page business plan.</small></span><span class="go">HAND OFF →</span></a><a class="mate" href="/agents/pitch" data-handoff="pitch"><i>P</i><span><b>Pitch Coach</b><small>Sharpens your pitch for investors, partners or customers.</small></span><span class="go">HAND OFF →</span></a><a class="mate" href="/agents/pricing" data-handoff="pricing"><i>P</i><span><b>Pricing Strategist</b><small>Helps you set prices that sell and make a profit.</small></span><span class="go">HAND OFF →</span></a><a class="mate" href="/agents/customer-persona" data-handoff="customer-persona"><i>C</i><span><b>Customer Persona Maker</b><small>Describes exactly who your ideal customer is.</small></span><span class="go">HAND OFF →</span></a></div>
+      </div>
+    </aside>
+
+    <main class="panel chat" id="pChat" style="--a:#22d3ee" aria-label="Chat with Business Idea Lab">
+      <div class="ph"><h2>Chat</h2><span><span class="k" id="sessState">Waiting for you</span><button type="button" class="newchat" id="newChat" hidden>NEW CHAT</button></span></div>
+      <div class="log" id="log" aria-live="polite"></div>
+      <div class="starters" id="starters"></div>
+      <form class="ask" id="form" autocomplete="off"><input id="q" type="text" maxlength="1500" placeholder="Type a message…" aria-label="Your message"><button type="submit" id="sendBtn">Send</button></form>
+    </main>
+
+    <aside class="right">
+      <div class="panel" id="pProg" style="--a:#34d399">
+        <div class="ph"><h2>Progress</h2><span class="k" id="stepTxt">Step 1 of 4</span></div>
+        <div class="pb"><ul class="steps" id="steps"><li class="now"><i></i>Start</li><li><i></i>Explore</li><li><i></i>Decide</li><li><i></i>Finish</li></ul></div>
+      </div>
+      <div class="panel" id="pBoard" style="--a:#fb923c">
+        <div class="ph"><h2>My board</h2><span class="k">Pin replies</span></div>
+        <div class="pb board" id="board"></div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="nl" data-source="agent-business"><span class="tag">Free guide</span><b>Get "50 AI prompts that save you hours" free</b><p>Plus one practical AI tip a week. No spam, unsubscribe anytime.</p><form novalidate><input type="email" required maxlength="120" placeholder="Your email" aria-label="Your email" autocomplete="email"><button type="submit">Send it to me</button></form><p class="msg" role="status" hidden></p><small>By joining you agree to our <a href="/privacy.html">Privacy Policy</a>.</small></div>
+  <nav class="seo" aria-label="More Business agents"><h2>More Business agents</h2><ul><li><a href="/agents/business-plan">Business Plan Builder</a></li><li><a href="/agents/pitch">Pitch Coach</a></li><li><a href="/agents/pricing">Pricing Strategist</a></li><li><a href="/agents/customer-persona">Customer Persona Maker</a></li><li><a href="/agents/competitor">Competitor Analyzer</a></li><li><a href="/agents/names">Brand Name Generator</a></li><li><a href="/agents/side-hustle">Side Hustle Finder</a></li><li><a href="/agents/customer-service">Customer Reply Writer</a></li><li><a href="/agents/sop">Process &amp; SOP Writer</a></li></ul></nav>
+  <p class="fine">Free · no sign-up · powered by open-source AI. AI can make mistakes; for health, legal or money decisions, check with a qualified professional. <a href="/blog/">Superintelligence News</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></p>
+</div>
+
+<div class="pal" id="pal" role="dialog" aria-modal="true" aria-label="Switch agent">
+  <div class="pal-box"><input id="palQ" type="text" placeholder="Search 100 agents…" aria-label="Search agents" autocomplete="off"><div class="pal-list" id="palList"></div></div>
+</div>
+<script>window.__AGENT = {"id":"business","name":"Business Idea Lab","cat":"Business","starters":["Give me 5 business ideas using AI","Check my idea: a dog-walking app","Low-cost businesses I can start this month"],"all":[["resume","Resume Helper","Career"],["cover-letter","Cover Letter Writer","Career"],["interview-coach","Interview Coach","Career"],["linkedin","LinkedIn Profile Pro","Career"],["salary-negotiator","Salary Negotiator","Career"],["career-switch","Career Switch Guide","Career"],["job-search","Job Search Planner","Career"],["networking","Networking Messages","Career"],["reference-letter","Recommendation Letter Writer","Career"],["resignation","Resignation Letter Writer","Career"],["business","Business Idea Lab","Business"],["business-plan","Business Plan Builder","Business"],["pitch","Pitch Coach","Business"],["pricing","Pricing Strategist","Business"],["customer-persona","Customer Persona Maker","Business"],["competitor","Competitor Analyzer","Business"],["names","Brand Name Generator","Business"],["side-hustle","Side Hustle Finder","Business"],["customer-service","Customer Reply Writer","Business"],["sop","Process & SOP Writer","Business"],["social","Social Post Writer","Marketing"],["video-script","Short Video Scripter","Marketing"],["seo","SEO Helper","Marketing"],["blog","Blog Post Writer","Marketing"],["ad-copy","Ad Copywriter","Marketing"],["newsletter","Newsletter Writer","Marketing"],["product-description","Product Description Writer","Marketing"],["brand-voice","Brand Voice Builder","Marketing"],["landing-page","Landing Page Copywriter","Marketing"],["slogan","Slogan Generator","Marketing"],["email","Email Writer","Writing"],["proofreader","Proofreader","Writing"],["rewriter","Tone Changer","Writing"],["summarizer","Summarizer","Writing"],["story","Story Writer","Writing"],["poem","Poem Writer","Writing"],["speech","Speech Writer","Writing"],["essay-outline","Essay Outliner","Writing"],["simplifier","Plain English","Writing"],["translator","Translator","Writing"],["tutor","Study Tutor","Learning"],["math","Math Tutor","Learning"],["essay-coach","Essay Feedback Coach","Learning"],["flashcards","Flashcard Maker","Learning"],["language-partner","Language Practice Partner","Learning"],["science","Science Explainer","Learning"],["history","History Storyteller","Learning"],["study-planner","Study Planner","Learning"],["eli5","Explain Like I'm 5","Learning"],["test-prep","Test Prep Coach","Learning"],["coach","AI Coach","Productivity"],["prompt-engineer","Prompt Engineer","Productivity"],["meeting-notes","Meeting Notes Organizer","Productivity"],["project-planner","Project Planner","Productivity"],["decision","Decision Helper","Productivity"],["daily-planner","Daily Planner","Productivity"],["spreadsheet","Spreadsheet Formula Helper","Productivity"],["presentation","Presentation Builder","Productivity"],["report","Report Writer","Productivity"],["focus","Focus Coach","Productivity"],["budget","Budget Planner","Money"],["debt","Debt Payoff Planner","Money"],["savings","Savings Coach","Money"],["money-basics","Money Explainer","Money"],["investing-basics","Investing Basics","Money"],["tax-basics","Tax Basics Explainer","Money"],["frugal","Frugal Living Tips","Money"],["big-purchase","Big Purchase Helper","Money"],["bill-negotiator","Bill Negotiator","Money"],["retirement-basics","Retirement Basics","Money"],["meal-planner","Meal Planner","Life"],["chef","Recipe Chef","Life"],["fitness","Workout Planner","Life"],["sleep","Sleep Coach","Life"],["habits","Habit Builder","Life"],["mindful","Calm & Mindfulness","Life"],["travel","Travel Planner","Life"],["gifts","Gift Idea Finder","Life"],["home","Home Organizer","Life"],["pets","Pet Care Helper","Life"],["code","Code Helper","Tech"],["debug","Bug Fixer","Tech"],["learn-code","Learn to Code Mentor","Tech"],["sql","SQL Helper","Tech"],["website","Website Builder","Tech"],["tech-support","Tech Support","Tech"],["scam-check","Scam Checker","Tech"],["privacy","Online Safety Guide","Tech"],["ai-tools","AI Tools Finder","Tech"],["automation","Automation Builder","Tech"],["guide","Brain Guide","Fun"],["quiz","Quiz Master","Fun"],["adventure","Text Adventure","Fun"],["riddles","Riddle Master","Fun"],["jokes","Joke Writer","Fun"],["debate","Debate Partner","Fun"],["names-fun","Name Generator","Fun"],["movies","Movie & Book Recommender","Fun"],["philosopher","Pocket Philosopher","Fun"],["would-you-rather","Would You Rather","Fun"]]};</script>
+<script>(function () {
+  "use strict";
+  var D = window.__AGENT;
+  var $ = function (id) { return document.getElementById(id); };
+  function store(kind) { try { return window[kind]; } catch (e) { return null; } }
+  var SS = store("sessionStorage"), LS = store("localStorage");
+  function get(st, k, def) { try { var v = st && st.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } }
+  function put(st, k, v) { try { if (st) st.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  var log = $("log"), input = $("q"), btn = $("sendBtn"), starters = $("starters");
+  var KEY = "si-chat-" + D.id, PKEY = "si-pins";
+  var hist = get(SS, KEY, []); if (!Array.isArray(hist)) hist = [];
+  var pins = get(LS, PKEY, []); if (!Array.isArray(pins)) pins = [];
+  // Pins are shared by all agents. Each pin remembers which agent wrote it.
+  pins = pins.map(function (p) { return typeof p === "string" ? { t: p, a: "" } : p; }).filter(function (p) { return p && typeof p.t === "string"; });
+  try {
+    // Bring over pins saved the old way (one list per agent), then remove the old lists.
+    for (var pi = LS ? LS.length - 1 : -1; pi >= 0; pi--) {
+      var pk = LS.key(pi);
+      if (pk && pk.indexOf("si-pins-") === 0) {
+        var old = get(LS, pk, []);
+        if (Array.isArray(old)) old.forEach(function (t) { if (typeof t === "string" && !pins.some(function (p) { return p.t === t; })) pins.push({ t: t, a: "" }); });
+        LS.removeItem(pk);
+      }
+    }
+  } catch (e) {}
+  pins = pins.slice(-30); put(LS, PKEY, pins);
+  var busy = false;
+
+  function bump(el, v) { el.textContent = v; el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+  function counts() {
+    bump($("pMsgs"), hist.length);
+    bump($("pPins"), pins.length);
+    var replies = hist.filter(function (h) { return h.role === "assistant"; }).length, step = Math.min(replies, 4);
+    $("steps").querySelectorAll("li").forEach(function (li, i) { li.className = i < step ? "done" : (i === step ? "now" : ""); });
+    $("stepTxt").textContent = step >= 4 ? "Done" : "Step " + (step + 1) + " of 4";
+  }
+  function bubble(kind, text) {
+    var h = log.querySelector(".hint"); if (h) h.remove();
+    var d = document.createElement("div"); d.className = "msg " + kind;
+    var t = document.createElement("span"); t.textContent = text; d.appendChild(t);
+    if (kind === "bot") {
+      var p = document.createElement("button"); p.type = "button"; p.className = "pin";
+      var already = pins.some(function (x) { return x.t === text; });
+      p.textContent = already ? "✓ Pinned" : "📌 Pin"; p.disabled = already;
+      p.onclick = function () { addPin(t.textContent); p.textContent = "✓ Pinned"; p.disabled = true; };
+      d.appendChild(p);
+    }
+    log.appendChild(d); log.scrollTop = log.scrollHeight; return { el: d, text: t };
+  }
+  function hint() { log.innerHTML = '<div class="hint"><b>How can I help?</b>Tap an idea or type your own.</div>'; }
+  function render() {
+    log.innerHTML = "";
+    if (!hist.length) hint();
+    hist.forEach(function (h) { bubble(h.role === "user" ? "you" : "bot", h.content); });
+    starters.hidden = !!hist.length;
+    $("newChat").hidden = !hist.length;
+    $("sessState").textContent = hist.length ? "Your move" : "Waiting for you";
+    counts();
+  }
+
+  // ---- My board (saved on this device) ----
+  function renderBoard() {
+    var b = $("board"); b.innerHTML = "";
+    if (!pins.length) { b.innerHTML = '<div class="empty">Tap "📌 Pin" on any reply to save it here.</div>'; return; }
+    pins.slice().reverse().forEach(function (pin) {
+      var text = pin.t;
+      var n = document.createElement("div"); n.className = "note"; n.textContent = text.length > 220 ? text.slice(0, 220) + "…" : text;
+      var x = document.createElement("button"); x.type = "button"; x.setAttribute("aria-label", "Remove"); x.textContent = "×";
+      x.onclick = function () { pins = pins.filter(function (q) { return q.t !== text; }); put(LS, PKEY, pins); renderBoard(); render(); };
+      if (pin.a) { var fr = document.createElement("small"); fr.style.cssText = "display:block;margin-top:6px;opacity:.65;font-size:.72rem"; fr.textContent = "from " + pin.a; n.appendChild(fr); }
+      n.appendChild(x); b.appendChild(n);
+    });
+  }
+  function addPin(text) { if (pins.some(function (p) { return p.t === text; })) return; pins.push({ t: text, a: D.name }); pins = pins.slice(-30); put(LS, PKEY, pins); renderBoard(); counts(); }
+
+  // ---- Chat (real agent) ----
+  async function send(text) {
+    text = String(text || "").trim(); if (!text || busy) return;
+    busy = true; btn.disabled = true;
+    hist.push({ role: "user", content: text.slice(0, 1500) }); put(SS, KEY, hist.slice(-20));
+    input.value = ""; starters.hidden = true; $("newChat").hidden = false;
+    bubble("you", text); counts();
+    $("sessState").textContent = "Thinking…";
+    var out = bubble("wait", "Thinking…");
+    try {
+      var res = await fetch("https://usi-agents-test.fancy-sound-69b6.workers.dev/api/agent", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ agent: D.id, messages: hist.slice(-10) }) });
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok) throw new Error(data.error || "The agent couldn't answer right now. Please try again.");
+      var reply = String(data.text || "").trim() || "I couldn't come up with an answer. Try asking another way.";
+      hist.push({ role: "assistant", content: reply }); put(SS, KEY, hist.slice(-20));
+      out.el.remove(); bubble("bot", reply);
+    } catch (err) {
+      hist.pop(); put(SS, KEY, hist.slice(-20)); out.el.className = "msg sys";
+      out.text.textContent = (err && err.message && !/fetch|network/i.test(err.message)) ? err.message : "Couldn't reach the agent. Check your connection and try again.";
+    } finally {
+      busy = false; btn.disabled = false; $("sessState").textContent = "Your move"; counts(); log.scrollTop = log.scrollHeight;
+    }
+  }
+  $("form").addEventListener("submit", function (e) { e.preventDefault(); send(input.value); });
+  D.starters.forEach(function (s) { var b = document.createElement("button"); b.type = "button"; b.textContent = s; b.onclick = function () { send(s); }; starters.appendChild(b); });
+  document.querySelectorAll("[data-try]").forEach(function (li) { li.addEventListener("click", function () { send(li.getAttribute("data-try")); input.focus(); }); });
+  $("newChat").addEventListener("click", function () { if (busy) return; hist = []; put(SS, KEY, hist); render(); input.focus(); });
+
+  // ---- Hand off to a teammate: carries the last reply to the next agent ----
+  document.querySelectorAll("[data-handoff]").forEach(function (a) {
+    a.addEventListener("click", function () {
+      var last = null; for (var i = hist.length - 1; i >= 0; i--) if (hist[i].role === "assistant") { last = hist[i].content; break; }
+      put(SS, "si-handoff", { to: a.getAttribute("data-handoff"), from: D.name, text: last ? last.slice(0, 900) : "" });
+    });
+  });
+  var ho = get(SS, "si-handoff", null);
+  if (ho && ho.to === D.id) {
+    try { SS.removeItem("si-handoff"); } catch (e) {}
+    if (ho.text) input.value = "From " + ho.from + ": \"" + ho.text.slice(0, 400) + (ho.text.length > 400 ? "…" : "") + "\" — help me with the next step.";
+    var note = document.createElement("div"); note.className = "msg sys"; note.textContent = "↪ Handed off from " + ho.from + (ho.text ? ". Their last reply is ready in the box below." : ".");
+    setTimeout(function () { var h = log.querySelector(".hint"); if (h) h.remove(); log.appendChild(note); }, 0);
+  }
+
+  // ---- Switch agent: search all agents (⌘K / Ctrl+K) ----
+  var pal = $("pal"), palQ = $("palQ"), list = $("palList"), selI = 0;
+  function renderPal() {
+    var q = palQ.value.toLowerCase().trim();
+    var items = D.all.filter(function (a) { return !q || (a[1] + " " + a[2]).toLowerCase().indexOf(q) !== -1; }).slice(0, 40);
+    list.innerHTML = ""; selI = Math.min(selI, Math.max(0, items.length - 1));
+    items.forEach(function (a, i) {
+      var b = document.createElement("a"); b.href = "/agents/" + a[0]; if (i === selI) b.className = "sel"; b.textContent = a[1];
+      var s = document.createElement("small"); s.textContent = a[2]; b.appendChild(s); list.appendChild(b);
+    });
+    if (!items.length) list.innerHTML = '<div class="empty" style="margin:6px">No agent found</div>';
+  }
+  function openPal() { pal.classList.add("open"); palQ.value = ""; selI = 0; renderPal(); setTimeout(function () { palQ.focus(); }, 30); }
+  function closePal() { pal.classList.remove("open"); }
+  $("openPal").onclick = openPal;
+  pal.addEventListener("click", function (e) { if (e.target === pal) closePal(); });
+  palQ.addEventListener("input", function () { selI = 0; renderPal(); });
+  palQ.addEventListener("keydown", function (e) {
+    var links = list.querySelectorAll("a");
+    if (e.key === "ArrowDown") { e.preventDefault(); selI = Math.min(selI + 1, links.length - 1); renderPal(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); selI = Math.max(selI - 1, 0); renderPal(); }
+    else if (e.key === "Enter" && links[selI]) { e.preventDefault(); location.href = links[selI].href; }
+  });
+  document.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); pal.classList.contains("open") ? closePal() : openPal(); }
+    else if (e.key === "Escape") closePal();
+  });
+
+  // ---- Glowing wires between the panels ----
+  var NS = "http://www.w3.org/2000/svg", wires = $("wires"), grid = $("grid");
+  var LINKS = [["pJob", "pChat", "#a78bfa", "#22d3ee"], ["pChat", "pProg", "#22d3ee", "#34d399"], ["pChat", "pBoard", "#22d3ee", "#fb923c"], ["pJob", "pTeam", "#a78bfa", "#f472b6"], ["pProg", "pBoard", "#34d399", "#fb923c"], ["pTeam", "pChat", "#f472b6", "#22d3ee"]];
+  function drawWires() {
+    while (wires.firstChild) wires.removeChild(wires.firstChild);
+    var G = grid.getBoundingClientRect(), defs = document.createElementNS(NS, "defs"); wires.appendChild(defs);
+    LINKS.forEach(function (L, k) {
+      var A = $(L[0]).getBoundingClientRect(), B = $(L[1]).getBoundingClientRect(), x1, y1, x2, y2, d;
+      if (B.left >= A.right - 2 || A.left >= B.right - 2) {
+        var lr = B.left >= A.right - 2; x1 = (lr ? A.right : A.left) - G.left; x2 = (lr ? B.left : B.right) - G.left;
+        y1 = Math.max(A.top, Math.min(A.bottom, B.top + 40)) - G.top + (k % 3) * 18 + 30; y2 = Math.max(B.top + 30, Math.min(B.bottom - 30, y1 + G.top)) - G.top;
+        if (y1 + G.top > A.bottom - 20) y1 = A.top + A.height / 2 - G.top;
+        var mx = (x1 + x2) / 2; d = "M" + x1 + " " + y1 + " C" + mx + " " + y1 + " " + mx + " " + y2 + " " + x2 + " " + y2;
+      } else {
+        var dn = B.top >= A.bottom - 2; y1 = (dn ? A.bottom : A.top) - G.top; y2 = (dn ? B.top : B.bottom) - G.top;
+        x1 = A.left + A.width * (0.3 + (k % 3) * 0.2) - G.left; x2 = B.left + B.width * (0.3 + (k % 3) * 0.2) - G.left;
+        var my = (y1 + y2) / 2; d = "M" + x1 + " " + y1 + " C" + x1 + " " + my + " " + x2 + " " + my + " " + x2 + " " + y2;
+      }
+      var gid = "wg" + k, g = document.createElementNS(NS, "linearGradient"); g.setAttribute("id", gid); g.setAttribute("gradientUnits", "userSpaceOnUse");
+      g.setAttribute("x1", x1); g.setAttribute("y1", y1); g.setAttribute("x2", x2); g.setAttribute("y2", y2);
+      [[0, L[2]], [1, L[3]]].forEach(function (st) { var s = document.createElementNS(NS, "stop"); s.setAttribute("offset", st[0]); s.setAttribute("stop-color", st[1]); g.appendChild(s); });
+      defs.appendChild(g);
+      var w = document.createElementNS(NS, "path"); w.setAttribute("class", "w"); w.setAttribute("d", d); w.setAttribute("stroke", "url(#" + gid + ")"); wires.appendChild(w);
+      var p = document.createElementNS(NS, "path"); p.setAttribute("class", "p"); p.setAttribute("d", d); p.setAttribute("stroke", "url(#" + gid + ")");
+      p.style.animationDelay = (-k * 0.4) + "s"; p.style.filter = "drop-shadow(0 0 4px " + L[3] + ")"; wires.appendChild(p);
+      [[x1, y1, L[2]], [x2, y2, L[3]]].forEach(function (c) { var n = document.createElementNS(NS, "circle"); n.setAttribute("cx", c[0]); n.setAttribute("cy", c[1]); n.setAttribute("r", 6); n.setAttribute("fill", c[2]); n.style.filter = "drop-shadow(0 0 5px " + c[2] + ")"; wires.appendChild(n); });
+    });
+  }
+  var wt; function later() { clearTimeout(wt); wt = setTimeout(drawWires, 80); }
+  window.addEventListener("resize", later); window.addEventListener("load", drawWires);
+  if (window.ResizeObserver) new ResizeObserver(later).observe(grid);
+
+  render(); renderBoard(); drawWires();
+})();
+</script>
+<script>
+(function () {
+  document.querySelectorAll(".nl").forEach(function (box) {
+    var form = box.querySelector("form"), input = box.querySelector("input"), btn = box.querySelector("button"), msg = box.querySelector(".msg");
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var email = input.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.hidden = false; msg.textContent = "Please enter a valid email."; return; }
+      btn.disabled = true; msg.hidden = false; msg.textContent = "Sending…";
+      try {
+        var res = await fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email, source: box.dataset.source }) });
+        var data = await res.json().catch(function () { return {}; });
+        if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+        form.hidden = true; msg.className = "done";
+        msg.innerHTML = (data.already ? "You're already on the list. " : "You're in! Check your inbox. ") + '<a href="' + (data.guide || "/free/50-ai-prompts.pdf") + '" target="_blank" rel="noopener">Download the guide now →</a>';
+      } catch (err) { msg.textContent = err.message; btn.disabled = false; }
+    });
+  });
+})();
+</script>
+</body>
+</html>
