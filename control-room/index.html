@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#060a18">
+<title>Control Room | Use Superintelligence (TEST)</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="control-room.css">
+</head>
+<body>
+<!-- USI Control Room V1 — TEST prototype. Sample data only. Not linked from any site menu. -->
+<div class="sample" role="note">SAMPLE DATA · DEMO ONLY · Nothing here is real or saved</div>
+
+<header class="top">
+  <div class="brand">
+    <img src="../brand/logo-cube-v2.png" alt="" width="34" height="39">
+    <div>
+      <div class="k">Use Superintelligence</div>
+      <h1>Control Room</h1>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Sections">
+    <a href="#overview" data-view="overview">Overview</a>
+    <a href="#tasks" data-view="tasks">Tasks</a>
+    <a href="#approvals" data-view="approvals">Approvals <span class="count" id="navCount"></span></a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <!-- OVERVIEW -->
+  <section class="view" id="view-overview" aria-labelledby="h-ov">
+    <h2 id="h-ov" class="vh">Overview</h2>
+    <div class="tiles" id="tiles"></div>
+    <div class="grid2">
+      <article class="card">
+        <header class="ch"><span class="k">Waiting for you</span><a class="more" href="#approvals">All approvals →</a></header>
+        <div id="ovApprovals"></div>
+      </article>
+      <article class="card">
+        <header class="ch"><span class="k">Budget · <span id="month"></span></span><span class="tag">Sample</span></header>
+        <div id="budget"></div>
+      </article>
+      <article class="card">
+        <header class="ch"><span class="k">Tasks by area</span><a class="more" href="#tasks">Task board →</a></header>
+        <div id="areas"></div>
+      </article>
+      <article class="card ph">
+        <header class="ch"><span class="k">Analytics</span><span class="tag gold">Connect later</span></header>
+        <p class="phx">Traffic numbers will show here once analytics is connected. No fake charts on purpose.</p>
+        <div class="phgrid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- TASKS -->
+  <section class="view" id="view-tasks" aria-labelledby="h-tk" hidden>
+    <h2 id="h-tk" class="vh">Task board</h2>
+    <div class="chips" id="chips" role="group" aria-label="Filter by area"></div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- APPROVALS -->
+  <section class="view" id="view-approvals" aria-labelledby="h-ap" hidden>
+    <h2 id="h-ap" class="vh">Approval inbox</h2>
+    <p class="hint">Demo buttons only. Choices reset when you reload the page.</p>
+    <div id="inbox"></div>
+    <h3 class="k sub">Decided</h3>
+    <div id="history"></div>
+  </section>
+</main>
+
+<footer class="foot"><span class="k" id="ver"></span></footer>
+
+<script src="control-room.js"></script>
+</body>
+</html>

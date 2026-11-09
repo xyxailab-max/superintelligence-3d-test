@@ -1,0 +1,44 @@
+{
+  "_note": "SAMPLE DATA ONLY. Everything in this file is made up for the TEST prototype. Shapes match the planned Cloudflare D1 tables: tasks, approvals, costs.",
+  "meta": {
+    "title": "USI Control Room",
+    "version": "V1 prototype",
+    "updated": "2026-11-09",
+    "month": "November 2026",
+    "monthlyBudget": 10
+  },
+  "areas": [
+    { "id": "dev", "name": "Development" },
+    { "id": "marketing", "name": "Marketing" },
+    { "id": "analytics", "name": "Analytics" },
+    { "id": "support", "name": "Support" },
+    { "id": "marketplace", "name": "Marketplace" }
+  ],
+  "tasks": [
+    { "id": "t-101", "title": "Fix card spacing on Marketplace slider (sample)", "area": "dev", "status": "doing", "priority": "high", "created": "2026-11-03", "updated": "2026-11-08", "notes": "Cards touch the search bar on small screens." },
+    { "id": "t-102", "title": "Speed check for the homepage brain (sample)", "area": "dev", "status": "todo", "priority": "medium", "created": "2026-11-04", "updated": "2026-11-04", "notes": "Measure load time on iPad Safari." },
+    { "id": "t-103", "title": "Draft 3 TikTok post ideas for AI Coach (sample)", "area": "marketing", "status": "waiting", "priority": "medium", "created": "2026-11-05", "updated": "2026-11-08", "notes": "Drafts ready for review." },
+    { "id": "t-104", "title": "Write launch email for Kids Learn AI (sample)", "area": "marketing", "status": "todo", "priority": "low", "created": "2026-11-06", "updated": "2026-11-06", "notes": "" },
+    { "id": "t-105", "title": "Weekly traffic summary (sample)", "area": "analytics", "status": "todo", "priority": "medium", "created": "2026-11-07", "updated": "2026-11-07", "notes": "Placeholder until analytics is connected." },
+    { "id": "t-106", "title": "Pick top 5 pages to improve (sample)", "area": "analytics", "status": "done", "priority": "low", "created": "2026-10-30", "updated": "2026-11-02", "notes": "" },
+    { "id": "t-107", "title": "Write FAQ answers for common questions (sample)", "area": "support", "status": "doing", "priority": "high", "created": "2026-11-02", "updated": "2026-11-07", "notes": "Start with 10 questions." },
+    { "id": "t-108", "title": "Reply template for creator sign-ups (sample)", "area": "support", "status": "waiting", "priority": "low", "created": "2026-11-05", "updated": "2026-11-08", "notes": "" },
+    { "id": "t-109", "title": "Review new creator listing: Study Planner (sample)", "area": "marketplace", "status": "waiting", "priority": "high", "created": "2026-11-08", "updated": "2026-11-09", "notes": "Made-up listing for the demo." },
+    { "id": "t-110", "title": "Add 2 partner tool cards (sample)", "area": "marketplace", "status": "todo", "priority": "medium", "created": "2026-11-06", "updated": "2026-11-06", "notes": "" },
+    { "id": "t-111", "title": "Clean up old TEST pages list (sample)", "area": "dev", "status": "done", "priority": "low", "created": "2026-10-28", "updated": "2026-11-01", "notes": "" }
+  ],
+  "approvals": [
+    { "id": "a-201", "taskId": "t-103", "ask": "Post these 3 TikTok drafts?", "risk": "low", "status": "pending", "requested": "2026-11-08", "decided": null },
+    { "id": "a-202", "taskId": "t-109", "ask": "Publish the Study Planner listing?", "risk": "medium", "status": "pending", "requested": "2026-11-09", "decided": null },
+    { "id": "a-203", "taskId": "t-108", "ask": "Use this reply template for creators?", "risk": "low", "status": "pending", "requested": "2026-11-08", "decided": null },
+    { "id": "a-204", "taskId": "t-101", "ask": "Move the slider fix from TEST to live?", "risk": "high", "status": "pending", "requested": "2026-11-09", "decided": null },
+    { "id": "a-205", "taskId": "t-106", "ask": "Accept the top 5 pages list?", "risk": "low", "status": "approved", "requested": "2026-11-01", "decided": "2026-11-02" },
+    { "id": "a-206", "taskId": "t-111", "ask": "Delete 12 old TEST pages?", "risk": "medium", "status": "rejected", "requested": "2026-10-31", "decided": "2026-11-01" }
+  ],
+  "costs": [
+    { "id": "c-301", "month": "2026-11", "item": "Website hosting (sample)", "amount": 0 },
+    { "id": "c-302", "month": "2026-11", "item": "AI usage – not connected (sample)", "amount": 0 },
+    { "id": "c-303", "month": "2026-11", "item": "Image tool trial (sample)", "amount": 1.5 },
+    { "id": "c-304", "month": "2026-11", "item": "Domain share (sample)", "amount": 1.25 }
+  ]
+}
