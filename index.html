@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><div style="position:fixed;left:50%;transform:translateX(-50%);top:8px;z-index:9999;padding:4px 10px;border-radius:999px;background:#2F6BFF;color:#fff;font:700 11px/1 system-ui;pointer-events:none">TEST · slow fade v3</div>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Free SI &amp; AI Agents Marketplace, News &amp; Prompts | Use Superintelligence</title>
@@ -12738,7 +12738,7 @@
     brain.quaternion.copy(qTmp2.setFromAxisAngle(AX_Y, (1 - intro) * 2.4)).multiply(brainQ);
     brain.scale.setScalar((extras.breath || 1) * (0.55 + 0.45 * intro));
     brain.position.y = 1.0 + Math.sin(t * 0.5) * 0.06;
-    goldBike(t, on * Math.min(1, Math.max(0, (clock.elapsedTime - (extras.revealStart === undefined ? 1e9 : extras.revealStart)) / 3)));   // bicycle appears with the other objects
+    goldBike(t, on * Math.min(1, Math.max(0, (clock.elapsedTime - (extras.revealStart === undefined ? 1e9 : extras.revealStart) - 1.5) / 4)));   // bicycle waits 1.5 s after the brain forms, then fades in over 4 s
 
 
     // Cursor lights up the part of the brain it touches
