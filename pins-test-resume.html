@@ -254,6 +254,15 @@
   .pinv-btn { display:inline-flex; align-items:center; padding:11px 16px; border-radius:10px; border:1px solid var(--edge); background:var(--s2); color:var(--ink); font:600 .74rem/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; text-decoration:none; cursor:pointer; }
   .pinv-btn.pri { border-color:transparent; background:var(--v5); color:#0b1020; }
   @media (prefers-reduced-motion:reduce) { .pinv, .pinv-box, .pinv-box::before { animation:none; } .note, .tile.tap { transition:none; } }
+
+  /* Real progress steps */
+  .steps li { cursor:pointer; border-radius:10px; padding:7px 6px 7px 0; transition:background .2s; }
+  .steps li:hover, .steps li:focus-visible { background:#ffffff08; outline:none; }
+  .steps li span { display:block; min-width:0; }
+  .steps li b { display:block; font:600 .84rem/1.2 var(--sans); }
+  .steps li small { display:block; margin-top:2px; font:500 .72rem/1.3 var(--sans); color:var(--mist); }
+  .steps li.done small { color:color-mix(in srgb, var(--s) 75%, #fff); }
+  .log .msg .pin.hint { opacity:1 !important; border-color:var(--v5); color:var(--v5); box-shadow:0 0 16px var(--v5); }
 </style>
 </head>
 <body><a href="https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-business.html" style="position:fixed;z-index:99;right:12px;bottom:12px;padding:10px 14px;border-radius:999px;background:#2F6BFF;color:#fff;font:700 14px/1 system-ui;text-decoration:none;box-shadow:0 6px 18px #0008">TEST: switch to Business Idea Lab &rarr;</a>
@@ -303,8 +312,8 @@
 
     <aside class="right">
       <div class="panel" id="pProg" style="--a:#34d399">
-        <div class="ph"><h2>Progress</h2><span class="k" id="stepTxt">Step 1 of 4</span></div>
-        <div class="pb"><ul class="steps" id="steps"><li class="now"><i></i>Start</li><li><i></i>Explore</li><li><i></i>Decide</li><li><i></i>Finish</li></ul></div>
+        <div class="ph"><h2>Progress</h2><span class="k" id="stepTxt">0 of 4 done</span></div>
+        <div class="pb"><ul class="steps" id="steps"><li class="now" data-s="ask"><i></i><span><b>Ask a question</b><small>Type or tap an idea</small></span></li><li data-s="answer"><i></i><span><b>Get an answer</b><small>The agent replies</small></span></li><li data-s="pin"><i></i><span><b>Pin what helps</b><small>Tap 📌 on a reply</small></span></li><li data-s="hand"><i></i><span><b>Hand off to a teammate</b><small>Send it to the next agent</small></span></li></ul></div>
       </div>
       <div class="panel" id="pBoard" style="--a:#fb923c">
         <div class="ph"><h2>My board</h2><span class="k">Pin replies</span></div>
@@ -355,9 +364,13 @@
   function counts() {
     bump($("pMsgs"), hist.length);
     bump($("pPins"), pins.length);
-    var replies = hist.filter(function (h) { return h.role === "assistant"; }).length, step = Math.min(replies, 4);
-    $("steps").querySelectorAll("li").forEach(function (li, i) { li.className = i < step ? "done" : (i === step ? "now" : ""); });
-    $("stepTxt").textContent = step >= 4 ? "Done" : "Step " + (step + 1) + " of 4";
+    var asked = hist.some(function (h) { return h.role === "user"; });
+    var answered = hist.some(function (h) { return h.role === "assistant"; });
+    var pinned = pins.some(function (p) { var pt = plain(p.t); return hist.some(function (h) { return h.role === "assistant" && plain(h.content) === pt; }); });
+    var handed = !!get(SS, "si-handed-" + D.id, false);
+    var st = [asked, answered, pinned, handed], done = st.filter(Boolean).length, nowSet = false;
+    $("steps").querySelectorAll("li").forEach(function (li, i) { li.className = st[i] ? "done" : (!nowSet ? (nowSet = true, "now") : ""); });
+    $("stepTxt").textContent = done >= 4 ? "All done ✓" : done + " of 4 done";
   }
   // Turns **bold** into real bold text and "* " lines into bullets. Text only, never HTML.
   function md(el, text) {
@@ -436,7 +449,7 @@
     var who = null;
     if (pin.id) who = D.all.filter(function (a) { return a[0] === pin.id; })[0];
     if (!who && pin.a) who = D.all.filter(function (a) { return a[1] === pin.a; })[0];
-    if (who && who[0] !== D.id) { var go = document.createElement("a"); go.className = "pinv-btn pri"; go.href = ({resume:"https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-resume.html", business:"https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-business.html"})[who[0]] || ("/agents/" + who[0]); go.textContent = "Open " + who[1] + " →"; ft.appendChild(go); }
+    if (who && who[0] !== D.id) { var go = document.createElement("a"); go.className = "pinv-btn pri"; go.href = {"resume":"https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-resume.html","business":"https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-business.html"}[who[0]] || ("/agents/" + who[0]); go.textContent = "Open " + who[1] + " →"; ft.appendChild(go); }
     box.appendChild(hd); box.appendChild(body); box.appendChild(ft); ov.appendChild(box); document.body.appendChild(ov);
     var oldOverflow = document.body.style.overflow; document.body.style.overflow = "hidden";
     function close() { document.removeEventListener("keydown", onKey); ov.remove(); document.body.style.overflow = oldOverflow; if (last && last.focus) last.focus(); }
@@ -479,13 +492,13 @@
   $("form").addEventListener("submit", function (e) { e.preventDefault(); send(input.value); });
   D.starters.forEach(function (s) { var b = document.createElement("button"); b.type = "button"; b.textContent = s; b.onclick = function () { send(s); }; starters.appendChild(b); });
   document.querySelectorAll("[data-try]").forEach(function (li) { li.addEventListener("click", function () { send(li.getAttribute("data-try")); input.focus(); }); });
-  $("newChat").addEventListener("click", function () { if (busy) return; hist = []; put(SS, KEY, hist); render(); input.focus(); });
+  $("newChat").addEventListener("click", function () { if (busy) return; hist = []; put(SS, KEY, hist); try { SS.removeItem("si-handed-" + D.id); } catch (e) {} render(); input.focus(); });
 
   // ---- Hand off to a teammate: carries the last reply to the next agent ----
   document.querySelectorAll("[data-handoff]").forEach(function (a) {
     a.addEventListener("click", function () {
       var last = null; for (var i = hist.length - 1; i >= 0; i--) if (hist[i].role === "assistant") { last = hist[i].content; break; }
-      put(SS, "si-handoff", { to: a.getAttribute("data-handoff"), from: D.name, text: last ? last.slice(0, 900) : "" });
+      put(SS, "si-handed-" + D.id, true); put(SS, "si-handoff", { to: a.getAttribute("data-handoff"), from: D.name, text: last ? last.slice(0, 900) : "" });
     });
   });
   var ho = get(SS, "si-handoff", null);
@@ -555,6 +568,28 @@
   var wt; function later() { clearTimeout(wt); wt = setTimeout(drawWires, 80); }
   window.addEventListener("resize", later); window.addEventListener("load", drawWires);
   if (window.ResizeObserver) new ResizeObserver(later).observe(grid);
+
+  (function () {
+    var steps = $("steps"); if (!steps) return;
+    function glow(el) { el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); setTimeout(function () { el.classList.remove("flash"); }, 1400); }
+    function act(li) {
+      var s = li.getAttribute("data-s");
+      if (s === "ask" || s === "answer") { input.scrollIntoView({ behavior: "smooth", block: "center" }); input.focus({ preventScroll: true }); return; }
+      if (s === "pin") {
+        var bots = log.querySelectorAll(".msg.bot"), lb = bots[bots.length - 1];
+        if (!lb) { input.scrollIntoView({ behavior: "smooth", block: "center" }); input.focus({ preventScroll: true }); return; }
+        lb.scrollIntoView({ behavior: "smooth", block: "center" });
+        var pb = lb.querySelector(".pin"); if (pb) { pb.classList.add("hint"); setTimeout(function () { pb.classList.remove("hint"); }, 2600); }
+        return;
+      }
+      if (s === "hand") { var t = $("pTeam"); if (t) { t.scrollIntoView({ behavior: "smooth", block: "center" }); glow(t); } }
+    }
+    steps.querySelectorAll("li").forEach(function (li) {
+      li.tabIndex = 0; li.setAttribute("role", "button");
+      li.addEventListener("click", function () { act(li); });
+      li.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(li); } });
+    });
+  })();
 
   render(); renderBoard(); drawWires();
 })();
