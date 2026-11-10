@@ -355,31 +355,20 @@
   .presets button, .actions button { color:var(--ac-ink); border-color:#ffffff1f; }
   .presets button[aria-current="true"], .actions button[aria-pressed="true"] { color:#F0C674; background:#4d371b88; border-color:#d3ac62aa; }
   @media (prefers-reduced-motion:reduce) { .ac-line, .ac-orb::before, .ac-orb::after, .fg-chips button, .fab::before { animation:none !important; } }
-  /* Pulsing core behind the logo */
+  /* Soft light waves behind the logo */
   .ac-core { position:absolute; left:50%; top:15px; width:0; height:0; z-index:-1; pointer-events:none; }
-  .ac-core i { position:absolute; left:-20px; top:-20px; width:40px; height:40px; border-radius:50%; border:1px solid #5aa2ff; box-shadow:0 0 12px #5aa2ff66, inset 0 0 10px #5aa2ff33; opacity:0; animation:acCore 3.6s ease-out infinite; }
-  .ac-core i:nth-child(2) { animation-delay:1.2s; border-color:#9fe3ff; } .ac-core i:nth-child(3) { animation-delay:2.4s; border-color:#F0C674; box-shadow:0 0 12px #F0C67455; }
-  .ac-core::before { content:""; position:absolute; left:-26px; top:-26px; width:52px; height:52px; border-radius:50%; background:radial-gradient(closest-side, #5aa2ff55, #5aa2ff11 60%, transparent); animation:acBreath 3.6s ease-in-out infinite; }
-  .ac-core b { position:absolute; top:0; height:1px; width:clamp(70px,22vw,150px); overflow:hidden; }
-  .ac-core b.l { right:22px; background:linear-gradient(270deg, #5aa2ffaa, transparent); }
-  .ac-core b.r { left:22px; background:linear-gradient(90deg, #5aa2ffaa, transparent); }
-  .ac-core b.l2, .ac-core b.r2 { top:9px; width:clamp(40px,13vw,90px); }
-  .ac-core b.l2 { right:20px; background:linear-gradient(270deg, #F0C67488, transparent); transform:rotate(14deg); transform-origin:right center; }
-  .ac-core b.r2 { left:20px; background:linear-gradient(90deg, #F0C67488, transparent); transform:rotate(-14deg); transform-origin:left center; }
-  .ac-core b::after { content:""; position:absolute; top:-2px; width:18px; height:5px; border-radius:5px; background:radial-gradient(closest-side, #fff, #9fe3ffaa, transparent); animation:acRunR 2.4s ease-in infinite; }
-  .ac-core b.l::after, .ac-core b.l2::after { animation-name:acRunL; }
-  .ac-core b.l2::after, .ac-core b.r2::after { animation-delay:1.2s; background:radial-gradient(closest-side, #fff, #F0C674aa, transparent); }
-  @keyframes acCore { 0% { transform:scale(.7); opacity:0; } 15% { opacity:.9; } 100% { transform:scale(3.2); opacity:0; } }
-  @keyframes acBreath { 0%,100% { transform:scale(.85); opacity:.6; } 50% { transform:scale(1.25); opacity:1; } }
-  @keyframes acRunR { 0% { left:-18px; opacity:0; } 15% { opacity:1; } 100% { left:100%; opacity:0; } }
-  @keyframes acRunL { 0% { right:-18px; opacity:0; } 15% { opacity:1; } 100% { right:100%; opacity:0; } }
+  .ac-core::before { content:""; position:absolute; left:-24px; top:-24px; width:48px; height:48px; border-radius:50%; background:radial-gradient(closest-side, #9fe3ff33, #5aa2ff11 60%, transparent); animation:acBreath 5s ease-in-out infinite; }
+  .ac-core i { position:absolute; left:-17px; top:-17px; width:34px; height:34px; border-radius:50%; border:1px solid #bfeaff; box-shadow:0 0 6px #9fe3ff55; opacity:0; animation:acWave 5s ease-out infinite; }
+  .ac-core i:nth-child(2) { animation-delay:1.66s; } .ac-core i:nth-child(3) { animation-delay:3.33s; }
+  @keyframes acWave { 0% { transform:scale(.9); opacity:0; } 20% { opacity:.28; } 100% { transform:scale(1.9); opacity:0; } }
+  @keyframes acBreath { 0%,100% { opacity:.45; transform:scale(.95); } 50% { opacity:.8; transform:scale(1.08); } }
   @media (max-width:420px) { .ac-core { top:13px; } }
-  @media (prefers-reduced-motion:reduce) { .ac-core i, .ac-core::before, .ac-core b::after { animation:none !important; } }
+  @media (prefers-reduced-motion:reduce) { .ac-core i, .ac-core::before { animation:none !important; } }
 </style>
 <!-- END AGENT CONSOLE STYLE -->
 
 <a class="brand si-logo" href="index.html" aria-label="Use Superintelligence, home">
-  <span class="ac-core" aria-hidden="true"><i></i><i></i><i></i><b class="l"></b><b class="r"></b><b class="l2"></b><b class="r2"></b></span>
+  <span class="ac-core" aria-hidden="true"><i></i><i></i><i></i></span>
   <img class="si-star" src="brand/logo-cube.png?v=2" alt="" aria-hidden="true">
   <span class="si-w"><span class="si-use">USE</span><span class="si-name">SUPERINTELLIGENCE</span></span>
 </a>
