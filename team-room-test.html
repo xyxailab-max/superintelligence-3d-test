@@ -107,7 +107,8 @@
     var d = document.createElement("div");
     if (h.role === "user") { d.className = "msg you"; d.textContent = h.text; }
     else { var m = find(h.id) || { name: "Agent", col: "#5aa2ff" }; d.className = "msg bot"; d.style.setProperty("--c", m.col);
-      var w = document.createElement("span"); w.className = "who"; w.textContent = m.name + " · " + (m.cat || ""); d.appendChild(w); d.appendChild(document.createTextNode(h.text)); }
+      var w = document.createElement("span"); w.className = "who"; w.textContent = m.name + " · " + (m.cat || ""); d.appendChild(w);
+      String(h.text).split("**").forEach(function (part, i) { if (!part) return; if (i % 2) { var b = document.createElement("b"); b.textContent = part; d.appendChild(b); } else d.appendChild(document.createTextNode(part)); }); }
     log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
   }
   function render() {
