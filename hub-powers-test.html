@@ -740,10 +740,18 @@
   <!-- END START HERE -->
   <!-- 5 POWERS (TEST). Delete from here to "END 5 POWERS" to undo. -->
   <style>
-  .pw5 { margin:0 0 30px; }
-  .pw5 .st-t { cursor:pointer; font:inherit; text-align:left; }
-  .pw5 .st-k i { animation:none; }
-  .pw5 .st-t[aria-expanded="true"] { box-shadow:0 0 24px color-mix(in srgb, var(--a) 35%, transparent); background:linear-gradient(180deg,#141c36,#0c1122) padding-box, linear-gradient(135deg, var(--a), transparent 70%) border-box; }
+  .pw5 { margin:0 0 30px; } .pw5 h2 { text-align:center; } .pw5 .sk { text-align:center; }
+  .pw-row { display:flex; justify-content:center; gap:clamp(10px,4vw,34px); flex-wrap:nowrap; }
+  .pw-o { --a:#5aa2ff; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0; border:0; background:none; cursor:pointer; color:#E9EDFF; font:inherit; -webkit-tap-highlight-color:transparent; }
+  .pw-c { position:relative; width:clamp(54px,14vw,72px); height:clamp(54px,14vw,72px); border-radius:50%; display:grid; place-items:center;
+    border:1.5px solid transparent; background:radial-gradient(circle at 50% 30%,#161f3a,#0a0e1b 70%) padding-box, conic-gradient(from 210deg, var(--a), transparent 40%, var(--a) 75%, transparent) border-box;
+    box-shadow:0 0 18px -6px var(--a), inset 0 1px 0 #ffffff1a; transition:transform .25s, box-shadow .25s; }
+  .pw-c svg { width:44%; height:44%; color:var(--a); filter:drop-shadow(0 0 6px color-mix(in srgb, var(--a) 60%, transparent)); }
+  .pw-l { font:600 .62rem/1.1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:#9AA3B8; text-align:center; max-width:80px; transition:color .25s; }
+  .pw-o:hover .pw-c, .pw-o:focus-visible .pw-c { transform:translateY(-2px); box-shadow:0 0 26px -4px var(--a), inset 0 1px 0 #ffffff1a; }
+  .pw-o:focus-visible { outline:none; }
+  .pw-o[aria-expanded="true"] .pw-c { transform:scale(1.08); background:radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--a) 35%, #161f3a), #0a0e1b 75%) padding-box, conic-gradient(from 210deg, var(--a), var(--a)) border-box; box-shadow:0 0 30px -2px var(--a); }
+  .pw-o[aria-expanded="true"] .pw-l { color:var(--a); }
   .pw-panel { --a:#5aa2ff; margin-top:12px; padding:14px 16px; border-radius:14px; border:1px solid transparent;
     background:linear-gradient(180deg,#0f1528,#0a0e1b) padding-box, linear-gradient(135deg, var(--a), transparent 60%) border-box; }
   .pw-panel[hidden] { display:none; }
@@ -760,7 +768,7 @@
   <section class="start pw5" aria-labelledby="pwH">
     <p class="sk">5 Powers</p>
     <h2 id="pwH">Do anything with AI</h2>
-    <div class="st-row" id="pwRow"></div>
+    <div class="pw-row" id="pwRow"></div>
     <div class="pw-panel" id="pwPanel" hidden></div>
   </section>
   <script>
@@ -773,12 +781,20 @@
         ["Make", "#fbbf24", "Posts, docs, diagrams, art", [["Caption Writer", "Social posts in seconds", "tools/caption-writer.html"], ["AI at Work prompts", "Ready-to-use prompts", "prompts/ai-at-work.html"], ["Idea to diagram", "Agents draw your plan", ""]]],
         ["Learn", "#f472b6", "Courses, news, kids", [["AI at Work course", "Free mini-course", "courses/ai-at-work.html"], ["AI news", "The latest superintelligence news", "blog/"], ["Teach the Robot", "AI game for kids", "kids-robot-test.html"]]]
       ];
+      var I = [
+        '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>',
+        '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+        '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+        '<path d="M12 3l2.2 5.3L20 10l-5.8 1.7L12 17l-2.2-5.3L4 10l5.8-1.7z"/><path d="M19 17l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+        '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5"/>'
+      ];
       var row = document.getElementById("pwRow"), panel = document.getElementById("pwPanel"), open = -1;
       function esc(s) { return String(s).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
       P.forEach(function (p, i) {
         var b = document.createElement("button");
-        b.type = "button"; b.className = "st-t"; b.style.setProperty("--a", p[1]); b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-controls", "pwPanel");
-        b.innerHTML = '<span class="st-k">Power ' + (i + 1) + '<i aria-hidden="true"></i></span><b>' + esc(p[0]) + '</b><small>' + esc(p[2]) + '</small><span class="st-go">Open &rarr;</span>';
+        b.type = "button"; b.className = "pw-o"; b.style.setProperty("--a", p[1]); b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-controls", "pwPanel");
+        b.setAttribute("aria-label", p[0] + ": " + p[2]);
+        b.innerHTML = '<span class="pw-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + I[i] + '</svg></span><span class="pw-l">' + esc(p[0]) + '</span>';
         b.addEventListener("click", function () { show(i); });
         row.appendChild(b);
       });
@@ -788,7 +804,7 @@
         for (var j = 0; j < btns.length; j++) btns[j].setAttribute("aria-expanded", String(j === i));
         var p = P[i]; open = i;
         panel.style.setProperty("--a", p[1]);
-        panel.innerHTML = '<span class="st-k">' + esc(p[0]) + ' tools</span><div class="pw-list">' + p[3].map(function (t) {
+        panel.innerHTML = '<span class="st-k">' + esc(p[0]) + ' · ' + esc(p[2]) + '</span><div class="pw-list">' + p[3].map(function (t) {
           return t[2] ? '<a class="pw-it" href="' + t[2] + '"><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small><span>Open &rarr;</span></a>'
             : '<div class="pw-it soon"><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small><span>Coming soon</span></div>';
         }).join("") + '</div>';
