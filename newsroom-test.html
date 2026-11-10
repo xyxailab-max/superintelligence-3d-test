@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Newsroom | Use Superintelligence</title>
+<meta name="description" content="News, updates and press resources from Use Superintelligence: free AI agents, a marketplace for AI creators, and news about superintelligence.">
+<link rel="icon" href="https://usesuperintelligence.com/favicon-48.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#03050b; --panel:#0a0e1b; --line:#ffffff1a; --ink:#e9edff; --mute:#9aa3b8; --blue:#3d7bff; --cyan:#7fe0ff; --sans:Manrope,system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:400 16px/1.6 var(--sans); }
+  body::before { content:""; position:fixed; inset:0; z-index:-1; background:radial-gradient(70% 40% at 50% 0%, #13235266, transparent 70%); }
+  a { color:inherit; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 16px; }
+  .k { font:700 .68rem/1 var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--cyan); }
+  header.top { display:flex; align-items:center; justify-content:space-between; padding:18px 0; }
+  .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .brand img { width:38px; height:38px; }
+  .brand b { font:800 .78rem/1.1 var(--sans); letter-spacing:.2em; color:#dfe5f2; }
+  .brand b span { display:block; color:var(--blue); font-size:.62rem; letter-spacing:.5em; }
+  .top nav a { margin-left:18px; font-size:.9rem; color:var(--mute); text-decoration:none; }
+  .top nav a:hover { color:var(--ink); }
+  .hero { text-align:center; padding:56px 0 40px; }
+  .hero img { width:110px; height:110px; animation:float 5s ease-in-out infinite; }
+  @keyframes float { 50% { transform:translateY(-6px); } }
+  .hero h1 { margin:14px 0 8px; font:800 clamp(2.2rem,6vw,3.6rem)/1.05 var(--sans); }
+  .hero p { margin:0 auto; max-width:560px; color:var(--mute); }
+  .facts { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:10px 0 56px; }
+  .fact { padding:16px; border-radius:14px; border:1px solid var(--line); background:var(--panel); text-align:center; }
+  .fact b { display:block; font:800 1.6rem/1.1 var(--sans); color:#fff; }
+  .fact span { font:600 .66rem/1.3 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--mute); }
+  section { margin:0 0 56px; }
+  .sh { display:flex; align-items:end; justify-content:space-between; gap:12px; margin:0 0 16px; }
+  .sh h2 { margin:6px 0 0; font:800 1.7rem/1.1 var(--sans); }
+  .sh a { font:700 .7rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--blue); text-decoration:none; white-space:nowrap; }
+  .news { display:grid; gap:10px; }
+  .post { --a:var(--blue); position:relative; overflow:hidden; display:block; padding:16px 18px 16px 22px; border-radius:14px; text-decoration:none;
+    border:1px solid transparent; background:linear-gradient(180deg,#0f1528,#0a0e1b) padding-box, linear-gradient(135deg, var(--a), transparent 55%) border-box; transition:transform .2s; }
+  .post::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--a); }
+  .post::after { content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--a), transparent); animation:sweep 3.4s ease-in-out infinite; }
+  .post:nth-child(2)::after { animation-delay:-.7s; } .post:nth-child(3)::after { animation-delay:-1.4s; } .post:nth-child(4)::after { animation-delay:-2.1s; } .post:nth-child(5)::after { animation-delay:-2.8s; }
+  @keyframes sweep { 0%,100% { transform:translateX(-60%); } 50% { transform:translateX(60%); } }
+  .post:hover { transform:translateY(-2px); }
+  .post .k { color:var(--a); }
+  .post h3 { margin:8px 0 4px; font:800 1.15rem/1.25 var(--sans); color:#fff; }
+  .post p { margin:0; color:var(--mute); font-size:.92rem; }
+  .press-empty { padding:22px; border-radius:14px; border:1px dashed #ffffff2e; color:var(--mute); text-align:center; }
+  .press-empty a { color:var(--blue); }
+  .centre { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .box { display:flex; flex-direction:column; gap:10px; padding:20px; border-radius:16px; border:1px solid var(--line); background:var(--panel); }
+  .box svg { width:34px; height:34px; stroke:var(--cyan); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .box h3 { margin:0; font:800 1.1rem/1.2 var(--sans); }
+  .box p { margin:0; color:var(--mute); font-size:.9rem; flex:1; }
+  .btn { display:inline-block; padding:11px 16px; border-radius:999px; background:var(--blue); color:#fff; font-weight:700; font-size:.9rem; text-align:center; text-decoration:none; }
+  .btn.alt { background:transparent; border:1px solid #ffffff33; }
+  .cta { text-align:center; padding:36px 20px; border-radius:20px; border:1px solid var(--line); background:radial-gradient(80% 90% at 50% 0%, #1b3a7a55, transparent 70%), var(--panel); }
+  .cta h2 { margin:0 0 8px; font:800 1.8rem/1.1 var(--sans); }
+  .cta p { margin:0 0 18px; color:var(--mute); }
+  .cta .row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  footer { padding:28px 0 40px; color:var(--mute); font-size:.82rem; text-align:center; border-top:1px solid var(--line); }
+  footer a { color:var(--mute); margin:0 8px; }
+  @media (max-width:760px) { .facts { grid-template-columns:repeat(2,1fr); } .centre { grid-template-columns:1fr; } .top nav a:not(:last-child) { display:none; } }
+  @media (prefers-reduced-motion:reduce) { .hero img, .post::after { animation:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="https://usesuperintelligence.com/"><img src="https://usesuperintelligence.com/brand/logo-cube.png?v=2" alt=""><b><span>USE</span>SUPERINTELLIGENCE</b></a>
+    <nav><a href="https://usesuperintelligence.com/agents.html">Agent Hub</a><a href="https://usesuperintelligence.com/marketplace.html">Marketplace</a><a href="https://usesuperintelligence.com/blog/">Blog</a></nav>
+  </header>
+
+  <div class="hero">
+    <img src="https://usesuperintelligence.com/brand/logo-cube.png?v=2" alt="Use Superintelligence cube logo" width="110" height="110">
+    <p class="k">Newsroom</p>
+    <h1>Use Superintelligence News</h1>
+    <p>The latest updates, launches and press resources from Use Superintelligence: free AI agents for everyone, and a marketplace for AI creators.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><b>100</b><span>Free AI agents</span></div>
+    <div class="fact"><b>0</b><span>Sign-ups needed</span></div>
+    <div class="fact"><b>6</b><span>Marketplace categories</span></div>
+    <div class="fact"><b>Free</b><span>For everyone</span></div>
+  </div>
+
+  <section>
+    <div class="sh"><div><p class="k">News &amp; updates</p><h2>What's new</h2></div><a href="https://usesuperintelligence.com/blog/">View blog →</a></div>
+    <div class="news">
+      <a class="post" style="--a:#ff5fa2" href="https://usesuperintelligence.com/agents.html"><span class="k">Agent Hub · November 2026</span><h3>Share your AI team with a new share card</h3><p>Pick up to 3 agents, then save a picture of your team to post on Instagram or TikTok.</p></a>
+      <a class="post" style="--a:#38d39f" href="https://usesuperintelligence.com/agents.html"><span class="k">Agent Hub · November 2026</span><h3>"Start here": the 5 best agents for your first try</h3><p>AI Coach, Resume Helper, Business Idea Lab, Study Tutor and Social Post Writer, right at the top of the Agent Hub.</p></a>
+      <a class="post" style="--a:#f2c14e" href="https://usesuperintelligence.com/team-room.html"><span class="k">Team Room · November 2026</span><h3>Team Room: three agents, one goal</h3><p>Give your AI team one goal, and each agent answers from its own specialty.</p></a>
+      <a class="post" style="--a:#5aa2ff" href="https://usesuperintelligence.com/agents.html"><span class="k">Agents · November 2026</span><h3>A new Agent Console on all 100 agent pages</h3><p>Chat, pin the best answers to your board, and pass work between teammates.</p></a>
+      <a class="post" style="--a:#a77bff" href="https://usesuperintelligence.com/marketplace.html"><span class="k">Marketplace</span><h3>A new Marketplace with six categories</h3><p>AI agents, AI tools, prompts and templates, digital art, courses and software, with free house products to start.</p></a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><div><p class="k">In the news</p><h2>Use Superintelligence in the press</h2></div></div>
+    <div class="press-empty">No press coverage yet. Writing about us? Email <a href="mailto:hello@usesuperintelligence.com">hello@usesuperintelligence.com</a>.</div>
+  </section>
+
+  <section>
+    <div class="sh"><div><p class="k">Press centre</p><h2>For journalists and partners</h2></div></div>
+    <div class="centre">
+      <div class="box">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        <h3>Press contact</h3><p>Questions, interviews or partnership ideas? Send us an email.</p>
+        <a class="btn" href="mailto:hello@usesuperintelligence.com">Email us</a>
+      </div>
+      <div class="box">
+        <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></svg>
+        <h3>Media kit</h3><p>Our official cube logo. Please don't change its colors or shape.</p>
+        <a class="btn" href="https://usesuperintelligence.com/brand/logo-cube.png?v=2" download="use-superintelligence-logo.png">Download logo</a>
+      </div>
+      <div class="box">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+        <h3>About us</h3><p>Use Superintelligence makes AI easy and free for everyone, with no sign-up.</p>
+        <a class="btn alt" href="https://usesuperintelligence.com/">Visit the site</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Ready to try your free AI agents?</h2>
+    <p>100 agents for work, school and life. Free, no sign-up.</p>
+    <div class="row"><a class="btn" href="https://usesuperintelligence.com/agents.html">Open the Agent Hub</a><a class="btn alt" href="https://usesuperintelligence.com/marketplace.html">Browse the Marketplace</a></div>
+  </section>
+</div>
+<footer>
+  <a href="https://usesuperintelligence.com/">Home</a><a href="https://usesuperintelligence.com/blog/">Blog</a><a href="https://usesuperintelligence.com/privacy.html">Privacy</a><a href="https://usesuperintelligence.com/terms.html">Terms</a>
+  <p>© 2026 Use Superintelligence</p>
+</footer>
+</body>
+</html>
