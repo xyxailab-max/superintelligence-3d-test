@@ -48,6 +48,15 @@
   .post .k { color:var(--a); }
   .post h3 { margin:8px 0 4px; font:800 1.15rem/1.25 var(--sans); color:#fff; }
   .post p { margin:0; color:var(--mute); font-size:.92rem; }
+  .blog { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .bp { display:flex; flex-direction:column; overflow:hidden; border-radius:14px; border:1px solid var(--line); background:var(--panel); text-decoration:none; transition:transform .2s, border-color .2s; }
+  .bp:hover { transform:translateY(-2px); border-color:#3d7bff66; }
+  .bp img { width:100%; aspect-ratio:1200/630; object-fit:cover; display:block; background:#0b1834; }
+  .bp div { padding:12px 14px 16px; }
+  .bp h3 { margin:6px 0 0; font:800 1rem/1.3 var(--sans); color:#fff; }
+  .press { margin:14px 0 0; color:var(--mute); font-size:.88rem; text-align:center; }
+  .press a { color:var(--blue); }
+  @media (max-width:760px) { .blog { grid-template-columns:1fr; } }
   .press-empty { padding:22px; border-radius:14px; border:1px dashed #ffffff2e; color:var(--mute); text-align:center; }
   .press-empty a { color:var(--blue); }
   .centre { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
@@ -100,8 +109,13 @@
   </section>
 
   <section>
-    <div class="sh"><div><p class="k">In the news</p><h2>Use Superintelligence in the press</h2></div></div>
-    <div class="press-empty">No press coverage yet. Writing about us? Email <a href="mailto:hello@usesuperintelligence.com">hello@usesuperintelligence.com</a>.</div>
+    <div class="sh"><div><p class="k">From our blog</p><h2>Superintelligence news &amp; guides</h2></div><a href="https://usesuperintelligence.com/blog/">All posts →</a></div>
+    <div class="blog" id="blog">
+      <a class="bp" href="https://usesuperintelligence.com/blog/superintelligence-vs-agi-vs-ai-explained.html"><img src="https://usesuperintelligence.com/blog/img/superintelligence-vs-agi-vs-ai-explained.jpg" alt="" loading="lazy"><div><span class="k">Nov 10, 2026</span><h3>Superintelligence vs AGI vs AI: What's the Difference?</h3></div></a>
+      <a class="bp" href="https://usesuperintelligence.com/blog/super-intelligence-force-explained.html"><img src="https://usesuperintelligence.com/blog/img/super-intelligence-force-explained.jpg" alt="" loading="lazy"><div><span class="k">Oct 20, 2026</span><h3>What Is the Super Intelligence Force? Washington's New AI Task Force, Explained</h3></div></a>
+      <a class="bp" href="https://usesuperintelligence.com/blog/white-house-accord-no-new-law-charter.html"><img src="https://usesuperintelligence.com/blog/img/white-house-accord-no-new-law-charter.jpg" alt="" loading="lazy"><div><span class="k">Oct 20, 2026</span><h3>The White House Accord on Super Intelligence</h3></div></a>
+    </div>
+    <p class="press">Writing about us? Press questions: <a href="mailto:hello@usesuperintelligence.com">hello@usesuperintelligence.com</a></p>
   </section>
 
   <section>
@@ -135,5 +149,26 @@
   <a href="https://usesuperintelligence.com/">Home</a><a href="https://usesuperintelligence.com/blog/">Blog</a><a href="https://usesuperintelligence.com/privacy.html">Privacy</a><a href="https://usesuperintelligence.com/terms.html">Terms</a>
   <p>© 2026 Use Superintelligence</p>
 </footer>
+<script>
+/* Shows the 3 newest blog posts automatically from the blog's RSS feed. If the feed can't be read (for example on the TEST site), the 3 posts above stay. */
+(function(){
+  var box=document.getElementById('blog'); if(!box||!window.fetch||!window.DOMParser) return;
+  var src=/usesuperintelligence\.com$/.test(location.hostname)?'/blog/feed.xml':'https://usesuperintelligence.com/blog/feed.xml';
+  fetch(src).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){
+    var items=[].slice.call(new DOMParser().parseFromString(t,'text/xml').querySelectorAll('item'),0,3); if(!items.length) return;
+    box.textContent='';
+    items.forEach(function(it){
+      var g=function(n){ var e=it.querySelector(n); return e?e.textContent:''; };
+      var link=g('link'); if(!/^https:\/\/usesuperintelligence\.com\/blog\//.test(link)) return;
+      var slug=link.replace(/^.*\/blog\//,'').replace(/\.html$/,''), d=new Date(g('pubDate'));
+      var a=document.createElement('a'); a.className='bp'; a.href=link;
+      var im=document.createElement('img'); im.src='https://usesuperintelligence.com/blog/img/'+slug+'.jpg'; im.alt=''; im.loading='lazy'; a.appendChild(im);
+      var dv=document.createElement('div'), k=document.createElement('span'), h=document.createElement('h3');
+      k.className='k'; k.textContent=isNaN(d)?'':d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}); h.textContent=g('title');
+      dv.appendChild(k); dv.appendChild(h); a.appendChild(dv); box.appendChild(a);
+    });
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>
