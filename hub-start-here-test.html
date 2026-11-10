@@ -646,7 +646,7 @@
             }, "image/png");
           };
         };
-        logo.src = core.querySelector("img").getAttribute("src");
+        logo.crossOrigin = "anonymous"; logo.src = core.querySelector("img").getAttribute("src");
       }
       if (FX.team) document.getElementById("fxTeamBtn").addEventListener("click", openTeam);
 
