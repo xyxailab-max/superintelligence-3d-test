@@ -471,19 +471,31 @@
   @keyframes ocDrop { from { top:-22px; opacity:0; } 20% { opacity:1; } to { top:-4px; opacity:0; } }
   @media (prefers-reduced-motion:reduce) { .oc-pulse { animation:none; display:none; } }
   .fx-empty { padding:14px; border-radius:14px; border:1px dashed #ffffff2a; color:#9AA3B8; font:500 .9rem/1.4 var(--sans); text-align:center; }
-  .sc-live { padding:22px 18px 20px; margin:0 0 14px; border-radius:14px; border:1px solid #ffffff1a; background:radial-gradient(120% 60% at 50% 15%, #13235255, transparent 70%), #03050b; text-align:center; }
-  .sc-cube { width:96px; height:96px; object-fit:contain; animation:cbFloat 5s ease-in-out infinite; }
-  .sc-t { margin:6px 0 16px; font:800 1.8rem/1.1 var(--sans); color:#f2f5ff; }
-  .sc-r { --a:#5aa2ff; position:relative; overflow:hidden; text-align:left; margin:0 0 10px; padding:12px 14px 12px 18px; border-radius:12px; border:1px solid transparent;
+  .sc-live { padding:22px 16px 18px; margin:0 0 14px; border-radius:14px; border:1px solid #ffffff1a; background:radial-gradient(120% 60% at 50% 15%, #13235255, transparent 70%), #03050b; }
+  .sc-head { display:flex; align-items:center; justify-content:center; gap:10px; margin:0 0 16px; }
+  .sc-cube { width:52px; height:52px; object-fit:contain; animation:cbFloat 5s ease-in-out infinite; }
+  .sc-t { font:800 1.35rem/1 var(--sans); color:#f2f5ff; }
+  .sc-team { position:relative; max-width:290px; margin:0 auto; padding-left:26px; }
+  .sc-wire { position:absolute; left:8px; top:28px; bottom:28px; width:2px; background:#5a8cff44; border-radius:2px; }
+  .sc-wire i { position:absolute; left:-3px; top:0; width:8px; height:8px; border-radius:50%; background:#bfe0ff; box-shadow:0 0 8px #5aa2ff, 0 0 16px #5aa2ff; animation:scData 2.6s linear infinite; }
+  .sc-wire i + i { animation-delay:-1.3s; }
+  @keyframes scData { 0% { top:0; opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { top:100%; opacity:0; } }
+  .sc-n { --a:#5aa2ff; position:relative; margin:0 0 9px; }
+  .sc-stub { position:absolute; left:-18px; top:50%; width:18px; height:2px; background:var(--a); }
+  .sc-stub::before { content:""; position:absolute; left:-3px; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--a); box-shadow:0 0 8px var(--a); }
+  .sc-stub::after { content:""; position:absolute; top:-1px; left:0; width:6px; height:4px; border-radius:2px; background:#fff; box-shadow:0 0 6px var(--a); animation:scHop 1.6s ease-in infinite; }
+  .sc-n:nth-child(3) .sc-stub::after { animation-delay:-.5s; } .sc-n:nth-child(4) .sc-stub::after { animation-delay:-1s; }
+  @keyframes scHop { 0% { left:0; opacity:0; } 30% { opacity:1; } 100% { left:14px; opacity:0; } }
+  .sc-r { position:relative; overflow:hidden; padding:9px 12px 9px 15px; border-radius:11px; border:1px solid transparent;
     background:linear-gradient(180deg,#0f1528,#0a0e1b) padding-box, linear-gradient(135deg, var(--a), transparent 60%) border-box; animation:scIn .6s ease-out both; }
   .sc-r::before { content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--a), transparent); animation:stSweep 3s ease-in-out infinite; }
-  .sc-r::after { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--a); }
-  .sc-r:nth-of-type(3)::before { animation-delay:-1s; } .sc-r:nth-of-type(4)::before { animation-delay:-2s; }
-  .sc-k { display:flex; justify-content:space-between; font:600 .64rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--a); }
+  .sc-r::after { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--a); }
+  .sc-n:nth-child(3) .sc-r::before { animation-delay:-1s; } .sc-n:nth-child(4) .sc-r::before { animation-delay:-2s; }
+  .sc-k { display:flex; justify-content:space-between; font:600 .58rem/1 var(--mono); letter-spacing:.13em; text-transform:uppercase; color:var(--a); }
   .sc-k i { font-style:normal; color:#38d39f; animation:stBlink 2s ease-in-out infinite; }
-  .sc-r b { display:block; margin-top:6px; font:800 1.2rem/1.15 var(--sans); color:#fff; text-shadow:0 0 18px color-mix(in srgb, var(--a) 45%, transparent); }
-  @keyframes scIn { from { transform:translateX(-24px); opacity:0; } }
-  @media (prefers-reduced-motion:reduce) { .sc-cube, .sc-r, .sc-r::before, .sc-k i { animation:none; } }
+  .sc-r b { display:block; margin-top:5px; font:800 1rem/1.15 var(--sans); color:#fff; text-shadow:0 0 16px color-mix(in srgb, var(--a) 45%, transparent); }
+  @keyframes scIn { from { transform:translateX(-20px); opacity:0; } }
+  @media (prefers-reduced-motion:reduce) { .sc-cube, .sc-r, .sc-r::before, .sc-k i, .sc-wire i, .sc-stub::after { animation:none; } }
   .fx-img { display:block; width:100%; border-radius:12px; margin:0 0 14px; border:1px solid #ffffff1a; }
   @media (prefers-reduced-motion:reduce) { .fx-card, .fx-sheet.open { animation:none; } .cb-core .fx-tilt { transition:none; } }
   </style>
@@ -622,25 +634,26 @@
         var members = team.map(byHref).filter(Boolean);
         var logo = new Image();
         logo.onload = logo.onerror = function () {
-          var cx = W / 2, cy = 300;
-          if (logo.naturalWidth) x.drawImage(logo, cx - 115, cy - 115, 230, 230);
-          x.textAlign = "center"; x.fillStyle = "#f2f5ff"; x.font = "800 80px Manrope, system-ui, sans-serif"; x.fillText("My AI Team", cx, 540);
-          x.strokeStyle = "rgba(200,210,230,.25)"; x.lineWidth = 2; x.beginPath(); x.moveTo(cx - 60, 575); x.lineTo(cx + 60, 575); x.stroke();
-          // spine line from title down to rows
-          var top = 650, rowH = 150, gap = 26, bx = 150, bw = W - 270;
-          if (members.length) { x.strokeStyle = "rgba(90,140,255,.45)"; x.lineWidth = 3; x.beginPath(); x.moveTo(110, top + 20); x.lineTo(110, top + (members.length - 1) * (rowH + gap) + rowH / 2); x.stroke(); }
+          var cx = W / 2, cy = 420;
+          // smaller cube + title side by side, centered
+          x.font = "800 66px Manrope, system-ui, sans-serif"; var tw = x.measureText("My AI Team").width, lw = logo.naturalWidth ? 120 : 0, gx0 = cx - (lw + 24 + tw) / 2;
+          if (lw) x.drawImage(logo, gx0, cy - 60, 120, 120);
+          x.textAlign = "left"; x.fillStyle = "#f2f5ff"; x.fillText("My AI Team", gx0 + lw + 24, cy + 24);
+          // narrower rows, centered, with a side wire
+          var top = 560, rowH = 130, gap = 24, bw = 620, bx = (W - bw) / 2 + 25, wx = bx - 50;
+          if (members.length) { x.strokeStyle = "rgba(90,140,255,.45)"; x.lineWidth = 3; x.beginPath(); x.moveTo(wx, top + 10); x.lineTo(wx, top + (members.length - 1) * (rowH + gap) + rowH / 2); x.stroke(); }
           members.forEach(function (a, i) {
             var ty = top + i * (rowH + gap);
-            x.strokeStyle = a.col; x.lineWidth = 3; x.beginPath(); x.moveTo(110, ty + rowH / 2); x.lineTo(bx, ty + rowH / 2); x.stroke();
-            x.fillStyle = a.col; x.beginPath(); x.arc(110, ty + rowH / 2, 9, 0, 7); x.fill();
+            x.strokeStyle = a.col; x.lineWidth = 3; x.beginPath(); x.moveTo(wx, ty + rowH / 2); x.lineTo(bx, ty + rowH / 2); x.stroke();
+            x.fillStyle = a.col; x.beginPath(); x.arc(wx, ty + rowH / 2, 9, 0, 7); x.fill();
             rr(bx, ty, bw, rowH, 18); x.fillStyle = "rgba(255,255,255,.04)"; x.fill(); x.strokeStyle = "rgba(200,210,230,.18)"; x.lineWidth = 2; x.stroke();
             x.fillStyle = a.col; rr(bx, ty, 10, rowH, 5); x.fill();
-            x.textAlign = "left"; x.fillStyle = a.col; x.font = "700 22px 'JetBrains Mono', ui-monospace, monospace"; x.fillText("0" + (i + 1) + " · " + a.cat.toUpperCase(), bx + 44, ty + 54);
-            x.fillStyle = "#ffffff"; x.font = "700 48px Manrope, system-ui, sans-serif"; x.fillText(a.name, bx + 44, ty + 110);
-            x.textAlign = "right"; x.fillStyle = "#38d39f"; x.font = "700 20px 'JetBrains Mono', ui-monospace, monospace"; x.fillText("● READY", bx + bw - 30, ty + 54);
+            x.textAlign = "left"; x.fillStyle = a.col; x.font = "700 22px 'JetBrains Mono', ui-monospace, monospace"; x.fillText("0" + (i + 1) + " · " + a.cat.toUpperCase(), bx + 36, ty + 48);
+            x.fillStyle = "#ffffff"; x.font = "700 40px Manrope, system-ui, sans-serif"; x.fillText(a.name, bx + 36, ty + 98);
+            x.textAlign = "right"; x.fillStyle = "#38d39f"; x.font = "700 20px 'JetBrains Mono', ui-monospace, monospace"; x.fillText("● READY", bx + bw - 26, ty + 48);
           });
           var url; try { url = cv.toDataURL("image/png"); } catch (e) { url = ""; }
-          openSheet('<span class="fx-k">Share card</span><h3>Post your AI Team</h3>' + (url ? '<div class="sc-live" role="img" aria-label="My AI Team share card"><img class="sc-cube" src="' + logo.src + '" alt=""><div class="sc-t">My AI Team</div>' + members.map(function (a, i) { return '<div class="sc-r" style="--a:' + a.col + ';animation-delay:' + (i * .18) + 's"><span class="sc-k">0' + (i + 1) + ' · ' + a.cat + '<i>● READY</i></span><b>' + a.name.replace(/[<>&"]/g, '') + '</b></div>'; }).join('') + '</div>' : "<p>Couldn't draw the card on this device.</p>") +
+          openSheet('<span class="fx-k">Share card</span><h3>Post your AI Team</h3>' + (url ? '<div class="sc-live" role="img" aria-label="My AI Team share card"><div class="sc-head"><img class="sc-cube" src="' + logo.src + '" alt=""><div class="sc-t">My AI Team</div></div><div class="sc-team"><span class="sc-wire"><i></i><i></i></span>' + members.map(function (a, i) { return '<div class="sc-n" style="--a:' + a.col + '"><span class="sc-stub"></span><div class="sc-r" style="animation-delay:' + (i * .18) + 's"><span class="sc-k">0' + (i + 1) + ' · ' + a.cat + '<i>● READY</i></span><b>' + a.name.replace(/[<>&"]/g, '') + '</b></div></div>'; }).join('') + '</div></div>' : "<p>Couldn't draw the card on this device.</p>") +
             '<div class="fx-row">' + (url ? '<button class="fx-go" type="button" id="fxSend">Share / Save</button>' : "") + '<button class="fx-alt" type="button" id="fxBack">Back to team</button></div>', members[0] ? members[0].col : "#5aa2ff");
           document.getElementById("fxBack").onclick = openTeam;
           var send = document.getElementById("fxSend");
