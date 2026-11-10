@@ -471,6 +471,19 @@
   @keyframes ocDrop { from { top:-22px; opacity:0; } 20% { opacity:1; } to { top:-4px; opacity:0; } }
   @media (prefers-reduced-motion:reduce) { .oc-pulse { animation:none; display:none; } }
   .fx-empty { padding:14px; border-radius:14px; border:1px dashed #ffffff2a; color:#9AA3B8; font:500 .9rem/1.4 var(--sans); text-align:center; }
+  .sc-live { padding:22px 18px 20px; margin:0 0 14px; border-radius:14px; border:1px solid #ffffff1a; background:radial-gradient(120% 60% at 50% 15%, #13235255, transparent 70%), #03050b; text-align:center; }
+  .sc-cube { width:96px; height:96px; object-fit:contain; animation:cbFloat 5s ease-in-out infinite; }
+  .sc-t { margin:6px 0 16px; font:800 1.8rem/1.1 var(--sans); color:#f2f5ff; }
+  .sc-r { --a:#5aa2ff; position:relative; overflow:hidden; text-align:left; margin:0 0 10px; padding:12px 14px 12px 18px; border-radius:12px; border:1px solid transparent;
+    background:linear-gradient(180deg,#0f1528,#0a0e1b) padding-box, linear-gradient(135deg, var(--a), transparent 60%) border-box; animation:scIn .6s ease-out both; }
+  .sc-r::before { content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--a), transparent); animation:stSweep 3s ease-in-out infinite; }
+  .sc-r::after { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--a); }
+  .sc-r:nth-of-type(3)::before { animation-delay:-1s; } .sc-r:nth-of-type(4)::before { animation-delay:-2s; }
+  .sc-k { display:flex; justify-content:space-between; font:600 .64rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--a); }
+  .sc-k i { font-style:normal; color:#38d39f; animation:stBlink 2s ease-in-out infinite; }
+  .sc-r b { display:block; margin-top:6px; font:800 1.2rem/1.15 var(--sans); color:#fff; text-shadow:0 0 18px color-mix(in srgb, var(--a) 45%, transparent); }
+  @keyframes scIn { from { transform:translateX(-24px); opacity:0; } }
+  @media (prefers-reduced-motion:reduce) { .sc-cube, .sc-r, .sc-r::before, .sc-k i { animation:none; } }
   .fx-img { display:block; width:100%; border-radius:12px; margin:0 0 14px; border:1px solid #ffffff1a; }
   @media (prefers-reduced-motion:reduce) { .fx-card, .fx-sheet.open { animation:none; } .cb-core .fx-tilt { transition:none; } }
   </style>
@@ -604,21 +617,17 @@
         var glow = x.createRadialGradient(W / 2, 300, 20, W / 2, 300, 620); glow.addColorStop(0, "rgba(40,90,220,.22)"); glow.addColorStop(1, "rgba(40,90,220,0)"); x.fillStyle = glow; x.fillRect(0, 0, W, H);
         x.fillStyle = "rgba(140,170,230,.10)"; for (var gx = 90; gx < W - 60; gx += 45) for (var gy = 90; gy < H - 60; gy += 45) x.fillRect(gx, gy, 2, 2);
         function rr(bx, by, bw, bh, r) { x.beginPath(); x.moveTo(bx + r, by); x.arcTo(bx + bw, by, bx + bw, by + bh, r); x.arcTo(bx + bw, by + bh, bx, by + bh, r); x.arcTo(bx, by + bh, bx, by, r); x.arcTo(bx, by, bx + bw, by, r); x.closePath(); }
-        // frame: thin silver line + blue corner brackets
-        var M = 46; x.strokeStyle = "rgba(200,210,230,.22)"; x.lineWidth = 2; x.strokeRect(M, M, W - 2 * M, H - 2 * M);
-        x.strokeStyle = "#3d7bff"; x.lineWidth = 6; var L = 90;
-        [[M, M, 1, 1], [W - M, M, -1, 1], [M, H - M, 1, -1], [W - M, H - M, -1, -1]].forEach(function (c) { x.beginPath(); x.moveTo(c[0], c[1] + L * c[3]); x.lineTo(c[0], c[1]); x.lineTo(c[0] + L * c[2], c[1]); x.stroke(); });
-        x.font = "600 20px 'JetBrains Mono', ui-monospace, monospace"; x.fillStyle = "#6f7c99"; x.textAlign = "left"; x.fillText("USI // AI TEAM", M + 28, M + 44);
-        x.textAlign = "right"; x.fillText("FREE · NO SIGN-UP", W - M - 28, M + 44);
+        x.font = "600 20px 'JetBrains Mono', ui-monospace, monospace"; x.fillStyle = "#6f7c99"; x.textAlign = "left"; x.fillText("USI // AI TEAM", 74, 90);
+        x.textAlign = "right"; x.fillText("FREE · NO SIGN-UP", W - 74, 90);
         var members = team.map(byHref).filter(Boolean);
         var logo = new Image();
         logo.onload = logo.onerror = function () {
-          var cx = W / 2, cy = 250;
+          var cx = W / 2, cy = 300;
           if (logo.naturalWidth) x.drawImage(logo, cx - 115, cy - 115, 230, 230);
-          x.textAlign = "center"; x.fillStyle = "#f2f5ff"; x.font = "800 80px Manrope, system-ui, sans-serif"; x.fillText("My AI Team", cx, 480);
-          x.strokeStyle = "rgba(200,210,230,.25)"; x.lineWidth = 2; x.beginPath(); x.moveTo(cx - 60, 515); x.lineTo(cx + 60, 515); x.stroke();
+          x.textAlign = "center"; x.fillStyle = "#f2f5ff"; x.font = "800 80px Manrope, system-ui, sans-serif"; x.fillText("My AI Team", cx, 540);
+          x.strokeStyle = "rgba(200,210,230,.25)"; x.lineWidth = 2; x.beginPath(); x.moveTo(cx - 60, 575); x.lineTo(cx + 60, 575); x.stroke();
           // spine line from title down to rows
-          var top = 560, rowH = 150, gap = 26, bx = 150, bw = W - 270;
+          var top = 650, rowH = 150, gap = 26, bx = 150, bw = W - 270;
           if (members.length) { x.strokeStyle = "rgba(90,140,255,.45)"; x.lineWidth = 3; x.beginPath(); x.moveTo(110, top + 20); x.lineTo(110, top + (members.length - 1) * (rowH + gap) + rowH / 2); x.stroke(); }
           members.forEach(function (a, i) {
             var ty = top + i * (rowH + gap);
@@ -630,11 +639,8 @@
             x.fillStyle = "#ffffff"; x.font = "700 48px Manrope, system-ui, sans-serif"; x.fillText(a.name, bx + 44, ty + 110);
             x.textAlign = "right"; x.fillStyle = "#38d39f"; x.font = "700 20px 'JetBrains Mono', ui-monospace, monospace"; x.fillText("● READY", bx + bw - 30, ty + 54);
           });
-          // sign: plain blue USE, bright silver SUPERINTELLIGENCE, stacked, no glow
-          x.textAlign = "center"; x.fillStyle = "#3d7bff"; x.font = "800 34px Manrope, system-ui, sans-serif"; x.fillText("U S E", cx, H - 175);
-          var sv = x.createLinearGradient(0, H - 160, 0, H - 100); sv.addColorStop(0, "#ffffff"); sv.addColorStop(1, "#c3cad8"); x.fillStyle = sv; x.font = "800 62px Manrope, system-ui, sans-serif"; x.fillText("SUPERINTELLIGENCE", cx, H - 110);
           var url; try { url = cv.toDataURL("image/png"); } catch (e) { url = ""; }
-          openSheet('<span class="fx-k">Share card</span><h3>Post your AI Team</h3>' + (url ? '<img class="fx-img" src="' + url + '" alt="My AI Team share card">' : "<p>Couldn't draw the card on this device.</p>") +
+          openSheet('<span class="fx-k">Share card</span><h3>Post your AI Team</h3>' + (url ? '<div class="sc-live" role="img" aria-label="My AI Team share card"><img class="sc-cube" src="' + logo.src + '" alt=""><div class="sc-t">My AI Team</div>' + members.map(function (a, i) { return '<div class="sc-r" style="--a:' + a.col + ';animation-delay:' + (i * .18) + 's"><span class="sc-k">0' + (i + 1) + ' · ' + a.cat + '<i>● READY</i></span><b>' + a.name.replace(/[<>&"]/g, '') + '</b></div>'; }).join('') + '</div>' : "<p>Couldn't draw the card on this device.</p>") +
             '<div class="fx-row">' + (url ? '<button class="fx-go" type="button" id="fxSend">Share / Save</button>' : "") + '<button class="fx-alt" type="button" id="fxBack">Back to team</button></div>', members[0] ? members[0].col : "#5aa2ff");
           document.getElementById("fxBack").onclick = openTeam;
           var send = document.getElementById("fxSend");
@@ -646,7 +652,7 @@
             }, "image/png");
           };
         };
-        logo.crossOrigin = "anonymous"; logo.src = core.querySelector("img").getAttribute("src");
+        logo.src = /github\.io$/.test(location.hostname) ? "https://xyxailab-max.github.io/superintelligence-3d-test/brand/logo-cube.png?v=2" : core.querySelector("img").getAttribute("src");
       }
       if (FX.team) document.getElementById("fxTeamBtn").addEventListener("click", openTeam);
 
