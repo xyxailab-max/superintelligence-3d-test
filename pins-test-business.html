@@ -232,6 +232,28 @@
   .owns li { cursor:pointer; } .owns li:hover { color:var(--ink); }
   .newchat { margin-left:8px; padding:6px 10px; border-radius:8px; border:1px solid var(--edge); background:var(--s2); font:600 .66rem/1 var(--mono); letter-spacing:.08em; color:var(--mist); }
   .newchat:hover { color:var(--ink); border-color:var(--v1); }
+
+  /* Pin reader */
+  .note { cursor:pointer; transition:border-color .2s, background .2s; }
+  .note:hover, .note:focus-visible { border-color:color-mix(in srgb, var(--v5) 60%, transparent); background:#ffffff0c; outline:none; }
+  .tile.tap { cursor:pointer; transition:transform .2s, box-shadow .2s; }
+  .tile.tap:hover, .tile.tap:focus-visible { transform:translateY(-2px); box-shadow:0 0 22px color-mix(in srgb, var(--a) 30%, transparent); outline:none; }
+  .panel.flash { box-shadow:0 0 0 2px var(--v5), 0 0 34px color-mix(in srgb, var(--v5) 45%, transparent); transition:box-shadow .3s; }
+  .log .msg.bot b, .pinv-b b { font-weight:700; color:#fff; }
+  .pinv { position:fixed; inset:0; z-index:300; display:grid; place-items:center; padding:16px; background:#03050ccc; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); animation:pinvIn .2s ease-out; }
+  @keyframes pinvIn { from { opacity:0; } }
+  .pinv-box { position:relative; width:min(660px,100%); max-height:min(82vh,740px); display:flex; flex-direction:column; overflow:hidden; border-radius:16px; border:1px solid transparent;
+    background:linear-gradient(180deg,#0f1528,#0a0e1b) padding-box, linear-gradient(135deg, var(--v5), transparent 60%) border-box; box-shadow:0 30px 80px -20px #000; animation:pinvUp .25s ease-out; }
+  @keyframes pinvUp { from { transform:translateY(12px); opacity:0; } }
+  .pinv-box::before { content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--v5), transparent); animation:sweep 3s ease-in-out infinite; }
+  .pinv-h { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--edge); }
+  .pinv-h .k { color:var(--v5); }
+  .pinv-x { flex:none; width:34px; height:34px; border-radius:9px; border:1px solid var(--edge); background:var(--s2); color:var(--ink); font-size:1.1rem; line-height:1; cursor:pointer; }
+  .pinv-b { padding:16px 18px; overflow:auto; white-space:pre-wrap; font:400 .98rem/1.6 var(--sans); color:var(--ink); -webkit-overflow-scrolling:touch; overscroll-behavior:contain; }
+  .pinv-f { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px; padding:12px 16px; border-top:1px solid var(--edge); }
+  .pinv-btn { display:inline-flex; align-items:center; padding:11px 16px; border-radius:10px; border:1px solid var(--edge); background:var(--s2); color:var(--ink); font:600 .74rem/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; text-decoration:none; cursor:pointer; }
+  .pinv-btn.pri { border-color:transparent; background:var(--v5); color:#0b1020; }
+  @media (prefers-reduced-motion:reduce) { .pinv, .pinv-box, .pinv-box::before { animation:none; } .note, .tile.tap { transition:none; } }
 </style>
 </head>
 <body><a href="https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-resume.html" style="position:fixed;z-index:99;right:12px;bottom:12px;padding:10px 14px;border-radius:999px;background:#2F6BFF;color:#fff;font:700 14px/1 system-ui;text-decoration:none;box-shadow:0 6px 18px #0008">TEST: switch to Resume Helper &rarr;</a>
@@ -337,13 +359,29 @@
     $("steps").querySelectorAll("li").forEach(function (li, i) { li.className = i < step ? "done" : (i === step ? "now" : ""); });
     $("stepTxt").textContent = step >= 4 ? "Done" : "Step " + (step + 1) + " of 4";
   }
+  // Turns **bold** into real bold text and "* " lines into bullets. Text only, never HTML.
+  function md(el, text) {
+    el.textContent = "";
+    String(text || "").split("\n").forEach(function (line, li) {
+      if (li) el.appendChild(document.createTextNode("\n"));
+      line = line.replace(/^(\s*)[*-] (?!\*)/, "$1• ");
+      var parts = line.split("**");
+      if (parts.length % 2 === 0) { var tail = parts.pop(); parts[parts.length - 1] += "**" + tail; }
+      parts.forEach(function (p, i) {
+        if (!p) return;
+        if (i % 2) { var b = document.createElement("b"); b.textContent = p; el.appendChild(b); }
+        else el.appendChild(document.createTextNode(p));
+      });
+    });
+  }
+  function plain(text) { var tmp = document.createElement("div"); md(tmp, text); return tmp.textContent; }
   function bubble(kind, text) {
     var h = log.querySelector(".hint"); if (h) h.remove();
     var d = document.createElement("div"); d.className = "msg " + kind;
-    var t = document.createElement("span"); t.textContent = text; d.appendChild(t);
+    var t = document.createElement("span"); if (kind === "bot") md(t, text); else t.textContent = text; d.appendChild(t);
     if (kind === "bot") {
       var p = document.createElement("button"); p.type = "button"; p.className = "pin";
-      var already = pins.some(function (x) { return x.t === text; });
+      var already = pins.some(function (x) { return plain(x.t) === t.textContent; });
       p.textContent = already ? "✓ Pinned" : "📌 Pin"; p.disabled = already;
       p.onclick = function () { addPin(t.textContent); p.textContent = "✓ Pinned"; p.disabled = true; };
       d.appendChild(p);
@@ -367,14 +405,53 @@
     if (!pins.length) { b.innerHTML = '<div class="empty">Tap "📌 Pin" on any reply to save it here.</div>'; return; }
     pins.slice().reverse().forEach(function (pin) {
       var text = pin.t;
-      var n = document.createElement("div"); n.className = "note"; n.textContent = text.length > 220 ? text.slice(0, 220) + "…" : text;
+      var n = document.createElement("div"); n.className = "note"; var clean = plain(text); n.textContent = clean.length > 220 ? clean.slice(0, 220) + "…" : clean;
+      n.tabIndex = 0; n.setAttribute("role", "button"); n.setAttribute("aria-label", "Read pinned answer");
+      n.onclick = function (ev) { if (ev.target.closest && ev.target.closest("button")) return; openPin(pin); };
+      n.onkeydown = function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openPin(pin); } };
       var x = document.createElement("button"); x.type = "button"; x.setAttribute("aria-label", "Remove"); x.textContent = "×";
-      x.onclick = function () { pins = pins.filter(function (q) { return q.t !== text; }); put(LS, PKEY, pins); renderBoard(); render(); };
+      x.onclick = function (ev) { ev.stopPropagation(); pins = pins.filter(function (q) { return q.t !== text; }); put(LS, PKEY, pins); renderBoard(); render(); };
       if (pin.a) { var fr = document.createElement("small"); fr.style.cssText = "display:block;margin-top:6px;opacity:.65;font-size:.72rem"; fr.textContent = "from " + pin.a; n.appendChild(fr); }
       n.appendChild(x); b.appendChild(n);
     });
   }
-  function addPin(text) { if (pins.some(function (p) { return p.t === text; })) return; pins.push({ t: text, a: D.name }); pins = pins.slice(-30); put(LS, PKEY, pins); renderBoard(); counts(); }
+  function openPin(pin) {
+    var last = document.activeElement;
+    var ov = document.createElement("div"); ov.className = "pinv"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Pinned answer");
+    var box = document.createElement("div"); box.className = "pinv-box";
+    var hd = document.createElement("div"); hd.className = "pinv-h";
+    var lb = document.createElement("span"); lb.className = "k"; lb.textContent = pin.a ? "Pinned · from " + pin.a : "Pinned answer";
+    var cl = document.createElement("button"); cl.type = "button"; cl.className = "pinv-x"; cl.setAttribute("aria-label", "Close"); cl.textContent = "×";
+    hd.appendChild(lb); hd.appendChild(cl);
+    var body = document.createElement("div"); body.className = "pinv-b"; md(body, pin.t);
+    var ft = document.createElement("div"); ft.className = "pinv-f";
+    var cp = document.createElement("button"); cp.type = "button"; cp.className = "pinv-btn"; cp.textContent = "Copy";
+    cp.onclick = function () {
+      var txt = body.textContent;
+      function ok() { cp.textContent = "✓ Copied"; setTimeout(function () { cp.textContent = "Copy"; }, 1600); }
+      function fallback() { var ta = document.createElement("textarea"); ta.value = txt; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); ok(); } catch (e) {} ta.remove(); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, fallback); else fallback();
+    };
+    ft.appendChild(cp);
+    var who = null;
+    if (pin.id) who = D.all.filter(function (a) { return a[0] === pin.id; })[0];
+    if (!who && pin.a) who = D.all.filter(function (a) { return a[1] === pin.a; })[0];
+    if (who && who[0] !== D.id) { var go = document.createElement("a"); go.className = "pinv-btn pri"; go.href = ({resume:"https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-resume.html", business:"https://xyxailab-max.github.io/superintelligence-3d-test/pins-test-business.html"})[who[0]] || ("/agents/" + who[0]); go.textContent = "Open " + who[1] + " →"; ft.appendChild(go); }
+    box.appendChild(hd); box.appendChild(body); box.appendChild(ft); ov.appendChild(box); document.body.appendChild(ov);
+    var oldOverflow = document.body.style.overflow; document.body.style.overflow = "hidden";
+    function close() { document.removeEventListener("keydown", onKey); ov.remove(); document.body.style.overflow = oldOverflow; if (last && last.focus) last.focus(); }
+    function onKey(e) { if (e.key === "Escape") close(); }
+    cl.onclick = close; ov.addEventListener("click", function (e) { if (e.target === ov) close(); }); document.addEventListener("keydown", onKey);
+    cl.focus();
+  }
+  (function () {
+    var pt = $("pPins") && $("pPins").closest(".tile"), bd = $("pBoard");
+    if (!pt || !bd) return;
+    pt.classList.add("tap"); pt.tabIndex = 0; pt.setAttribute("role", "button"); pt.setAttribute("aria-label", "Go to My board");
+    function jump() { bd.scrollIntoView({ behavior: "smooth", block: "center" }); bd.classList.remove("flash"); void bd.offsetWidth; bd.classList.add("flash"); setTimeout(function () { bd.classList.remove("flash"); }, 1400); }
+    pt.addEventListener("click", jump); pt.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); jump(); } });
+  })();
+  function addPin(text) { if (pins.some(function (p) { return p.t === text; })) return; pins.push({ t: text, a: D.name, id: D.id }); pins = pins.slice(-30); put(LS, PKEY, pins); renderBoard(); counts(); }
 
   // ---- Chat (real agent) ----
   async function send(text) {
