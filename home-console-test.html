@@ -355,20 +355,21 @@
   .presets button, .actions button { color:var(--ac-ink); border-color:#ffffff1f; }
   .presets button[aria-current="true"], .actions button[aria-pressed="true"] { color:#F0C674; background:#4d371b88; border-color:#d3ac62aa; }
   @media (prefers-reduced-motion:reduce) { .ac-line, .ac-orb::before, .ac-orb::after, .fg-chips button, .fab::before { animation:none !important; } }
-  /* Soft light waves behind the logo */
+  /* Fiber frequencies coming out of the logo */
   .ac-core { position:absolute; left:50%; top:15px; width:0; height:0; z-index:-1; pointer-events:none; }
-  .ac-core::before { content:""; position:absolute; left:-24px; top:-24px; width:48px; height:48px; border-radius:50%; background:radial-gradient(closest-side, #9fe3ff33, #5aa2ff11 60%, transparent); animation:acBreath 5s ease-in-out infinite; }
-  .ac-core i { position:absolute; left:-17px; top:-17px; width:34px; height:34px; border-radius:50%; border:1px solid #bfeaff; box-shadow:0 0 6px #9fe3ff55; opacity:0; animation:acWave 5s ease-out infinite; }
-  .ac-core i:nth-child(2) { animation-delay:1.66s; } .ac-core i:nth-child(3) { animation-delay:3.33s; }
-  @keyframes acWave { 0% { transform:scale(.9); opacity:0; } 20% { opacity:.28; } 100% { transform:scale(1.9); opacity:0; } }
+  .ac-core::before { content:""; position:absolute; left:-22px; top:-22px; width:44px; height:44px; border-radius:50%; background:radial-gradient(closest-side, #9fe3ff2e, #5aa2ff0d 60%, transparent); animation:acBreath 5s ease-in-out infinite; }
+  .ac-core i { position:absolute; left:0; top:-.5px; width:var(--l); height:1px; transform-origin:0 50%;
+    transform:rotate(var(--r)) translateX(19px) scaleX(.35); border-radius:1px;
+    background:linear-gradient(90deg, #bfeaffcc, #5aa2ff55 60%, transparent); opacity:.15; animation:acFreq var(--d) ease-in-out var(--w) infinite; }
+  @keyframes acFreq { 0%,100% { transform:rotate(var(--r)) translateX(19px) scaleX(.35); opacity:.12; } 50% { transform:rotate(var(--r)) translateX(19px) scaleX(1); opacity:.55; } }
   @keyframes acBreath { 0%,100% { opacity:.45; transform:scale(.95); } 50% { opacity:.8; transform:scale(1.08); } }
-  @media (max-width:420px) { .ac-core { top:13px; } }
+  @media (max-width:420px) { .ac-core { top:13px; } .ac-core i { --s:.85; } }
   @media (prefers-reduced-motion:reduce) { .ac-core i, .ac-core::before { animation:none !important; } }
 </style>
 <!-- END AGENT CONSOLE STYLE -->
 
 <a class="brand si-logo" href="index.html" aria-label="Use Superintelligence, home">
-  <span class="ac-core" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span class="ac-core" aria-hidden="true"><i style="--r:-1.1deg;--l:10px;--d:1.41s;--w:-0.1s"></i><i style="--r:14.8deg;--l:8px;--d:1.38s;--w:-0.12s"></i><i style="--r:25.8deg;--l:8px;--d:1.01s;--w:-0.84s"></i><i style="--r:37.0deg;--l:16px;--d:1.45s;--w:-1.65s"></i><i style="--r:49.2deg;--l:10px;--d:1.72s;--w:-1.17s"></i><i style="--r:61.7deg;--l:16px;--d:1.42s;--w:-1.95s"></i><i style="--r:74.4deg;--l:10px;--d:1.28s;--w:-0.29s"></i><i style="--r:87.7deg;--l:12px;--d:1.63s;--w:-1.36s"></i><i style="--r:100.5deg;--l:16px;--d:1.73s;--w:-0.74s"></i><i style="--r:116.0deg;--l:8px;--d:1.63s;--w:-1.24s"></i><i style="--r:128.5deg;--l:16px;--d:1.46s;--w:-0.63s"></i><i style="--r:141.9deg;--l:14px;--d:1.37s;--w:-0.5s"></i><i style="--r:152.4deg;--l:10px;--d:1.01s;--w:-0.6s"></i><i style="--r:167.1deg;--l:12px;--d:1.85s;--w:-0.58s"></i><i style="--r:182.9deg;--l:8px;--d:1.57s;--w:-0.33s"></i><i style="--r:191.9deg;--l:14px;--d:1.45s;--w:-1.92s"></i><i style="--r:203.2deg;--l:16px;--d:1.64s;--w:-1.75s"></i><i style="--r:217.5deg;--l:18px;--d:1.36s;--w:-0.99s"></i><i style="--r:233.2deg;--l:8px;--d:1.99s;--w:-1.89s"></i><i style="--r:244.1deg;--l:18px;--d:0.98s;--w:-1.46s"></i><i style="--r:256.0deg;--l:16px;--d:2.19s;--w:-1.64s"></i><i style="--r:268.7deg;--l:14px;--d:2.05s;--w:-0.69s"></i><i style="--r:285.5deg;--l:12px;--d:1.12s;--w:-0.23s"></i><i style="--r:293.1deg;--l:12px;--d:1.07s;--w:-0.5s"></i><i style="--r:307.9deg;--l:14px;--d:1.0s;--w:-0.9s"></i><i style="--r:321.7deg;--l:10px;--d:1.97s;--w:-1.73s"></i><i style="--r:333.0deg;--l:14px;--d:2.18s;--w:-1.37s"></i><i style="--r:346.4deg;--l:10px;--d:1.1s;--w:-0.35s"></i></span>
   <img class="si-star" src="brand/logo-cube.png?v=2" alt="" aria-hidden="true">
   <span class="si-w"><span class="si-use">USE</span><span class="si-name">SUPERINTELLIGENCE</span></span>
 </a>
