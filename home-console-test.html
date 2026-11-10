@@ -1,6 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
 <title>Free SI &amp; AI Agents Marketplace, News &amp; Prompts | Use Superintelligence</title>
 <meta name="description" content="A free marketplace for everyone. Find superintelligence (SI) and AI agents with free plans, read the latest SI news, and get SI prompts. Free, no sign-up.">
 <meta name="keywords" content="superintelligence, super intelligence, SI, superintelligence agents, free superintelligence, super intelligence AI, superintelligence news, artificial superintelligence, ASI, AI agents, AI marketplace, use superintelligence">
@@ -272,11 +273,96 @@
     background: linear-gradient(180deg,#ffffff 0%,#dfe3e9 45%,#aab1bc 56%,#f0f2f5 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
   @media (max-width: 420px) { .si-star{width:auto;height:26px;} .si-name { font-size: 0.56rem; letter-spacing: 0.18em; } .si-logo { gap: 5px; } }
 </style>
+<!-- AGENT CONSOLE STYLE (homepage). Delete from here to "END AGENT CONSOLE STYLE" to undo. -->
+<style>
+  :root { --ac-bg:linear-gradient(180deg,#0f1528f0,#0a0e1bf2); --ac-ink:#E9EDFF; --ac-dim:#9AA3B8; --ac-mono:ui-monospace,"SF Mono",Menlo,monospace; }
+  @keyframes acSweep { 0%,100% { transform:translateX(-60%); } 50% { transform:translateX(60%); } }
+  @keyframes acSpin { to { transform:rotate(360deg); } }
+  @keyframes acPing { 0% { transform:scale(1); opacity:.6; } 70%,100% { transform:scale(1.5); opacity:0; } }
+  @keyframes acFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
+  @keyframes acIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  .ac-tile { --a:#5aa2ff; border:1px solid transparent !important; border-radius:18px !important;
+    background:var(--ac-bg) padding-box, linear-gradient(135deg, var(--a), transparent 60%) border-box !important;
+    box-shadow:0 0 30px -12px var(--a), 0 20px 50px -20px #000c !important; overflow:hidden; }
+  .ac-line { position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--a), transparent); animation:acSweep 3s ease-in-out infinite; pointer-events:none; }
+
+  /* Info card */
+  #focusCard { --a:#5aa2ff; border-radius:18px; padding:22px 20px 18px; color:var(--ac-ink); }
+  #focusCard::before, #focusCard::after { display:none; }
+  .fc-lab { font:600 .64rem/1 var(--ac-mono); letter-spacing:.14em; color:var(--ac-dim); text-transform:uppercase; }
+  .fc-lab::after { background:linear-gradient(90deg, #ffffff22, transparent); }
+  .fc-dot { width:7px; height:7px; background:#34d399; box-shadow:0 0 8px #34d399; animation:none; }
+  #fcName { font:800 clamp(1.6rem,3vw,2.1rem)/1.1 var(--sans); color:var(--a); text-shadow:0 0 18px color-mix(in srgb, var(--a) 45%, transparent); }
+  #fcText { color:#B8C1D6; font-size:.95rem; line-height:1.6; }
+  .fc-acts input, #fgAsk input { font:.9rem/1.2 var(--sans); border-radius:12px; border:1px solid #ffffff1f; background:#060a18; color:var(--ac-ink); padding:11px 12px; }
+  .fc-acts input:focus-visible, #fgAsk input:focus-visible { outline:none; border-color:var(--a); box-shadow:0 0 0 3px color-mix(in srgb, var(--a) 25%, transparent); }
+  .fc-acts button, #fgAsk button { font:600 .66rem/1 var(--ac-mono); letter-spacing:.12em; text-transform:uppercase; border-radius:12px; color:#F0C674; background:#4d371b88; border:1px solid #d3ac62aa; box-shadow:none; padding:12px 16px; }
+  .fc-acts button.alt { color:var(--ac-ink); background:#ffffff08; border:1px solid #ffffff1f; }
+  .fc-acts button:hover, #fgAsk button:hover { box-shadow:0 0 20px -4px #F0C674; }
+  .fc-row button { font:600 .64rem/1 var(--ac-mono); letter-spacing:.12em; border-radius:12px; color:var(--ac-ink); background:#ffffff08; border:1px solid #ffffff14; padding:12px; transition:border-color .2s, color .2s; }
+  .fc-row button:hover { border-color:var(--a); color:var(--a); }
+  .fc-hint { font:.62rem/1.4 var(--ac-mono); letter-spacing:.08em; color:#9AA3B8aa; }
+  #fcGuide { border-top:1px solid #ffffff14; }
+  .fg-lab { font:600 .64rem/1 var(--ac-mono); letter-spacing:.14em; color:var(--ac-dim); text-transform:uppercase; margin-bottom:12px; }
+  .fg-chips { grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+  .fg-chips button { --a:#5aa2ff; display:flex; flex-direction:column; align-items:center; gap:7px; padding:4px 0 0; min-height:0; background:none; border:0; text-align:center;
+    font:600 .58rem/1.15 var(--ac-mono); letter-spacing:.08em; color:var(--ac-dim); animation:acFloat 4s ease-in-out infinite; }
+  .fg-chips button:nth-child(1) { --a:#5aa2ff; } .fg-chips button:nth-child(2) { --a:#fbbf24; animation-delay:-1s; }
+  .fg-chips button:nth-child(3) { --a:#f472b6; animation-delay:-2s; } .fg-chips button:nth-child(4) { --a:#34d399; animation-delay:-3s; }
+  .fg-chips button:hover { color:var(--a); border:0; }
+  .ac-orb { position:relative; width:50px; height:50px; border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle at 50% 30%,#161f3a,#0a0e1b 70%); box-shadow:0 0 16px -6px var(--a), inset 0 1px 0 #ffffff1a; transition:transform .2s; }
+  .ac-orb::before { content:""; position:absolute; inset:-2px; border-radius:50%; background:conic-gradient(from 0deg, var(--a), transparent 30%, var(--a) 55%, transparent 80%, var(--a));
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px)); mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px)); animation:acSpin 6s linear infinite; }
+  .ac-orb::after { content:""; position:absolute; inset:0; border-radius:50%; border:1px solid var(--a); opacity:0; animation:acPing 3.5s ease-out infinite; }
+  .fg-chips button:nth-child(even) .ac-orb::before { animation-direction:reverse; }
+  .fg-chips button:nth-child(2) .ac-orb::after { animation-delay:-.9s; } .fg-chips button:nth-child(3) .ac-orb::after { animation-delay:-1.8s; } .fg-chips button:nth-child(4) .ac-orb::after { animation-delay:-2.7s; }
+  .ac-orb svg { width:44%; height:44%; color:var(--a); filter:drop-shadow(0 0 6px color-mix(in srgb, var(--a) 60%, transparent)); }
+  .fg-chips button:hover .ac-orb, .fg-chips button:focus-visible .ac-orb { transform:scale(1.08); box-shadow:0 0 24px -3px var(--a); }
+  .fg-chips button:focus-visible { outline:none; }
+  #fgOut { border-radius:12px; border:1px solid #ffffff14; border-left:2px solid #5aa2ff; background:#060a18cc; }
+  #fgOut .fg-q { font:600 .62rem/1.4 var(--ac-mono); letter-spacing:.1em; color:var(--ac-dim); }
+  #hoverTag { font:600 .62rem/1 var(--ac-mono); letter-spacing:.1em; color:var(--ac-ink); border-radius:999px; padding:7px 12px; background:#0a0e1be6; border:1px solid #5aa2ff88; box-shadow:0 0 14px -4px #5aa2ff; }
+  #hoverTag::before { content:"● "; color:#34d399; }
+
+  /* Object of the day */
+  .today { --a:#F0C674; padding:16px 16px 14px; }
+  .today .t-lab { font:600 .64rem/1 var(--ac-mono); letter-spacing:.14em; color:var(--ac-dim); }
+  .today .t-name { font:800 1.35rem/1.15 var(--sans); color:var(--a); text-shadow:0 0 18px color-mix(in srgb, var(--a) 40%, transparent); }
+  .today.min .t-name { font-size:1.05rem; }
+  .today .t-desc { color:#B8C1D6; }
+  .today .t-go, .today .t-row button { font:600 .66rem/1 var(--ac-mono); letter-spacing:.12em; text-transform:uppercase; border-radius:12px; color:#F0C674; background:#4d371b88; border:1px solid #d3ac62aa; padding:11px 14px; }
+  .today .t-row input { border-radius:12px; border:1px solid #ffffff1f; background:#060a18; }
+  .today .t-sub { border-top:1px solid #ffffff14; }
+
+  /* Bottom dock */
+  .dock { --a:#5aa2ff; border-radius:20px; padding:6px; }
+  .dock::before { display:none; }
+  .dock a { border-radius:14px; font:600 .7rem/1 var(--ac-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--ac-ink); }
+  .dock a svg { color:#5aa2ff; }
+  .dock a.cta { color:#F0C674; background:#4d371b88; border:1px solid #d3ac62aa; box-shadow:0 0 20px -6px #F0C674; }
+  .dock a.cta svg { color:#F0C674; }
+  @media (max-width:560px) { .dock a { font-size:.62rem; letter-spacing:.06em; } }
+
+  /* Layers button + panel */
+  .fab { --a:#5aa2ff; background:radial-gradient(circle at 50% 30%,#161f3a,#0a0e1b 70%); border:0; color:#5aa2ff; box-shadow:0 0 16px -6px #5aa2ff; }
+  .fab::before { content:""; position:absolute; inset:-2px; border-radius:50%; background:conic-gradient(from 0deg, #5aa2ff, transparent 30%, #5aa2ff 55%, transparent 80%, #5aa2ff);
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px)); mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px)); animation:acSpin 6s linear infinite; }
+  .fab[aria-expanded="true"] { color:#F0C674; background:radial-gradient(circle at 50% 30%,#3a2f1a,#0a0e1b 75%); }
+  .panel { --a:#5aa2ff; }
+  .panel .sect { font:600 .64rem/1 var(--ac-mono); letter-spacing:.14em; color:var(--ac-dim); }
+  .panel button { font:600 .7rem/1 var(--ac-mono); letter-spacing:.06em; border-radius:12px; color:var(--ac-dim); background:#ffffff06; border:1px solid #ffffff14; }
+  .toggles button[aria-pressed="true"] { color:#5aa2ff; background:#5aa2ff1f; border-color:#5aa2ff99; }
+  .presets button, .actions button { color:var(--ac-ink); border-color:#ffffff1f; }
+  .presets button[aria-current="true"], .actions button[aria-pressed="true"] { color:#F0C674; background:#4d371b88; border-color:#d3ac62aa; }
+  @media (prefers-reduced-motion:reduce) { .ac-line, .ac-orb::before, .ac-orb::after, .fg-chips button, .fab::before { animation:none !important; } }
+</style>
+<!-- END AGENT CONSOLE STYLE -->
+
 <a class="brand si-logo" href="index.html" aria-label="Use Superintelligence, home">
   <img class="si-star" src="brand/logo-cube.png?v=2" alt="" aria-hidden="true">
   <span class="si-w"><span class="si-use">USE</span><span class="si-name">SUPERINTELLIGENCE</span></span>
 </a>
-<aside id="today" class="today" hidden aria-label="Object of the day">
+<aside id="today" class="today ac-tile" hidden aria-label="Object of the day"><span class="ac-line" aria-hidden="true"></span>
   <button class="t-x" type="button" aria-label="Close">×</button>
   <div class="t-lab">✦ OBJECT OF THE DAY</div>
   <div class="t-name"><span id="tName"></span><span class="t-more">· tap to open</span></div>
@@ -290,7 +376,7 @@
   </form>
 </aside>
 <h1 style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0">Use Superintelligence: free AI agents, an AI marketplace and superintelligence news</h1>
-<nav class="dock" aria-label="Site">
+<nav class="dock ac-tile" aria-label="Site"><span class="ac-line" aria-hidden="true"></span>
   <a href="creators.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.4 5.6L20 11l-5.6 2.4L12 19l-2.4-5.6L4 11l5.6-2.4z"/></svg><span class="long">For creators</span><span class="short">Creators</span></a>
   <a href="marketplace.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9h16v11H4z"/><path d="M9 20v-6h6v6"/></svg><span class="long">Marketplace</span><span class="short">Market</span></a>
   <a class="cta" href="https://usesuperintelligence.com/agents.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="7" width="14" height="11" rx="3"/><path d="M12 3v4M9.5 12h.01M14.5 12h.01M9 15h6"/></svg><span class="long">Agent Hub</span><span class="short">Agents</span></a>
@@ -298,18 +384,18 @@
 
 <canvas id="scene" aria-hidden="true"></canvas>
 <div id="veil"></div>
-<div id="focusCard" hidden role="dialog" aria-label="Object details">
+<div id="focusCard" class="ac-tile" hidden role="dialog" aria-label="Object details"><span class="ac-line" aria-hidden="true"></span>
   <div class="fc-lab"><span class="fc-dot"></span><span id="fcIdx">TARGET LOCKED</span></div>
   <h2 id="fcName"></h2>
   <p id="fcText"></p>
   <div class="fc-acts" id="fcActs"></div>
   <div id="fcGuide" hidden>
-    <div class="fg-lab">◇ AI GUIDE</div>
+    <div class="fg-lab">AI Guide</div>
     <div class="fg-chips">
-      <button type="button" data-ask="learn">📘 LEARN</button>
-      <button type="button" data-ask="fact">✨ FUN FACT</button>
-      <button type="button" data-ask="mind">🧠 BRAIN &amp; AI</button>
-      <button type="button" data-ask="quiz">❓ QUIZ ME</button>
+      <button type="button" data-ask="learn"><span class="ac-orb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5"/></svg></span><span>Learn</span></button>
+      <button type="button" data-ask="fact"><span class="ac-orb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.2 5.3L20 10l-5.8 1.7L12 17l-2.2-5.3L4 10l5.8-1.7z"/></svg></span><span>Fun fact</span></button>
+      <button type="button" data-ask="mind"><span class="ac-orb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></span><span>Brain &amp; AI</span></button>
+      <button type="button" data-ask="quiz"><span class="ac-orb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg></span><span>Quiz me</span></button>
     </div>
     <div id="fgOut" aria-live="polite"></div>
     <form id="fgAsk"><input id="fgIn" maxlength="300" placeholder="Ask anything about this…" aria-label="Ask the AI guide"><button type="submit">ASK</button></form>
@@ -325,7 +411,7 @@
 <button id="layersBtn" class="fab" aria-label="Layers" aria-expanded="false" aria-controls="layers">
   <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 2 8l10 5 10-5-10-5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m2 12 10 5 10-5M2 16l10 5 10-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
 </button>
-<div id="layers" class="panel" hidden>
+<div id="layers" class="panel ac-tile" hidden><span class="ac-line" aria-hidden="true"></span>
   <label class="depth">Depth
     <input id="depth" type="range" min="0" max="1000" value="0" aria-label="Zoom depth into the brain">
   </label>
