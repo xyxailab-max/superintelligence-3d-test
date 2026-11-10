@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><div id="prTag" style="position:fixed;left:50%;transform:translateX(-50%);top:8px;z-index:9999;padding:4px 10px;border-radius:999px;background:#2F6BFF;color:#fff;font:700 11px/1 system-ui;pointer-events:none">TEST · sharpness ?</div>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Free SI &amp; AI Agents Marketplace, News &amp; Prompts | Use Superintelligence</title>
@@ -489,9 +489,11 @@
   /* ---------- Setup ---------- */
   const canvas = document.getElementById("scene");
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  // Render at up to 3x screen resolution (4K on a 1080p display) for crisp detail
-  const PR = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3);
+  // Render at up to 3x screen resolution (4K on a 1080p display) for crisp detail; phones (iPhone, Samsung) stay at 2x so they run smooth and cool
+  const IS_PHONE = Math.min(screen.width || 9999, screen.height || 9999) < 600;
+  const PR = Math.min(Math.max(window.devicePixelRatio || 1, 2), IS_PHONE ? 2 : 3);
   renderer.setPixelRatio(PR);
+  try { document.getElementById("prTag").textContent = "TEST · " + (IS_PHONE ? "phone" : "tablet/computer") + " · sharpness " + PR + "x (screen " + (window.devicePixelRatio || 1) + "x)"; } catch (e) {}
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0x000000, 0);
 
