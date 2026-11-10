@@ -472,7 +472,7 @@
   @media (prefers-reduced-motion:reduce) { .oc-pulse { animation:none; display:none; } }
   .fx-empty { padding:14px; border-radius:14px; border:1px dashed #ffffff2a; color:#9AA3B8; font:500 .9rem/1.4 var(--sans); text-align:center; }
   .sc-live { padding:22px 16px 18px; margin:0 0 14px; border-radius:14px; border:1px solid #ffffff1a; background:radial-gradient(120% 60% at 50% 15%, #13235255, transparent 70%), #03050b; }
-  .sc-head { display:flex; align-items:center; justify-content:center; gap:10px; margin:0 0 16px; }
+  .sc-head { display:flex; flex-direction:column; align-items:center; gap:6px; margin:0 0 16px; }
   .sc-cube { width:52px; height:52px; object-fit:contain; animation:cbFloat 5s ease-in-out infinite; }
   .sc-t { font:800 1.35rem/1 var(--sans); color:#f2f5ff; }
   .sc-team { position:relative; max-width:290px; margin:0 auto; padding-left:26px; }
@@ -634,13 +634,12 @@
         var members = team.map(byHref).filter(Boolean);
         var logo = new Image();
         logo.onload = logo.onerror = function () {
-          var cx = W / 2, cy = 420;
-          // smaller cube + title side by side, centered
-          x.font = "800 66px Manrope, system-ui, sans-serif"; var tw = x.measureText("My AI Team").width, lw = logo.naturalWidth ? 120 : 0, gx0 = cx - (lw + 24 + tw) / 2;
-          if (lw) x.drawImage(logo, gx0, cy - 60, 120, 120);
-          x.textAlign = "left"; x.fillStyle = "#f2f5ff"; x.fillText("My AI Team", gx0 + lw + 24, cy + 24);
+          var cx = W / 2, cy = 330;
+          // smaller cube on top, title under it, centered
+          if (logo.naturalWidth) x.drawImage(logo, cx - 65, cy - 65, 130, 130);
+          x.textAlign = "center"; x.fillStyle = "#f2f5ff"; x.font = "800 66px Manrope, system-ui, sans-serif"; x.fillText("My AI Team", cx, cy + 135);
           // narrower rows, centered, with a side wire
-          var top = 560, rowH = 130, gap = 24, bw = 620, bx = (W - bw) / 2 + 25, wx = bx - 50;
+          var top = 540, rowH = 130, gap = 24, bw = 620, bx = (W - bw) / 2 + 25, wx = bx - 50;
           if (members.length) { x.strokeStyle = "rgba(90,140,255,.45)"; x.lineWidth = 3; x.beginPath(); x.moveTo(wx, top + 10); x.lineTo(wx, top + (members.length - 1) * (rowH + gap) + rowH / 2); x.stroke(); }
           members.forEach(function (a, i) {
             var ty = top + i * (rowH + gap);
