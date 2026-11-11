@@ -1,0 +1,147 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#070914">
+<meta name="robots" content="noindex">
+<title>Translate · Use Superintelligence</title>
+<meta name="description" content="Free translator: translate text between English and 9 languages. Runs on your own device, nothing is uploaded.">
+<link rel="icon" href="/favicon.ico?v=4" sizes="any">
+<link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" sizes="180x180">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#070914;--tx:#E9EDFF;--tx2:#9AA3B8;--a:#34d399;--ice:#7FE0FF;--gold:#F0C674;--mono:"JetBrains Mono",monospace;--sans:Manrope,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 500px at 50% -10%,#34d39914,transparent 60%),var(--bg);color:var(--tx);font:400 15px/1.55 var(--sans)}
+@keyframes sw{0%,100%{transform:translateX(-60%)}50%{transform:translateX(60%)}}
+@keyframes bl{50%{opacity:.3}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #ff5a6466}100%{box-shadow:0 0 0 22px #ff5a6400}}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px max(16px,env(safe-area-inset-left))}
+.back{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid #ffffff1f;background:linear-gradient(180deg,#ffffff0d,#ffffff03);box-shadow:inset 0 1px 0 #ffffff1f;color:var(--tx);text-decoration:none;font:700 .62rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.tag{font:700 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tx2)}
+main{max-width:760px;margin:0 auto;padding:10px 16px 56px}
+.k{font:700 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tx2)}
+.eye{color:var(--a)}
+h1{margin:12px 0 6px;font:800 clamp(28px,6vw,40px)/1.1 var(--sans)}
+.lead{color:var(--tx2);margin:0 0 20px}
+.panel{position:relative;overflow:hidden;border-radius:18px;border:1px solid #ffffff18;background:linear-gradient(180deg,#0c1224,#070a14);padding:18px}
+.line{position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--a),transparent);animation:sw 3s ease-in-out infinite}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:22px}
+.stat{display:flex;align-items:center;gap:8px;min-width:0;padding:10px 14px;border-radius:999px;border:1px solid #ffffff1f;background:linear-gradient(180deg,#ffffff0d,#ffffff03);box-shadow:inset 0 1px 0 #ffffff1f}
+.stat b{font:800 .9rem/1 var(--sans);color:var(--c,var(--a));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat i{width:7px;height:7px;border-radius:50%;background:#3ddc97;box-shadow:0 0 8px #3ddc97;animation:bl 2.4s infinite;flex:none}
+.core{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0 4px}
+.mic{width:116px;height:116px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--a);background:radial-gradient(circle at 50% 35%,#34d39933,#0a1422 70%);color:var(--a);box-shadow:0 0 0 8px #34d39912,0 0 34px -4px var(--a),inset 0 1px 0 #ffffff30;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.mic:active{transform:scale(.96)}
+.mic svg{width:40px;height:40px}
+.mic.on{border-color:#ff5a64;color:#ff8a92;background:radial-gradient(circle at 50% 35%,#ff5a6433,#1a0d14 70%);animation:pulse 1.4s infinite}
+.mic:disabled{opacity:.45;cursor:default}
+.ml{font:700 .7rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--a)}
+.mic.on+.ml{color:#ff8a92}
+.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 18px;border-radius:999px;border:1px solid #ffffff1f;background:linear-gradient(180deg,#ffffff0d,#ffffff03);box-shadow:inset 0 1px 0 #ffffff1f;color:var(--tx);font:700 .64rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pill svg{width:16px;height:16px}
+.pill.go{color:#05070f;border:0;background:linear-gradient(120deg,var(--a),color-mix(in srgb,var(--a) 55%,#fff));box-shadow:0 0 16px -4px var(--a)}
+input[type=file]{display:none}
+select{appearance:none;-webkit-appearance:none;min-height:42px;padding:0 18px;border-radius:999px;border:1px solid #ffffff1f;background:linear-gradient(180deg,#ffffff0d,#ffffff03);color:var(--tx);font:700 .64rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.st{margin-top:16px;text-align:center;min-height:20px;font:500 .72rem/1.5 var(--mono);color:var(--tx2)}
+.prog{height:3px;border-radius:3px;background:#ffffff12;overflow:hidden;margin-top:10px;display:none}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--ice));box-shadow:0 0 10px var(--a);transition:width .2s}
+.out{margin-top:16px}
+.oh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+textarea{width:100%;min-height:170px;padding:14px 16px;border:1px solid #ffffff14;border-radius:14px;background:#060914;color:var(--tx);font:15px/1.6 var(--sans);resize:vertical}
+textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transparent);box-shadow:0 0 18px -8px var(--a)}
+.acts{display:flex;gap:10px;margin-top:12px}.acts .pill{flex:1}
+.tip{margin-top:18px;color:var(--tx2);font-size:13px;text-align:center}.tip b{color:var(--gold)}
+.foot{margin-top:28px;color:#6d768a;font-size:12px;text-align:center}.foot a{color:var(--tx2)}
+@media(max-width:480px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1;justify-content:center}}
+
+.langs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:14px}
+.langs select{width:100%}
+.swap{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--a);background:radial-gradient(circle at 50% 35%,#34d39933,#0a1422 70%);color:var(--a);box-shadow:0 0 18px -6px var(--a);cursor:pointer}
+.swap svg{width:18px;height:18px}
+.cnt{font:500 .62rem/1 var(--mono);color:#6d768a}
+</style>
+</head><body>
+<header class="bar"><a class="back" href="/agents.html">← Agent Hub</a><span class="tag">Hear &amp; Speak</span></header>
+<main>
+<div class="k eye">Free tool · USI-HS3</div>
+<h1>Translate</h1>
+<p class="lead">Type or paste text, pick the languages, and get it translated. It runs on your own device, so your words are never uploaded.</p>
+
+<section class="panel">
+ <span class="line" aria-hidden="true"></span>
+ <div class="stats">
+  <div class="stat"><span class="k">Status</span><i></i><b>Ready</b></div>
+  <div class="stat"><span class="k">Languages</span><b style="--c:#7FE0FF">10</b></div>
+  <div class="stat"><span class="k">Cost</span><b style="--c:#F0C674">Free</b></div>
+ </div>
+ <div class="langs">
+  <select id="from" aria-label="From"><option value="en" selected>English</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="hi">Hindi</option><option value="zh">Chinese</option><option value="jap">Japanese</option></select>
+  <button class="swap" id="swap" type="button" aria-label="Swap languages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7h12l-4-4M17 17H5l4 4"/></svg></button>
+  <select id="to" aria-label="To"><option value="en">English</option><option value="es" selected>Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="hi">Hindi</option><option value="zh">Chinese</option><option value="jap">Japanese</option></select>
+ </div>
+ <textarea id="inp" placeholder="Type or paste your text here."></textarea>
+ <div class="oh" style="margin-top:8px"><span class="cnt" id="cnt">0 / 2000</span><span></span></div>
+ <div class="row" style="margin-top:6px"><button class="pill go" id="go" type="button">Translate</button></div>
+ <div class="st" id="st">The first time for each language, the AI downloads once. Then it's fast.</div>
+ <div class="prog" id="pg"><i id="pgi"></i></div>
+</section>
+
+<section class="panel out">
+ <span class="line" aria-hidden="true"></span>
+ <div class="oh"><span class="k">Translation</span><span class="k" style="color:var(--a)">● Live</span></div>
+ <textarea id="out" placeholder="Your translation will show up here."></textarea>
+ <div class="acts">
+  <button class="pill go" id="copy" type="button">Copy</button>
+  <button class="pill" id="save" type="button">Save as .txt</button>
+ </div>
+</section>
+
+<p class="tip"><b>Tip:</b> between two non-English languages, it goes through English, so short, clear sentences work best.</p>
+<p class="foot">Made by Use Superintelligence · Powered by the free OPUS-MT AI · <a href="/privacy.html">Privacy</a></p>
+</main>
+<script type="module">
+const $=id=>document.getElementById(id);
+const st=$('st'),pg=$('pg'),pgi=$('pgi'),inp=$('inp'),out=$('out'),from=$('from'),to=$('to'),go=$('go');
+const MAX=2000,cache={};let T=null,busy=false;
+const say=(t,p)=>{st.textContent=t;if(p==null){pg.style.display='none'}else{pg.style.display='block';pgi.style.width=Math.round(p)+'%'}};
+const name=c=>from.querySelector('option[value="'+c+'"]').textContent;
+inp.addEventListener('input',()=>{if(inp.value.length>MAX)inp.value=inp.value.slice(0,MAX);$('cnt').textContent=inp.value.length+' / '+MAX});
+$('swap').addEventListener('click',()=>{const a=from.value;from.value=to.value;to.value=a;if(out.value.trim()){const t=inp.value;inp.value=out.value;out.value=t;inp.dispatchEvent(new Event('input'))}});
+
+async function model(pair){
+  if(cache[pair])return cache[pair];
+  if(!T){say('Loading the AI…',0);T=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3');T.env.allowLocalModels=false}
+  const files={};
+  const m=await T.pipeline('translation','Xenova/opus-mt-'+pair,{dtype:'q8',progress_callback:e=>{
+    if(e.status==='progress'&&e.total){files[e.file]=[e.loaded,e.total];let l=0,t=0;for(const k in files){l+=files[k][0];t+=files[k][1]}
+      say('Downloading the AI (only once): '+(l/1048576).toFixed(0)+' MB of '+(t/1048576).toFixed(0)+' MB',l/t*100)}}});
+  return cache[pair]=m;
+}
+function pieces(text){
+  const out=[];text.split(/\n/).forEach(line=>{if(!line.trim()){out.push('');return}
+    (line.match(/[^.!?。！？]+[.!?。！？]*\s*/g)||[line]).forEach(s=>out.push(s.trim()))});return out;
+}
+async function step(text,pair,label){
+  const m=await model(pair),parts=pieces(text),res=[];
+  for(let i=0;i<parts.length;i++){
+    if(!parts[i]){res.push('\n');continue}
+    say(label+' '+(i+1)+' of '+parts.filter(Boolean).length+'…',(i+1)/parts.length*100);
+    const r=await m(parts[i]);res.push((r[0]&&r[0].translation_text||'')+' ');
+  }
+  return res.join('').replace(/ \n/g,'\n').replace(/\n /g,'\n').trim();
+}
+go.addEventListener('click',async()=>{
+  const text=inp.value.trim(),a=from.value,b=to.value;
+  if(busy)return;if(!text){say('Type some text first.');return}
+  if(a===b){out.value=text;say('Same language picked, nothing to change.');return}
+  busy=true;go.disabled=true;go.style.opacity=.5;
+  try{
+    let t=text;
+    if(a!=='en')t=await step(t,a+'-en','Translating from '+name(a));
+    if(b!=='en')t=await step(t,'en-'+b,'Translating to '+name(b));
+    out.value=t;say('Done. Your translation is below.');
+  }catch(e){console.error(e);say('Sorry, that did not work. Check your internet for the first download, or try a newer browser.')}
+  busy=false;go.disabled=false;go.style.opacity='';
+});
+$('copy').addEventListener('click',async e=>{try{await navigator.clipboard.writeText(out.value);e.target.textContent='Copied ✓'}catch(_){out.select();document.execCommand('copy');e.target.textContent='Copied ✓'}setTimeout(()=>e.target.textContent='Copy',1500)});
+$('save').addEventListener('click',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out.value],{type:'text/plain'}));a.download='translation.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
+</script>
+</body></html>
