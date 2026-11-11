@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Agent Panel Options (TEST)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --sans:"Manrope",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace; --ink:#E9EDFF; --dim:#9AA3B8; --bg:#05070f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); }
+  .wrap { max-width:1180px; margin:0 auto; padding:20px 16px 60px; }
+  .pick { display:flex; gap:8px; margin:0 0 6px; flex-wrap:wrap; }
+  .pick button { font:700 .7rem/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; padding:11px 14px; border-radius:12px; cursor:pointer; color:var(--dim); background:#ffffff08; border:1px solid #ffffff1a; }
+  .pick button[aria-pressed="true"] { color:#F0C674; background:#4d371b88; border-color:#d3ac62aa; }
+  .note { margin:0 0 18px; color:var(--dim); font-size:.85rem; }
+  .k { font:700 .62rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--dim); }
+  .led { display:inline-block; width:7px; height:7px; border-radius:50%; background:#3ddc97; box-shadow:0 0 8px #3ddc97; }
+  a { color:inherit; text-decoration:none; }
+  @keyframes sweep { 0%,100% { transform:translateX(-60%); } 50% { transform:translateX(60%); } }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes blink { 50% { opacity:.35; } }
+  @keyframes scan { 0% { top:0; } 100% { top:100%; } }
+  .line { position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg,transparent,var(--a),transparent); animation:sweep 3s ease-in-out infinite; pointer-events:none; }
+  .view[hidden] { display:none; }
+
+  /* ===== A: MISSION CONTROL ===== */
+  .A { position:relative; overflow:hidden; display:grid; grid-template-columns:230px 1fr; border-radius:18px; border:1px solid #ffffff18; background:linear-gradient(180deg,#0c1224,#070a14); }
+  .A-side { padding:16px 10px; border-right:1px solid #ffffff12; background:#060914; }
+  .A-side .k { display:block; padding:0 8px 10px; }
+  .A-team { width:100%; display:flex; align-items:center; gap:10px; padding:10px; margin-bottom:4px; border-radius:10px; border:1px solid transparent; background:none; color:var(--dim); cursor:pointer; font:600 .86rem/1 var(--sans); text-align:left; }
+  .A-team i { width:8px; height:8px; border-radius:50%; background:var(--a); box-shadow:0 0 8px var(--a); }
+  .A-team b { margin-left:auto; font:700 .62rem/1 var(--mono); color:#7d869c; }
+  .A-team[aria-pressed="true"] { color:var(--ink); border-color:color-mix(in srgb,var(--a) 50%,transparent); background:color-mix(in srgb,var(--a) 10%,transparent); }
+  .A-main { position:relative; padding:16px; min-width:0; }
+  .A-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .A-stat { position:relative; overflow:hidden; padding:12px 14px; border-radius:12px; border:1px solid #ffffff12; background:#0a0f1e; }
+  .A-stat b { display:block; margin-top:8px; font:800 1.5rem/1 var(--sans); color:var(--a); text-shadow:0 0 16px color-mix(in srgb,var(--a) 50%,transparent); }
+  .A-head, .A-row { display:grid; grid-template-columns:78px minmax(0,1.1fr) minmax(0,2fr) 92px 80px; gap:12px; align-items:center; }
+  .A-head { padding:0 12px 8px; border-bottom:1px solid #ffffff12; }
+  .A-row { padding:12px; border-bottom:1px solid #ffffff0c; border-radius:10px; transition:background .2s; }
+  .A-row:hover { background:color-mix(in srgb,var(--a) 8%,transparent); }
+  .A-id { font:500 .66rem/1 var(--mono); color:#7d869c; letter-spacing:.06em; }
+  .A-nm { font-weight:800; font-size:.95rem; }
+  .A-bl { color:#B8C1D6; font-size:.82rem; line-height:1.35; }
+  .A-st { display:flex; align-items:center; gap:6px; font:700 .6rem/1 var(--mono); letter-spacing:.12em; color:#7CF0BE; }
+  .A-st .led { animation:blink 2.4s ease-in-out infinite; }
+  .A-go { justify-self:end; font:700 .6rem/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; padding:8px 10px; border-radius:9px; color:#F0C674; background:#4d371b66; border:1px solid #d3ac6288; }
+  @media (max-width:760px) {
+    .A { grid-template-columns:1fr; }
+    .A-side { display:flex; gap:6px; overflow-x:auto; padding:12px; border-right:0; border-bottom:1px solid #ffffff12; scrollbar-width:none; }
+    .A-side .k { display:none; }
+    .A-team { flex:none; width:auto; margin:0; }
+    .A-head { display:none; }
+    .A-row { grid-template-columns:1fr auto; grid-template-areas:"nm go" "bl go" "id st"; gap:4px 10px; }
+    .A-id { grid-area:id; } .A-nm { grid-area:nm; } .A-bl { grid-area:bl; } .A-st { grid-area:st; justify-self:end; } .A-go { grid-area:go; }
+    .A-stat b { font-size:1.2rem; }
+  }
+
+  /* ===== B: MODULE RACK ===== */
+  .B-team { position:relative; overflow:hidden; margin-bottom:16px; border-radius:16px; border:1px solid transparent;
+    background:linear-gradient(180deg,#0e1427,#080b16) padding-box, linear-gradient(135deg,var(--a),transparent 55%) border-box; }
+  .B-bar { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #ffffff10; background:repeating-linear-gradient(90deg,#ffffff05 0 2px,transparent 2px 8px); }
+  .B-bar h2 { margin:0; font:700 .8rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--a); }
+  .B-bar .meter { margin-left:auto; display:flex; gap:3px; }
+  .B-bar .meter i { width:4px; height:14px; border-radius:2px; background:var(--a); opacity:.25; animation:blink 1.6s ease-in-out infinite; }
+  .B-bar .meter i:nth-child(odd) { animation-delay:-.5s; } .B-bar .meter i:nth-child(3n) { animation-delay:-1s; }
+  .B-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; padding:12px; }
+  @media (max-width:1000px) { .B-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  @media (max-width:560px) { .B-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .B-mod { position:relative; display:flex; flex-direction:column; gap:8px; min-height:118px; padding:12px; border-radius:10px; border:1px solid #ffffff14;
+    background:linear-gradient(180deg,#121a30,#0a0f1d); box-shadow:inset 0 1px 0 #ffffff12; transition:border-color .2s, transform .2s; }
+  .B-mod::before, .B-mod::after { content:""; position:absolute; width:4px; height:4px; border-radius:50%; background:#ffffff22; top:6px; }
+  .B-mod::before { left:6px; } .B-mod::after { right:6px; }
+  .B-mod:hover { border-color:var(--a); transform:translateY(-2px); }
+  .B-top { display:flex; align-items:center; justify-content:space-between; padding:0 6px; }
+  .B-top .led { animation:blink 2s ease-in-out infinite; }
+  .B-mod:nth-child(3n) .led { animation-delay:-.7s; } .B-mod:nth-child(3n+1) .led { animation-delay:-1.4s; }
+  .B-nm { font:800 .92rem/1.2 var(--sans); }
+  .B-bl { color:var(--dim); font-size:.74rem; line-height:1.35; }
+  .B-slot { margin-top:auto; height:3px; border-radius:3px; background:#ffffff10; overflow:hidden; }
+  .B-slot i { display:block; height:100%; width:40%; background:var(--a); box-shadow:0 0 8px var(--a); animation:sweep 2.6s ease-in-out infinite; }
+
+  /* ===== C: SWITCHBOARD ===== */
+  .C-dials { display:flex; gap:clamp(10px,2.4vw,24px); overflow-x:auto; padding:8px 4px 14px; scrollbar-width:none; }
+  .C-dial { flex:none; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0; border:0; background:none; cursor:pointer; color:var(--dim); }
+  .C-orb { position:relative; width:58px; height:58px; border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle at 50% 30%,#161f3a,#0a0e1b 70%);
+    box-shadow:0 0 14px -6px var(--a); font:800 1rem/1 var(--mono); color:var(--a); transition:transform .25s, box-shadow .25s; }
+  .C-orb::before { content:""; position:absolute; inset:-2px; border-radius:50%; background:conic-gradient(from 0deg,var(--a),transparent 30%,var(--a) 55%,transparent 80%,var(--a));
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px)); mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px)); animation:spin 7s linear infinite; }
+  .C-dial:nth-child(even) .C-orb::before { animation-direction:reverse; }
+  .C-dial span:last-child { font:700 .58rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; }
+  .C-dial[aria-pressed="true"] { color:var(--a); }
+  .C-dial[aria-pressed="true"] .C-orb { transform:scale(1.1); box-shadow:0 0 26px -2px var(--a); background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--a) 35%,#161f3a),#0a0e1b 75%); }
+  .C-dial[aria-pressed="true"] .C-orb::before { animation-duration:2s; }
+  .C-panel { position:relative; overflow:hidden; border-radius:18px; border:1px solid transparent;
+    background:linear-gradient(180deg,#0f1528,#0a0e1b) padding-box, linear-gradient(135deg,var(--a),transparent 60%) border-box; box-shadow:0 0 30px -14px var(--a); }
+  .C-scan { position:absolute; left:0; right:0; height:40px; background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--a) 10%,transparent),transparent); animation:scan 5s linear infinite; pointer-events:none; }
+  .C-ph { display:flex; align-items:center; gap:10px; padding:16px 18px 12px; }
+  .C-ph h2 { margin:0; font:800 1.4rem/1 var(--sans); color:var(--a); text-shadow:0 0 18px color-mix(in srgb,var(--a) 45%,transparent); }
+  .C-ph .k { margin-left:auto; display:flex; align-items:center; gap:6px; color:#7CF0BE; }
+  .C-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 18px; padding:0 18px 12px; }
+  @media (max-width:700px) { .C-list { grid-template-columns:1fr; } }
+  .C-sw { display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid #ffffff0e; }
+  .C-tog { flex:none; position:relative; width:38px; height:22px; border-radius:22px; background:color-mix(in srgb,var(--a) 25%,#0a0e1b); border:1px solid color-mix(in srgb,var(--a) 70%,transparent); }
+  .C-tog::after { content:""; position:absolute; top:3px; right:3px; width:14px; height:14px; border-radius:50%; background:var(--a); box-shadow:0 0 10px var(--a); }
+  .C-tx { min-width:0; }
+  .C-nm { font:800 .95rem/1.2 var(--sans); }
+  .C-bl { margin-top:2px; color:var(--dim); font-size:.78rem; line-height:1.35; }
+  .C-id { margin-left:auto; flex:none; font:500 .6rem/1 var(--mono); color:#7d869c; }
+  .C-sw:hover .C-nm { color:var(--a); }
+  @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; } }
+</style>
+</head><body>
+<div class="wrap">
+  <div class="pick" id="pick">
+    <button type="button" data-v="A" aria-pressed="true">A · Mission Control</button>
+    <button type="button" data-v="B" aria-pressed="false">B · Module Rack</button>
+    <button type="button" data-v="C" aria-pressed="false">C · Switchboard</button>
+  </div>
+  <p class="note" id="note"></p>
+  <section class="view" id="vA"></section>
+  <section class="view" id="vB" hidden></section>
+  <section class="view" id="vC" hidden></section>
+</div>
+<script>
+(function () {
+  var D = [["resume","Resume Helper","Career","Turns your experience into a strong, results-focused resume."],["cover-letter","Cover Letter Writer","Career","Writes a tailored cover letter in minutes."],["interview-coach","Interview Coach","Career","Practice interviews with feedback on every answer."],["linkedin","LinkedIn Profile Pro","Career","Writes a headline and About section that get noticed."],["salary-negotiator","Salary Negotiator","Career","Helps you ask for more money with confidence."],["career-switch","Career Switch Guide","Career","Maps a realistic path into a new career."],["job-search","Job Search Planner","Career","Builds a weekly plan to land interviews faster."],["networking","Networking Messages","Career","Writes friendly outreach that people actually answer."],["reference-letter","Recommendation Letter Writer","Career","Drafts recommendation and reference letters."],["resignation","Resignation Letter Writer","Career","Leave your job gracefully, on good terms."],["business","Business Idea Lab","Business","Brainstorms ideas and checks if they can really work."],["business-plan","Business Plan Builder","Business","Creates a clear one-page business plan."],["pitch","Pitch Coach","Business","Sharpens your pitch for investors, partners or customers."],["pricing","Pricing Strategist","Business","Helps you set prices that sell and make a profit."],["customer-persona","Customer Persona Maker","Business","Describes exactly who your ideal customer is."],["competitor","Competitor Analyzer","Business","Finds how to stand out from the competition."],["names","Brand Name Generator","Business","Creates memorable names and taglines."],["side-hustle","Side Hustle Finder","Business","Finds side income ideas that fit your skills and time."],["customer-service","Customer Reply Writer","Business","Writes calm, professional replies to customers."],["sop","Process & SOP Writer","Business","Turns how you work into clear step-by-step guides."],["social","Social Post Writer","Marketing","Writes scroll-stopping posts, captions and hooks."],["video-script","Short Video Scripter","Marketing","Scripts Reels, TikToks and Shorts that keep people watching."],["seo","SEO Helper","Marketing","Helps your website rank higher on Google."],["blog","Blog Post Writer","Marketing","Outlines and writes helpful blog posts."],["ad-copy","Ad Copywriter","Marketing","Writes ads for Facebook, Instagram and Google."],["newsletter","Newsletter Writer","Marketing","Writes engaging email newsletters people open."],["product-description","Product Description Writer","Marketing","Writes product descriptions that sell."],["brand-voice","Brand Voice Builder","Marketing","Defines how your brand sounds everywhere."],["landing-page","Landing Page Copywriter","Marketing","Writes the words for a page that converts visitors."],["slogan","Slogan Generator","Marketing","Creates catchy slogans and taglines."],["email","Email Writer","Writing","Drafts clear, polite emails for any situation."],["proofreader","Proofreader","Writing","Fixes grammar, spelling and clarity, and explains why."],["rewriter","Tone Changer","Writing","Rewrites text to sound more professional, friendly or confident."],["summarizer","Summarizer","Writing","Turns long text into a short, clear summary."],["story","Story Writer","Writing","Writes short stories in any genre, together with you."],["poem","Poem Writer","Writing","Writes original poems for any moment."],["speech","Speech Writer","Writing","Writes speeches and toasts that land."],["essay-outline","Essay Outliner","Writing","Builds a clear thesis and outline for any essay."],["simplifier","Plain English","Writing","Turns confusing text into simple words anyone understands."],["translator","Translator","Writing","Translates naturally between languages."],["tutor","Study Tutor","Learning","Explains any school topic simply, step by step."],["math","Math Tutor","Learning","Solves math step by step so you actually understand it."],["essay-coach","Essay Feedback Coach","Learning","Gives clear feedback to improve your essay."],["flashcards","Flashcard Maker","Learning","Turns notes into flashcards and practice questions."],["language-partner","Language Practice Partner","Learning","Chat in a new language and get gentle corrections."],["science","Science Explainer","Learning","Makes science fascinating and easy to understand."],["history","History Storyteller","Learning","Tells history as gripping, accurate stories."],["study-planner","Study Planner","Learning","Makes a study schedule that fits your life."],["eli5","Explain Like I'm 5","Learning","Explains anything in the simplest possible way."],["test-prep","Test Prep Coach","Learning","Practice questions and strategies for big exams."],["coach","AI Coach","Productivity","Shows you practical ways to use AI in your job."],["prompt-engineer","Prompt Engineer","Productivity","Writes better prompts so AI gives better answers."],["meeting-notes","Meeting Notes Organizer","Productivity","Turns messy notes into clear summaries and action items."],["project-planner","Project Planner","Productivity","Breaks big goals into clear steps and deadlines."],["decision","Decision Helper","Productivity","Helps you think through tough choices clearly."],["daily-planner","Daily Planner","Productivity","Plans your day so the important things get done."],["spreadsheet","Spreadsheet Formula Helper","Productivity","Writes Excel and Google Sheets formulas for you."],["presentation","Presentation Builder","Productivity","Outlines slides and speaker notes for any talk."],["report","Report Writer","Productivity","Turns information into a clear, professional report."],["focus","Focus Coach","Productivity","Beats procrastination with small, doable steps."],["budget","Budget Planner","Money","Builds a simple monthly budget that works."],["debt","Debt Payoff Planner","Money","Makes a plan to get out of debt faster."],["savings","Savings Coach","Money","Helps you save for goals, step by step."],["money-basics","Money Explainer","Money","Explains credit scores, interest and money terms simply."],["investing-basics","Investing Basics","Money","Explains how investing works, without the jargon."],["tax-basics","Tax Basics Explainer","Money","Explains US tax terms and forms in plain English."],["frugal","Frugal Living Tips","Money","Practical ways to spend less and live well."],["big-purchase","Big Purchase Helper","Money","Helps you buy smart: cars, laptops, appliances and more."],["bill-negotiator","Bill Negotiator","Money","Scripts to lower your bills and fees."],["retirement-basics","Retirement Basics","Money","Explains 401(k)s, IRAs and planning for later."],["meal-planner","Meal Planner","Life","Plans a week of meals and a shopping list."],["chef","Recipe Chef","Life","Turns what's in your fridge into a delicious meal."],["fitness","Workout Planner","Life","Creates workouts for your goals and equipment."],["sleep","Sleep Coach","Life","Helps you fall asleep faster and wake up rested."],["habits","Habit Builder","Life","Builds good habits that actually stick."],["mindful","Calm & Mindfulness","Life","Guided breathing and calming exercises for stressful moments."],["travel","Travel Planner","Life","Plans trips with itineraries, budgets and tips."],["gifts","Gift Idea Finder","Life","Finds thoughtful gifts for anyone, any budget."],["home","Home Organizer","Life","Plans cleaning routines and decluttering projects."],["pets","Pet Care Helper","Life","Answers everyday questions about dogs, cats and more."],["code","Code Helper","Tech","Writes and explains code in any language."],["debug","Bug Fixer","Tech","Finds and fixes errors in your code."],["learn-code","Learn to Code Mentor","Tech","Teaches coding from zero, one small step at a time."],["sql","SQL Helper","Tech","Writes database queries from plain English."],["website","Website Builder","Tech","Creates simple web pages with HTML and CSS."],["tech-support","Tech Support","Tech","Fixes everyday phone, computer and Wi-Fi problems."],["scam-check","Scam Checker","Tech","Checks if a message, email or offer looks like a scam."],["privacy","Online Safety Guide","Tech","Protects your accounts, passwords and privacy."],["ai-tools","AI Tools Finder","Tech","Recommends the right AI tool for your task."],["automation","Automation Builder","Tech","Designs workflows to automate repetitive work."],["guide","Brain Guide","Fun","Explains the science behind everything in the 3D brain."],["quiz","Quiz Master","Fun","Runs quizzes on any topic and keeps score."],["adventure","Text Adventure","Fun","An interactive story game where you choose what happens."],["riddles","Riddle Master","Fun","Riddles and brain teasers to test your wits."],["jokes","Joke Writer","Fun","Clean, clever jokes for any topic."],["debate","Debate Partner","Fun","Argues the other side to sharpen your thinking."],["names-fun","Name Generator","Fun","Names for pets, babies, characters, teams and more."],["movies","Movie & Book Recommender","Fun","Finds your next favorite movie, show or book."],["philosopher","Pocket Philosopher","Fun","Explores big questions about life, meaning and ideas."],["would-you-rather","Would You Rather","Fun","Fun and thought-provoking would-you-rather questions."]];
+  var CATS = ["Career","Business","Marketing","Writing","Learning","Productivity","Money","Life","Tech","Fun"];
+  var COL = ["#3ddc97","#f0c674","#ff6b9d","#b48cff","#4fd1ff","#ffa24c","#9be15d","#ff7a6b","#22e3c4","#ffd84d"];
+  var NOTES = { A: "A dashboard: teams on the side, live stats on top, agents in clean rows with a Launch button.",
+    B: "Each team is a hardware rack. Each agent is a small module with a status light and a running signal bar.",
+    C: "Round team dials (like your 5 Powers). Tap one, and its agents show up as switched-on controls." };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (m) { return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[m]; }); }
+  var by = {}; CATS.forEach(function (c) { by[c] = []; });
+  D.forEach(function (a, i) { a.push("USI-" + String(i + 1).padStart(3, "0")); by[a[2]].push(a); });
+  function url(a) { return "https://usesuperintelligence.com/agents/" + a[0]; }
+
+  // A
+  var vA = document.getElementById("vA"), aCat = 0;
+  vA.innerHTML = '<div class="A" style="--a:' + COL[0] + '"><span class="line"></span><nav class="A-side" id="aSide"><span class="k">Teams</span>' +
+    CATS.map(function (c, i) { return '<button type="button" class="A-team" data-i="' + i + '" style="--a:' + COL[i] + '" aria-pressed="' + (i === 0) + '"><i></i>' + c + '<b>' + by[c].length + '</b></button>'; }).join("") +
+    '</nav><div class="A-main"><div class="A-stats">' +
+    '<div class="A-stat" style="--a:#5aa2ff"><span class="line"></span><span class="k">Agents</span><b>100</b></div>' +
+    '<div class="A-stat" style="--a:#3ddc97"><span class="line"></span><span class="k">Online</span><b>100%</b></div>' +
+    '<div class="A-stat" id="aTeamStat"><span class="line"></span><span class="k">This team</span><b></b></div></div>' +
+    '<div class="A-head"><span class="k">ID</span><span class="k">Agent</span><span class="k">Job</span><span class="k">Status</span><span></span></div><div id="aRows"></div></div></div>';
+  function drawA() {
+    var c = CATS[aCat], col = COL[aCat];
+    vA.querySelector(".A").style.setProperty("--a", col);
+    var st = document.getElementById("aTeamStat"); st.style.setProperty("--a", col); st.querySelector("b").textContent = c;
+    document.getElementById("aRows").innerHTML = by[c].map(function (a) {
+      return '<a class="A-row" href="' + url(a) + '"><span class="A-id">' + a[4] + '</span><span class="A-nm">' + esc(a[1]) + '</span><span class="A-bl">' + esc(a[3]) +
+        '</span><span class="A-st"><span class="led"></span>READY</span><span class="A-go">Launch</span></a>'; }).join("");
+    vA.querySelectorAll(".A-team").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.i === aCat)); });
+  }
+  document.getElementById("aSide").addEventListener("click", function (e) { var b = e.target.closest(".A-team"); if (b) { aCat = +b.dataset.i; drawA(); } });
+  drawA();
+
+  // B
+  document.getElementById("vB").innerHTML = CATS.map(function (c, i) {
+    return '<section class="B-team" style="--a:' + COL[i] + '"><span class="line"></span><div class="B-bar"><h2>' + c + '</h2><span class="k">' + by[c].length + ' modules</span><span class="meter"><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div class="B-grid">' +
+      by[c].map(function (a) { return '<a class="B-mod" href="' + url(a) + '"><span class="B-top"><span class="k">' + a[4] + '</span><span class="led"></span></span><span class="B-nm">' + esc(a[1]) + '</span><span class="B-bl">' + esc(a[3]) + '</span><span class="B-slot"><i></i></span></a>'; }).join("") +
+      '</div></section>'; }).join("");
+
+  // C
+  var vC = document.getElementById("vC"), cCat = 0;
+  vC.innerHTML = '<div class="C-dials" id="cDials">' + CATS.map(function (c, i) {
+    return '<button type="button" class="C-dial" data-i="' + i + '" style="--a:' + COL[i] + '" aria-pressed="' + (i === 0) + '"><span class="C-orb">' + by[c].length + '</span><span>' + c + '</span></button>'; }).join("") +
+    '</div><div class="C-panel" id="cPanel"><span class="line"></span><span class="C-scan"></span><div class="C-ph"><h2 id="cH"></h2><span class="k"><span class="led"></span>All online</span></div><div class="C-list" id="cList"></div></div>';
+  function drawC() {
+    var c = CATS[cCat]; document.getElementById("cPanel").style.setProperty("--a", COL[cCat]);
+    document.getElementById("cH").textContent = c + " team";
+    document.getElementById("cList").innerHTML = by[c].map(function (a) {
+      return '<a class="C-sw" href="' + url(a) + '"><span class="C-tog"></span><span class="C-tx"><span class="C-nm">' + esc(a[1]) + '</span><span class="C-bl">' + esc(a[3]) + '</span></span><span class="C-id">' + a[4] + '</span></a>'; }).join("");
+    vC.querySelectorAll(".C-dial").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.i === cCat)); });
+  }
+  document.getElementById("cDials").addEventListener("click", function (e) { var b = e.target.closest(".C-dial"); if (b) { cCat = +b.dataset.i; drawC(); } });
+  drawC();
+
+  // switcher
+  var note = document.getElementById("note");
+  function show(v) {
+    ["A","B","C"].forEach(function (x) { document.getElementById("v" + x).hidden = x !== v; });
+    document.querySelectorAll("#pick button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === v)); });
+    note.textContent = NOTES[v];
+  }
+  document.getElementById("pick").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) show(b.dataset.v); });
+  show("A");
+})();
+</script>
+</body></html>
