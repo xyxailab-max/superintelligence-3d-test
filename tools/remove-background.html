@@ -84,7 +84,7 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
   <span class="ml">Tap to pick or take a photo</span>
  </label>
  <input type="file" id="file" accept="image/*">
- <div class="langs"><select id="q" aria-label="What is in the photo"><option value="onnx-community/BiRefNet_lite-ONNX">Any object · best</option><option value="Xenova/modnet">People only · fast</option></select></div>
+ <div class="langs"><select id="q" aria-label="What is in the photo"><option value="any">Any object · best</option><option value="people">People only · fast</option></select></div>
  <div class="st" id="st">The first time, the AI downloads once. Then it's fast.</div>
  <div class="prog" id="pg"><i id="pgi"></i></div>
 </section>
@@ -109,33 +109,49 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
 <script type="module">
 const $=id=>document.getElementById(id);
 const st=$('st'),pg=$('pg'),pgi=$('pgi'),file=$('file'),drop=$('drop'),q=$('q'),res=$('res');
-let T=null,pipe=null,pid='',busy=false,last=null,cut=null,bg='';
+let T=null,busy=false,last=null,cut=null,bg='';const M={};
 const say=(t,p)=>{st.textContent=t;if(p==null){pg.style.display='none'}else{pg.style.display='block';pgi.style.width=Math.round(p)+'%'}};
-async function getPipe(){
-  if(pipe&&pid===q.value)return pipe;
-  if(!T){say('Loading the AI…',0);T=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3');T.env.allowLocalModels=false}
-  if(pipe&&pipe.dispose){try{await pipe.dispose()}catch(_){}}pipe=null;
-  const files={};
-  pipe=await T.pipeline('background-removal',q.value,{progress_callback:e=>{
-    if(e.status==='progress'&&e.total){files[e.file]=[e.loaded,e.total];let l=0,t=0;for(const k in files){l+=files[k][0];t+=files[k][1]}
-      say('Downloading the AI (only once): '+(l/1048576).toFixed(0)+' MB of '+(t/1048576).toFixed(0)+' MB',l/t*100)}}});
-  pid=q.value;return pipe;
+async function lib(){if(!T){say('Loading the AI…',0);T=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3');T.env.allowLocalModels=false}return T}
+function prog(){const files={};return e=>{if(e.status==='progress'&&e.total){files[e.file]=[e.loaded,e.total];let l=0,t=0;for(const k in files){l+=files[k][0];t+=files[k][1]}
+  say('Downloading the AI (only once): '+(l/1048576).toFixed(0)+' MB of '+(t/1048576).toFixed(0)+' MB',l/t*100)}}}
+// "Any object": BiRefNet lite, run the way its model card shows
+async function anyObject(c){
+  const T=await lib(),id='onnx-community/BiRefNet_lite-ONNX';
+  if(!M.bi){
+    let dev='wasm';try{if(navigator.gpu&&await navigator.gpu.requestAdapter())dev='webgpu'}catch(_){}
+    M.bi={model:await T.AutoModel.from_pretrained(id,{dtype:'fp32',device:dev,progress_callback:prog()}),proc:await T.AutoProcessor.from_pretrained(id)};
+  }
+  say('Removing the background…');
+  const img=await T.RawImage.fromCanvas(c);
+  const {pixel_values}=await M.bi.proc(img);
+  const {output_image}=await M.bi.model({input_image:pixel_values});
+  const mask=await T.RawImage.fromTensor(output_image[0].sigmoid().mul(255).to('uint8')).resize(c.width,c.height);
+  const o=document.createElement('canvas');o.width=c.width;o.height=c.height;const x=o.getContext('2d');x.drawImage(c,0,0);
+  const d=x.getImageData(0,0,o.width,o.height);for(let i=0;i<mask.data.length;i++)d.data[4*i+3]=mask.data[i];x.putImageData(d,0,0);
+  return o;
 }
-function shrink(f){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const L=Math.max(im.width,im.height),k=L>2048?2048/L:1;
+// "People only": MODNet, small and fast
+async function people(c){
+  const T=await lib();
+  if(!M.mod)M.mod=await T.pipeline('background-removal','Xenova/modnet',{progress_callback:prog()});
+  say('Removing the background…');
+  const out=await M.mod(await T.RawImage.fromCanvas(c));
+  return out[0].toCanvas();
+}
+function shrink(f){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const L=Math.max(im.width,im.height),k=L>1600?1600/L:1;
   const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
   URL.revokeObjectURL(im.src);ok(c)};im.onerror=no;im.src=URL.createObjectURL(f)})}
 async function run(f){
   if(busy)return;busy=true;drop.style.pointerEvents='none';q.disabled=true;
   try{
-    const c=await shrink(f);
-    const p=await getPipe();
-    say('Removing the background…');
-    const img=await T.RawImage.fromCanvas(c);
-    const out=await p(img);
-    cut=out[0].toCanvas();
+    const c=await shrink(f);let note='';
+    if(q.value==='any'){
+      try{cut=await anyObject(c)}
+      catch(e){console.warn(e);M.bi=null;say('This device could not run "Any object". Trying "People only"…');cut=await people(c);q.value='people';note=' (used "People only", the best this device can run)'}
+    }else cut=await people(c);
     res.innerHTML='';res.appendChild(cut);
-    say('Done. Pick a background and tap Save picture.');
-  }catch(e){console.error(e);say(q.value.includes('modnet')?'Sorry, that did not work. Try another photo, or a newer browser.':'Sorry, that did not work. Try "People only · fast", or a newer device.')}
+    say('Done'+note+'. Pick a background and tap Save picture.');
+  }catch(e){console.error(e);say('Sorry, that did not work. Try another photo, or a newer browser.')}
   busy=false;drop.style.pointerEvents='';q.disabled=false;
 }
 file.addEventListener('change',()=>{const f=file.files[0];file.value='';if(!f)return;last=f;
