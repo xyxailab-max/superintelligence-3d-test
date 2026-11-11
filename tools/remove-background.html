@@ -131,17 +131,23 @@ async function anyObject(c){
   const {pixel_values}=await M.bi.proc(img);
   const {output_image}=await M.bi.model({input_image:pixel_values});
   const mask=await T.RawImage.fromTensor(output_image[0].sigmoid().mul(255).to('uint8')).resize(c.width,c.height);
+  return withMask(c,mask);
+}
+function withMask(c,mask){
   const o=document.createElement('canvas');o.width=c.width;o.height=c.height;const x=o.getContext('2d');x.drawImage(c,0,0);
-  const d=x.getImageData(0,0,o.width,o.height);for(let i=0;i<mask.data.length;i++)d.data[4*i+3]=mask.data[i];x.putImageData(d,0,0);
+  const d=x.getImageData(0,0,o.width,o.height),ch=mask.channels||1;for(let i=0,n=o.width*o.height;i<n;i++)d.data[4*i+3]=mask.data[i*ch];x.putImageData(d,0,0);
   return o;
 }
 // "People only": MODNet, small and fast
 async function people(c){
   const T=await lib();
-  if(!M.mod)M.mod=await T.pipeline('background-removal','Xenova/modnet',{progress_callback:prog()});
+  const id='Xenova/modnet';
+  if(!M.mod)M.mod={model:await T.AutoModel.from_pretrained(id,{dtype:'fp32',progress_callback:prog()}),proc:await T.AutoProcessor.from_pretrained(id)};
   say('Removing the background…');
-  const out=await M.mod(await T.RawImage.fromCanvas(c));
-  return out[0].toCanvas();
+  const {pixel_values}=await M.mod.proc(await T.RawImage.fromCanvas(c));
+  const {output}=await M.mod.model({input:pixel_values});
+  const mask=await T.RawImage.fromTensor(output[0].mul(255).to('uint8')).resize(c.width,c.height);
+  return withMask(c,mask);
 }
 function shrink(f){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const L=Math.max(im.width,im.height),k=L>1600?1600/L:1;
   const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
