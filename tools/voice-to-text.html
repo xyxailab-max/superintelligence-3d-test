@@ -7,68 +7,94 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" sizes="180x180">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-:root{color-scheme:dark;--bg:#070914;--s2:#0E1220;--card:#111725;--line:#283246;--tx:#E9EDFF;--tx2:#9AA3B8;--blue:#3D7BFF;--ice:#7FE0FF;--gold:#F0C674;--grn:#34d399}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:400 15px/1.55 Manrope,system-ui,sans-serif}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--line)}
-.bar a{color:var(--tx2);text-decoration:none;font-size:13px;font-weight:600}
-.logo{display:flex;align-items:center;gap:9px;color:var(--tx)!important}.logo img{height:28px;width:auto}
-main{max-width:760px;margin:0 auto;padding:32px 16px 56px}
-.eye{font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--grn)}
-h1{margin:12px 0 8px;font-size:clamp(28px,5vw,40px);line-height:1.1}
-.lead{color:var(--tx2);margin:0 0 24px}
-.box{padding:18px;background:var(--card);border:1px solid var(--line);border-radius:14px}
-.btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.b{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--tx);font:700 15px Manrope,sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.b svg{width:20px;height:20px}
-.b.rec{border-color:rgba(52,211,153,.55);color:var(--grn)}
-.b.on{background:rgba(255,80,90,.12);border-color:#ff5a64;color:#ff8a92}
-.b:disabled{opacity:.45;cursor:default}
-.dot{width:9px;height:9px;border-radius:50%;background:#ff5a64;animation:bl 1s infinite}@keyframes bl{50%{opacity:.25}}
+:root{color-scheme:dark;--bg:#070914;--tx:#E9EDFF;--tx2:#9AA3B8;--a:#34d399;--ice:#7FE0FF;--gold:#F0C674;--mono:"JetBrains Mono",monospace;--sans:Manrope,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 500px at 50% -10%,#34d39914,transparent 60%),var(--bg);color:var(--tx);font:400 15px/1.55 var(--sans)}
+@keyframes sw{0%,100%{transform:translateX(-60%)}50%{transform:translateX(60%)}}
+@keyframes bl{50%{opacity:.3}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #ff5a6466}100%{box-shadow:0 0 0 22px #ff5a6400}}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px max(16px,env(safe-area-inset-left))}
+.back{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid #ffffff1f;background:linear-gradient(180deg,#ffffff0d,#ffffff03);box-shadow:inset 0 1px 0 #ffffff1f;color:var(--tx);text-decoration:none;font:700 .62rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.tag{font:700 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tx2)}
+main{max-width:760px;margin:0 auto;padding:10px 16px 56px}
+.k{font:700 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tx2)}
+.eye{color:var(--a)}
+h1{margin:12px 0 6px;font:800 clamp(28px,6vw,40px)/1.1 var(--sans)}
+.lead{color:var(--tx2);margin:0 0 20px}
+.panel{position:relative;overflow:hidden;border-radius:18px;border:1px solid #ffffff18;background:linear-gradient(180deg,#0c1224,#070a14);padding:18px}
+.line{position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--a),transparent);animation:sw 3s ease-in-out infinite}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:22px}
+.stat{display:flex;align-items:center;gap:8px;min-width:0;padding:10px 14px;border-radius:999px;border:1px solid #ffffff1f;background:linear-gradient(180deg,#ffffff0d,#ffffff03);box-shadow:inset 0 1px 0 #ffffff1f}
+.stat b{font:800 .9rem/1 var(--sans);color:var(--c,var(--a));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat i{width:7px;height:7px;border-radius:50%;background:#3ddc97;box-shadow:0 0 8px #3ddc97;animation:bl 2.4s infinite;flex:none}
+.core{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0 4px}
+.mic{width:116px;height:116px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--a);background:radial-gradient(circle at 50% 35%,#34d39933,#0a1422 70%);color:var(--a);box-shadow:0 0 0 8px #34d39912,0 0 34px -4px var(--a),inset 0 1px 0 #ffffff30;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.mic:active{transform:scale(.96)}
+.mic svg{width:40px;height:40px}
+.mic.on{border-color:#ff5a64;color:#ff8a92;background:radial-gradient(circle at 50% 35%,#ff5a6433,#1a0d14 70%);animation:pulse 1.4s infinite}
+.mic:disabled{opacity:.45;cursor:default}
+.ml{font:700 .7rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--a)}
+.mic.on+.ml{color:#ff8a92}
+.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 18px;border-radius:999px;border:1px solid #ffffff1f;background:linear-gradient(180deg,#ffffff0d,#ffffff03);box-shadow:inset 0 1px 0 #ffffff1f;color:var(--tx);font:700 .64rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pill svg{width:16px;height:16px}
+.pill.go{color:#05070f;border:0;background:linear-gradient(120deg,var(--a),color-mix(in srgb,var(--a) 55%,#fff));box-shadow:0 0 16px -4px var(--a)}
 input[type=file]{display:none}
-.opt{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;font-size:13px;color:var(--tx2)}
-select{padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--s2);color:var(--tx);font:600 13px Manrope,sans-serif}
-.st{margin-top:14px;min-height:22px;font:500 12px/1.5 "JetBrains Mono",monospace;color:var(--tx2)}
-.prog{height:4px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:8px;display:none}
-.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--grn),var(--ice));transition:width .2s}
-h2{margin:28px 0 12px;font:600 12px/1 "JetBrains Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--tx2)}
-textarea{width:100%;min-height:180px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--tx);font:15px/1.6 Manrope,sans-serif;resize:vertical}
-.acts{display:flex;gap:10px;margin-top:10px}.acts .b{flex:1;min-height:44px;font-size:13px}
-.tip{margin-top:22px;color:var(--tx2);font-size:13px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--s2)}.tip b{color:var(--gold)}
-.foot{margin-top:36px;color:#6d768a;font-size:12px;text-align:center}.foot a{color:var(--tx2)}
-@media(max-width:480px){.btns{grid-template-columns:1fr}}
-</style></head><body>
-<header class="bar"><a class="logo" href="/"><img src="/brand/logo-cube.png?v=2" alt=""><span>Use Superintelligence</span></a><a href="/agents.html">← Agent Hub</a></header>
+select{appearance:none;-webkit-appearance:none;min-height:42px;padding:0 18px;border-radius:999px;border:1px solid #ffffff1f;background:linear-gradient(180deg,#ffffff0d,#ffffff03);color:var(--tx);font:700 .64rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.st{margin-top:16px;text-align:center;min-height:20px;font:500 .72rem/1.5 var(--mono);color:var(--tx2)}
+.prog{height:3px;border-radius:3px;background:#ffffff12;overflow:hidden;margin-top:10px;display:none}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--ice));box-shadow:0 0 10px var(--a);transition:width .2s}
+.out{margin-top:16px}
+.oh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+textarea{width:100%;min-height:170px;padding:14px 16px;border:1px solid #ffffff14;border-radius:14px;background:#060914;color:var(--tx);font:15px/1.6 var(--sans);resize:vertical}
+textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transparent);box-shadow:0 0 18px -8px var(--a)}
+.acts{display:flex;gap:10px;margin-top:12px}.acts .pill{flex:1}
+.tip{margin-top:18px;color:var(--tx2);font-size:13px;text-align:center}.tip b{color:var(--gold)}
+.foot{margin-top:28px;color:#6d768a;font-size:12px;text-align:center}.foot a{color:var(--tx2)}
+@media(max-width:480px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1;justify-content:center}}
+</style>
+</head><body>
+<header class="bar"><a class="back" href="/agents.html">← Agent Hub</a><span class="tag">Hear &amp; Speak</span></header>
 <main>
-<div class="eye">Hear &amp; Speak · Free</div>
+<div class="k eye">Free tool · USI-HS2</div>
 <h1>Voice to Text</h1>
 <p class="lead">Record your voice or pick a voice memo, and get it as text you can copy. It runs on your own device, so your audio is never uploaded.</p>
 
-<div class="box">
- <div class="btns">
-  <button class="b rec" id="rec" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Record</span></button>
-  <label class="b" for="file" id="pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg><span>Pick a voice memo</span></label>
+<section class="panel">
+ <span class="line" aria-hidden="true"></span>
+ <div class="stats">
+  <div class="stat"><span class="k">Status</span><i></i><b>Ready</b></div>
+  <div class="stat"><span class="k">Runs</span><b style="--c:#7FE0FF">On device</b></div>
+  <div class="stat"><span class="k">Cost</span><b style="--c:#F0C674">Free</b></div>
+ </div>
+ <div class="core">
+  <button class="mic" id="rec" type="button" aria-label="Record"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+  <span class="ml" id="ml">Tap to record</span>
+ </div>
+ <div class="row">
+  <label class="pill" for="file" id="pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>Pick a voice memo</label>
   <input type="file" id="file" accept="audio/*,video/*">
+  <select id="q" aria-label="Quality"><option value="Xenova/whisper-tiny">Fast · 40 MB</option><option value="Xenova/whisper-base" selected>Better · 75 MB</option></select>
  </div>
- <div class="opt"><span>Quality</span>
-  <select id="q"><option value="Xenova/whisper-tiny">Fast (40 MB)</option><option value="Xenova/whisper-base" selected>Better (75 MB)</option></select>
- </div>
- <div class="st" id="st">Ready. The first time, the AI downloads once (then it's fast).</div>
+ <div class="st" id="st">The first time, the AI downloads once. Then it's fast.</div>
  <div class="prog" id="pg"><i id="pgi"></i></div>
-</div>
+</section>
 
-<h2>Your text</h2>
-<textarea id="out" placeholder="Your words will show up here."></textarea>
-<div class="acts">
- <button class="b" id="copy" type="button">Copy</button>
- <button class="b" id="save" type="button">Save as .txt</button>
-</div>
+<section class="panel out">
+ <span class="line" aria-hidden="true"></span>
+ <div class="oh"><span class="k">Your text</span><span class="k" style="color:var(--a)">● Live</span></div>
+ <textarea id="out" placeholder="Your words will show up here."></textarea>
+ <div class="acts">
+  <button class="pill go" id="copy" type="button">Copy</button>
+  <button class="pill" id="save" type="button">Save as .txt</button>
+ </div>
+</section>
 
-<p class="tip"><b>Tip:</b> works in most languages. Best on newer phones, iPads and computers. Long recordings take a little longer.</p>
+<p class="tip"><b>Tip:</b> works in most languages. Fix any word right in the text box.</p>
 <p class="foot">Made by Use Superintelligence · Powered by the free Whisper AI · <a href="/privacy.html">Privacy</a></p>
 </main>
 <script type="module">
 const $=id=>document.getElementById(id);
-const st=$('st'),pg=$('pg'),pgi=$('pgi'),out=$('out'),rec=$('rec'),pick=$('pick'),file=$('file'),q=$('q');
+const ml=$('ml'),st=$('st'),pg=$('pg'),pgi=$('pgi'),out=$('out'),rec=$('rec'),pick=$('pick'),file=$('file'),q=$('q');
 let asr=null,asrId='',busy=false,mr=null,chunks=[],stream=null;
 const say=(t,p)=>{st.textContent=t;if(p==null){pg.style.display='none'}else{pg.style.display='block';pgi.style.width=Math.round(p)+'%'}};
 const lock=b=>{busy=b;rec.disabled=b&&!mr;pick.style.opacity=b?.45:1;pick.style.pointerEvents=b?'none':'';q.disabled=b};
@@ -117,10 +143,9 @@ rec.addEventListener('click',async()=>{
   chunks=[];mr=new MediaRecorder(stream);
   mr.ondataavailable=e=>e.data.size&&chunks.push(e.data);
   mr.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const b=new Blob(chunks,{type:mr.mimeType||'audio/webm'});mr=null;
-    rec.classList.remove('on');rec.innerHTML=REC;run(b)};
-  mr.start();rec.classList.add('on');rec.innerHTML='<span class="dot"></span><span>Stop</span>';say('Recording… tap Stop when you are done.');
+    rec.classList.remove('on');ml.textContent='Tap to record';run(b)};
+  mr.start();rec.classList.add('on');ml.textContent='Recording · tap to stop';say('Recording… tap Stop when you are done.');
 });
-const REC=rec.innerHTML;
 file.addEventListener('change',()=>{const f=file.files[0];file.value='';if(f)run(f)});
 
 $('copy').addEventListener('click',async e=>{try{await navigator.clipboard.writeText(out.value);e.target.textContent='Copied ✓'}catch(_){out.select();document.execCommand('copy');e.target.textContent='Copied ✓'}setTimeout(()=>e.target.textContent='Copy',1500)});
