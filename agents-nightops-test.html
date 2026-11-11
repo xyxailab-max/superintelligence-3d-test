@@ -1051,17 +1051,17 @@ document.addEventListener("DOMContentLoaded", function () {
   .no-sweep { position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg,transparent,#7fe0ff,transparent); animation:noSweep 4s ease-in-out infinite; pointer-events:none; z-index:3; }
   @keyframes noSweep { 0%,100% { transform:translateX(-60%); } 50% { transform:translateX(60%); } }
   @keyframes noEq { 0%,100% { height:30%; } 50% { height:100%; } }
-  nav.crumbs { background:none !important; border:0 !important; padding:0 !important; gap:6px !important; }
-  nav.crumbs a { font:700 .64rem/1 "JetBrains Mono",ui-monospace,Menlo,monospace !important; letter-spacing:.14em; text-transform:uppercase; padding:10px 13px !important; border-radius:999px !important; border:1px solid #ffffff1f !important; background:#0a0f1ed9; color:#9AA3B8 !important; }
-  nav.crumbs a:hover { color:#7fe0ff !important; border-color:#7fe0ff !important; background:#0a0f1ed9 !important; }
-  nav.crumbs a.no-cur { color:#7fe0ff !important; border-color:#7fe0ff8c !important; }
-  header.top { border-bottom:0 !important; }
   .cb { border-radius:18px !important; overflow:hidden; }
   .no-eye { display:flex; align-items:center; gap:8px; margin:0 0 10px; font:700 .66rem/1 "JetBrains Mono",ui-monospace,Menlo,monospace; letter-spacing:.18em; text-transform:uppercase; color:#F0C674; }
   .no-led { width:7px; height:7px; border-radius:50%; background:#3DDC97; box-shadow:0 0 8px #3DDC97; flex:none; }
   .cb-head h1 { font:800 clamp(2rem,5.4vw,3.2rem)/1.04 "Manrope",system-ui,sans-serif !important; letter-spacing:-.02em !important; }
   html:not(.silver) .cb-head h1 em { color:#7fe0ff; background:none; -webkit-background-clip:initial; background-clip:initial; text-shadow:0 0 24px #7fe0ff55; }
   .cb-live { padding:8px 12px; border-radius:999px; border:1px solid #ffffff1f; background:#0a0f1ed9; }
+  .no-hero { display:flex; justify-content:space-between; align-items:flex-end; gap:12px 20px; flex-wrap:wrap; margin:4px 0 18px; }
+  .no-hero h1 { margin:0; font:800 clamp(2rem,5.4vw,3.2rem)/1.04 "Manrope",system-ui,sans-serif !important; letter-spacing:-.02em; }
+  html:not(.silver) .no-hero h1 em { color:#7fe0ff; background:none; -webkit-background-clip:initial; background-clip:initial; text-shadow:0 0 24px #7fe0ff55; }
+  .no-core-h { margin-top:30px; }
+  @media (max-width:760px) { .no-hero { flex-direction:column; align-items:center; text-align:center; } }
   .no-con { position:relative; overflow:hidden; margin:0 0 30px; padding:16px; border-radius:18px; border:1px solid #ffffff17; background:#0d1226b8; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:0 20px 60px #00000066; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
   .no-ch { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; }
   .no-k { font:700 .62rem/1 "JetBrains Mono",ui-monospace,Menlo,monospace; letter-spacing:.14em; text-transform:uppercase; color:#9AA3B8; }
@@ -1088,10 +1088,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /* Silver versions of the layout parts */
   html.silver .no-sweep { background:linear-gradient(90deg,transparent,#1F6BFF,transparent); opacity:.6; }
-  html.silver nav.crumbs a { background:#fff; border-color:#D8DEE8 !important; color:#5B6577 !important; }
-  html.silver nav.crumbs a:hover, html.silver nav.crumbs a.no-cur { color:#1F6BFF !important; border-color:#1F6BFF !important; background:#fff !important; }
   html.silver .no-eye { color:#1F6BFF; }
   html.silver .no-led { background:#12A765; box-shadow:none; }
+  html.silver .no-hero h1 { color:#0E1626; }
   html.silver .cb-live { background:#fff; border-color:#D8DEE8; }
   html.silver .no-con { background:#fff; border-color:#D8DEE8; box-shadow:0 1px 2px #0e16260f, 0 10px 28px #0e16260f; backdrop-filter:none; -webkit-backdrop-filter:none; }
   html.silver .no-tile { background:#F6F8FB; border-color:#E1E6EE; }
@@ -1218,12 +1217,19 @@ document.addEventListener("DOMContentLoaded", function () {
 (function () {
   function sweep(el) { if (el && !el.querySelector(":scope > .no-sweep")) { var s = document.createElement("span"); s.className = "no-sweep"; el.insertBefore(s, el.firstChild); } }
   function run() {
-    // menu pills + current page
-    var nav = document.querySelector("nav.crumbs");
-    if (nav && !nav.querySelector(".no-cur")) { var cur = document.createElement("a"); cur.href = "/agents.html"; cur.className = "no-cur"; cur.textContent = "Agent Hub"; var m = nav.querySelector('a[href="/marketplace.html"]'); nav.insertBefore(cur, m ? m.nextSibling : null); }
-    // hero: control room label + sweep line
-    var cb = document.getElementById("cbWrap"), h1 = cb && cb.querySelector(".cb-head h1");
-    if (h1 && !cb.querySelector(".no-eye")) { var e = document.createElement("p"); e.className = "no-eye"; e.innerHTML = '<span class="no-led"></span>Agent Hub · Control Room'; h1.parentNode.insertBefore(e, h1); var hd = h1.parentNode; var w = document.createElement("div"); hd.insertBefore(w, e); w.appendChild(e); w.appendChild(h1); }
+    // title at the top on its own; the big Agent Core box goes to the bottom
+    var cb = document.getElementById("cbWrap"), hd = cb && cb.querySelector(".cb-head"), h1 = hd && hd.querySelector("h1");
+    if (h1 && !document.querySelector(".no-hero")) {
+      var e = document.createElement("p"); e.className = "no-eye"; e.innerHTML = '<span class="no-led"></span>Agent Hub · Control Room';
+      var w = document.createElement("div"); w.appendChild(e); w.appendChild(h1);
+      var hero = document.createElement("section"); hero.className = "no-hero"; hero.appendChild(w);
+      var live = hd.querySelector(".cb-live"); if (live) hero.appendChild(live);
+      cb.parentNode.insertBefore(hero, cb);
+      var bh = document.createElement("div"); bh.className = "no-sec no-core-h"; bh.innerHTML = '<p class="sk"><span class="n">04</span>Agent Core</p><h2>Ask the Core &amp; build your AI company</h2>';
+      var nl = document.querySelector(".wrap > .hub-nl") || document.querySelector(".wrap > .fine");
+      nl.parentNode.insertBefore(bh, nl); nl.parentNode.insertBefore(cb, nl);
+      hd.hidden = true;
+    }
     sweep(cb);
     // system status panel under the hero
     if (cb && !document.querySelector(".no-con")) {
@@ -1235,7 +1241,7 @@ document.addEventListener("DOMContentLoaded", function () {
         '<div class="no-tile"><span class="no-k">Teams</span><b>' + teams + '</b><small>career to fun</small></div>' +
         '<div class="no-tile"><span class="no-k">Powers</span><b>5</b><small>free AI tools</small></div>' +
         '<div class="no-tile"><span class="no-k">Activity</span><div class="no-bars"><i></i><i style="animation-delay:.2s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.7s"></i></div></div>';
-      cb.parentNode.insertBefore(c, cb.nextSibling); sweep(c);
+      var hr = document.querySelector(".no-hero"); hr.parentNode.insertBefore(c, hr.nextSibling); sweep(c);
     }
     // numbered sections
     var st = document.getElementById("start"), pw = document.querySelector(".start.pw5");
@@ -1245,7 +1251,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (pw && !pw.querySelector(".no-pw")) { var row = document.getElementById("pwRow"), pnl = document.getElementById("pwPanel"); if (row) { var box = document.createElement("div"); box.className = "no-pw"; row.parentNode.insertBefore(box, row); box.appendChild(row); if (pnl) box.appendChild(pnl); sweep(box); } }
     // Mission Control heading above search
     var tools = document.querySelector(".wrap > .tools");
-    if (tools && !document.querySelector(".no-sec")) { var h = document.createElement("div"); h.className = "no-sec"; h.innerHTML = '<p class="sk"><span class="n">03</span>Mission Control</p><h2>All ' + ((document.getElementById("cbTotal") || {}).textContent || "100") + ' agents</h2>'; tools.parentNode.insertBefore(h, tools); }
+    if (tools && !document.querySelector(".no-mc-h")) { var h = document.createElement("div"); h.className = "no-sec no-mc-h"; h.innerHTML = '<p class="sk"><span class="n">03</span>Mission Control</p><h2>All ' + ((document.getElementById("cbTotal") || {}).textContent || "100") + ' agents</h2>'; tools.parentNode.insertBefore(h, tools); }
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
   setTimeout(run, 300);
