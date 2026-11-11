@@ -357,7 +357,7 @@
   @media (prefers-reduced-motion:reduce) { .ac-line, .ac-orb::before, .ac-orb::after, .fg-chips button, .fab::before { animation:none !important; } }
   /* Fiber frequencies coming out of the logo */
   .ac-core { position:absolute; left:50%; top:15px; width:0; height:0; z-index:-1; pointer-events:none; }
-  .ac-core::before { content:""; position:absolute; left:-22px; top:-22px; width:44px; height:44px; border-radius:50%; background:radial-gradient(closest-side, #9fe3ff2e, #5aa2ff0d 60%, transparent); animation:acBreath 7s ease-in-out infinite; }
+  .ac-core::before { display:none; }
   .ac-core i { position:absolute; left:0; top:-.5px; width:var(--l); height:1px; transform-origin:0 50%;
     transform:rotate(var(--r)) translateX(19px) scaleX(.35); border-radius:1px;
     background:linear-gradient(90deg, #bfeaffcc, #5aa2ff55 60%, transparent); opacity:.15; animation:acFreq var(--d) ease-in-out var(--w) infinite; }
