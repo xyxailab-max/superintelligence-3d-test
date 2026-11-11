@@ -63,6 +63,10 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
 .res canvas{max-width:100%;max-height:420px;display:block}
 .res .ph{color:#6d768a;font:500 .72rem/1.5 var(--mono);padding:20px;text-align:center}
 .bgs{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.modes{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.modes .pill[aria-pressed="true"]{border-color:var(--a);color:var(--a);box-shadow:0 0 14px -6px var(--a)}
+.tol{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:14px}
+.tol input{width:min(320px,60vw);accent-color:var(--a)}
 .bgs .pill[aria-pressed="true"]{border-color:var(--a);color:var(--a);box-shadow:0 0 14px -6px var(--a)}
 </style>
 </head><body>
@@ -70,7 +74,7 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
 <main>
 <div class="k eye">Free tool · USI-SE1</div>
 <h1>Remove Background</h1>
-<p class="lead">Pick a photo of a person and get a clean cut-out with the background removed. It runs on your own device, so your photo is never uploaded.</p>
+<p class="lead">Pick a photo and get a clean cut-out with the background removed. It runs on your own device, so your photo is never uploaded.</p>
 
 <section class="panel">
  <span class="line" aria-hidden="true"></span>
@@ -84,7 +88,12 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
   <span class="ml">Tap to pick or take a photo</span>
  </label>
  <input type="file" id="file" accept="image/*">
- <div class="st" id="st">The first time, the AI downloads once. Then it's fast.</div>
+ <div class="modes">
+  <button class="pill" type="button" data-m="person" aria-pressed="true">Person</button>
+  <button class="pill" type="button" data-m="plain" aria-pressed="false">Plain background</button>
+ </div>
+ <div class="tol" id="tolBox" hidden><span class="k">Strength</span><input type="range" id="tol" min="5" max="120" value="40" aria-label="Strength"></div>
+ <div class="st" id="st">Person: for photos of people. Plain background: for logos and products on one solid color.</div>
  <div class="prog" id="pg"><i id="pgi"></i></div>
 </section>
 
@@ -102,8 +111,8 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
  </div>
 </section>
 
-<p class="tip"><b>Tip:</b> made for photos of people, like selfies and portraits. "Clear" saves a see-through PNG.</p>
-<p class="foot">Made by Use Superintelligence · Powered by free open-source AI (MODNet) · <a href="/privacy.html">Privacy</a></p>
+<p class="tip"><b>Tip:</b> use Person for photos of people, and Plain background for logos and products on one solid color. "Clear" saves a see-through PNG.</p>
+<p class="foot">Made by Use Superintelligence · Powered by the free MODNet AI · <a href="/privacy.html">Privacy</a></p>
 </main>
 <script type="module">
 const $=id=>document.getElementById(id);
@@ -129,17 +138,41 @@ async function people(c){
   const mask=await T.RawImage.fromTensor(output[0].mul(255).to('uint8')).resize(c.width,c.height);
   return withMask(c,mask);
 }
+// "Plain background": no AI. Finds the color around the edges and removes it, starting from the edges inward.
+let mode='person',src=null;const tolEl=$('tol');
+function plain(c){
+  const w=c.width,h=c.height,o=document.createElement('canvas');o.width=w;o.height=h;const x=o.getContext('2d');x.drawImage(c,0,0);
+  const d=x.getImageData(0,0,w,h),p=d.data,n=w*h;
+  // background color = average of the most common edge color
+  const bins=new Map(),edge=[];for(let X=0;X<w;X++){edge.push(X,(h-1)*w+X)}for(let Y=0;Y<h;Y++){edge.push(Y*w,Y*w+w-1)}
+  for(const i of edge){const k=(p[4*i]>>4)+','+(p[4*i+1]>>4)+','+(p[4*i+2]>>4);const b=bins.get(k)||[0,0,0,0];b[0]+=p[4*i];b[1]+=p[4*i+1];b[2]+=p[4*i+2];b[3]++;bins.set(k,b)}
+  let best=[0,0,0,0];for(const b of bins.values())if(b[3]>best[3])best=b;
+  const R=best[0]/best[3],G=best[1]/best[3],B=best[2]/best[3],tol=+tolEl.value,soft=tol*.6;
+  const dist=i=>Math.sqrt((p[4*i]-R)**2+(p[4*i+1]-G)**2+(p[4*i+2]-B)**2);
+  const seen=new Uint8Array(n),stack=[];
+  for(const i of edge)if(!seen[i]&&dist(i)<=tol){seen[i]=1;stack.push(i)}
+  while(stack.length){const i=stack.pop();p[4*i+3]=0;const X=i%w,Y=(i/w)|0;
+    for(const j of [X>0?i-1:-1,X<w-1?i+1:-1,Y>0?i-w:-1,Y<h-1?i+w:-1]){if(j<0||seen[j])continue;
+      const dj=dist(j);if(dj<=tol){seen[j]=1;stack.push(j)}else if(dj<=tol+soft){seen[j]=2;p[4*j+3]=Math.min(p[4*j+3],Math.round((dj-tol)/soft*255))}}}
+  x.putImageData(d,0,0);return o;
+}
+document.querySelectorAll('.modes .pill').forEach(b=>b.addEventListener('click',()=>{if(busy)return;mode=b.dataset.m;
+  document.querySelectorAll('.modes .pill').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  $('tolBox').hidden=mode!=='plain';
+  say(mode==='plain'?'Plain background: no download needed. Move Strength if too much or too little is removed.':'Person: for photos of people. The first time, the AI downloads once.');
+  if(last)run(last)}));
+tolEl.addEventListener('input',()=>{if(mode==='plain'&&src&&!busy){cut=plain(src);res.innerHTML='';res.appendChild(cut)}});
 function shrink(f){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const L=Math.max(im.width,im.height),k=L>1600?1600/L:1;
   const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
   URL.revokeObjectURL(im.src);ok(c)};im.onerror=no;im.src=URL.createObjectURL(f)})}
 async function run(f){
   if(busy)return;busy=true;drop.style.pointerEvents='none';
   try{
-    const c=await shrink(f),note='';
-    cut=await people(c);
+    const c=await shrink(f),note='';src=c;
+    cut=mode==='plain'?plain(c):await people(c);
     res.innerHTML='';res.appendChild(cut);
     say('Done'+note+'. Pick a background and tap Save picture.');
-  }catch(e){console.error(e);say('Sorry, that did not work. Try another photo of a person.')}
+  }catch(e){console.error(e);say(mode==='plain'?'Sorry, that did not work. Try another picture.':'Sorry, that did not work. Try another photo of a person.')}
   busy=false;drop.style.pointerEvents='';
 }
 file.addEventListener('change',()=>{const f=file.files[0];file.value='';if(!f)return;last=f;
