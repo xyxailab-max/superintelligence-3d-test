@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Agent Hub · 3 Control Room Styles (TEST)</title>
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --sans:"Manrope",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace; color-scheme:dark; }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  a { color:inherit; text-decoration:none; }
+  button { font:inherit; color:inherit; }
+  body { margin:0; font:15px/1.55 var(--sans); -webkit-font-smoothing:antialiased; transition:background .4s; }
+
+  /* ---------- style switcher (TEST only) ---------- */
+  .pick { position:sticky; top:0; z-index:50; display:flex; gap:6px; justify-content:center; flex-wrap:wrap; padding:10px 12px; background:#000000cc; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid #ffffff1a; }
+  .pick button { font:700 .66rem/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; padding:10px 13px; border-radius:10px; cursor:pointer; color:#9AA3B8; background:#ffffff0a; border:1px solid #ffffff1f; }
+  .pick button[aria-pressed="true"] { color:#000; background:#F0C674; border-color:#F0C674; }
+
+  /* ---------- theme tokens ---------- */
+  body.A { --bg:#05070f; --bg2:radial-gradient(ellipse 80% 55% at 25% -5%,#16204a 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 100% 30%,#0d2a3a55 0%,transparent 60%);
+    --panel:#0d1226b8; --panel2:#0a0f1ed9; --line:#ffffff17; --ink:#E9EDFF; --dim:#9AA3B8; --acc:#7FE0FF; --acc2:#F0C674; --ok:#3DDC97;
+    --r:18px; --r2:12px; --head:"Manrope",system-ui,sans-serif; --glow:1; --shadow:0 20px 60px #00000066; }
+  body.B { --bg:#0a0a0b; --bg2:linear-gradient(#ffffff06 1px,transparent 1px) 0 0/100% 32px,linear-gradient(90deg,#ffffff06 1px,transparent 1px) 0 0/32px 100%;
+    --panel:#131315; --panel2:#0f0f11; --line:#2b2b30; --ink:#F2EEE6; --dim:#8E8A82; --acc:#FFB547; --acc2:#FF6A3D; --ok:#9BE15D;
+    --r:4px; --r2:3px; --head:"Space Grotesk",system-ui,sans-serif; --glow:.5; --shadow:none; }
+  body.C { color-scheme:light; --bg:#EEF1F6; --bg2:radial-gradient(ellipse 70% 45% at 50% -10%,#ffffff 0%,transparent 70%);
+    --panel:#ffffff; --panel2:#F6F8FB; --line:#D8DEE8; --ink:#0E1626; --dim:#5B6577; --acc:#1F6BFF; --acc2:#0E1626; --ok:#12A765;
+    --r:16px; --r2:12px; --head:"Manrope",system-ui,sans-serif; --glow:0; --shadow:0 1px 2px #0e16260f,0 8px 24px #0e16260d; }
+  body { background:var(--bg2),var(--bg); background-attachment:fixed; color:var(--ink); }
+
+  .wrap { max-width:1180px; margin:0 auto; padding:22px 16px 50px; }
+  .k { font:700 .62rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--dim); }
+  .led { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--ok); box-shadow:0 0 calc(8px * var(--glow)) var(--ok); flex:none; }
+  .panel { position:relative; overflow:hidden; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); }
+  body.A .panel { backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+  .sweep { position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg,transparent,var(--acc),transparent); animation:sweep 4s ease-in-out infinite; pointer-events:none; opacity:calc(.3 + .7 * var(--glow)); }
+  body.C .sweep { opacity:.55; height:2px; }
+  @keyframes sweep { 0%,100% { transform:translateX(-60%); } 50% { transform:translateX(60%); } }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes floaty { 50% { transform:translateY(-4px); } }
+
+  /* ---------- top bar ---------- */
+  header.top { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px 22px; margin-bottom:26px; }
+  .logo { display:flex; align-items:center; gap:12px; }
+  .logo img { width:48px; height:48px; object-fit:contain; }
+  .sign { display:flex; flex-direction:column; line-height:1; }
+  .sign b { font:800 .62rem/1 var(--mono); letter-spacing:.32em; color:#4F8BFF; }
+  .sign span { font:800 .98rem/1.2 var(--sans); letter-spacing:.14em; color:#D9DEE8; }
+  body.C .sign span { color:#1A2234; }
+  nav.crumbs { display:flex; flex-wrap:wrap; gap:6px; }
+  nav.crumbs a { font:700 .64rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; padding:9px 12px; border-radius:999px; border:1px solid var(--line); color:var(--dim); background:var(--panel2); }
+  body.B nav.crumbs a { border-radius:var(--r2); }
+  nav.crumbs a:hover { color:var(--acc); border-color:var(--acc); }
+  nav.crumbs a.cur { color:var(--acc); border-color:color-mix(in srgb,var(--acc) 55%,transparent); }
+
+  /* ---------- hero ---------- */
+  .hero { display:grid; grid-template-columns:1.3fr 1fr; gap:18px; align-items:stretch; margin-bottom:18px; }
+  .hero-txt { padding:6px 0; }
+  .eyebrow { display:flex; align-items:center; gap:8px; margin:0 0 12px; font:700 .66rem/1 var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--acc2); }
+  body.C .eyebrow { color:var(--acc); }
+  h1 { margin:0 0 10px; font:800 clamp(2rem,5.4vw,3.3rem)/1.04 var(--head); letter-spacing:-.02em; }
+  body.B h1 { text-transform:uppercase; letter-spacing:.01em; font-weight:700; }
+  h1 em { font-style:normal; color:var(--acc); }
+  body.A h1 em { text-shadow:0 0 24px #7FE0FF55; }
+  .lede { margin:0 0 18px; color:var(--dim); max-width:56ch; }
+  .search { position:relative; max-width:520px; }
+  .search input { width:100%; font:1rem/1.2 var(--sans); color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:var(--r2); padding:14px 14px 14px 44px; box-shadow:var(--shadow); }
+  .search input:focus { outline:2px solid var(--acc); outline-offset:2px; }
+  .search svg { position:absolute; left:15px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--dim); }
+
+  /* status console in hero */
+  .console { padding:16px; display:grid; grid-template-columns:1fr 1fr; gap:10px; align-content:start; }
+  .console .ch { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; }
+  .tile { padding:12px 14px; border-radius:var(--r2); background:var(--panel2); border:1px solid var(--line); }
+  .tile b { display:block; margin-top:8px; font:800 1.55rem/1 var(--head); color:var(--acc); }
+  body.A .tile b { text-shadow:0 0 16px #7FE0FF55; }
+  body.B .tile b { font-family:var(--mono); font-weight:700; }
+  .tile small { display:block; margin-top:4px; color:var(--dim); font-size:.74rem; }
+  .bars { display:flex; align-items:flex-end; gap:3px; height:22px; margin-top:8px; }
+  .bars i { flex:1; background:color-mix(in srgb,var(--acc) 70%,transparent); border-radius:2px; animation:eq 1.6s ease-in-out infinite; }
+  @keyframes eq { 0%,100% { height:30%; } 50% { height:100%; } }
+
+  /* ---------- section heads ---------- */
+  .sec { margin-top:26px; }
+  .sh { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 0 12px; }
+  .sh h2 { margin:0; font:800 1.15rem/1.2 var(--head); }
+  body.B .sh h2 { text-transform:uppercase; letter-spacing:.06em; font-weight:700; font-size:1rem; }
+  .sh h2 .n { font:700 .7rem/1 var(--mono); color:var(--acc2); margin-right:8px; letter-spacing:.1em; }
+  body.C .sh h2 .n { color:var(--acc); }
+
+  /* ---------- start here ---------- */
+  .start { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+  .st { position:relative; overflow:hidden; display:flex; flex-direction:column; gap:8px; padding:14px; min-height:150px; background:var(--panel); border:1px solid var(--line); border-radius:var(--r2); box-shadow:var(--shadow); transition:transform .2s,border-color .2s; }
+  .st:hover { transform:translateY(-2px); border-color:color-mix(in srgb,var(--a) 60%,transparent); }
+  .st .top { display:flex; align-items:center; justify-content:space-between; }
+  .ico { width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font:800 .9rem/1 var(--sans); color:var(--a); background:color-mix(in srgb,var(--a) 14%,transparent); border:1px solid color-mix(in srgb,var(--a) 45%,transparent); }
+  body.B .ico { border-radius:var(--r2); font-family:var(--mono); }
+  .on { display:flex; align-items:center; gap:5px; font:700 .56rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--ok); }
+  .st h3 { margin:0; font:800 .95rem/1.2 var(--head); }
+  .st p { margin:0; color:var(--dim); font-size:.8rem; line-height:1.4; flex:1; }
+  .st .go { font:700 .6rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--a); }
+  .st::after { content:""; position:absolute; left:0; top:0; height:2px; width:100%; background:var(--a); opacity:.75; }
+  body.C .st::after { opacity:1; }
+
+  /* ---------- 5 powers ---------- */
+  .powers { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; padding:18px 14px; }
+  .pw { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; cursor:pointer; background:none; border:0; padding:0; }
+  .orb { position:relative; width:72px; height:72px; border-radius:50%; display:grid; place-items:center; background:color-mix(in srgb,var(--a) 12%,var(--panel2)); border:1px solid color-mix(in srgb,var(--a) 50%,transparent); animation:floaty 4s ease-in-out infinite; }
+  body.B .orb { border-radius:var(--r2); animation:none; }
+  .orb::before { content:""; position:absolute; inset:-6px; border-radius:50%; border:1.5px dashed color-mix(in srgb,var(--a) 55%,transparent); animation:spin 14s linear infinite; }
+  body.B .orb::before { border-radius:var(--r2); border-style:solid; border-width:1px; inset:-5px; animation:none; }
+  body.C .orb::before { border-style:solid; border-color:color-mix(in srgb,var(--a) 30%,transparent); }
+  .orb svg { width:28px; height:28px; color:var(--a); }
+  .pw b { font:800 .85rem/1.1 var(--head); }
+  .pw small { color:var(--dim); font-size:.72rem; line-height:1.3; }
+  .pw-tools { display:none; grid-column:1/-1; flex-wrap:wrap; gap:8px; justify-content:center; padding-top:6px; }
+  .pw-tools.show { display:flex; }
+  .chip { font:700 .62rem/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; padding:9px 12px; border-radius:999px; border:1px solid var(--line); background:var(--panel2); color:var(--ink); }
+  body.B .chip { border-radius:var(--r2); }
+  .chip.live { border-color:color-mix(in srgb,var(--ok) 55%,transparent); }
+  .chip.soon { color:var(--dim); opacity:.7; }
+
+  /* ---------- mission control ---------- */
+  .mc { display:grid; grid-template-columns:230px 1fr; }
+  .side { padding:14px 10px; border-right:1px solid var(--line); background:var(--panel2); }
+  .side .k { display:block; padding:2px 8px 10px; }
+  .tm { width:100%; display:flex; align-items:center; gap:10px; padding:10px; margin-bottom:4px; border-radius:999px; border:1px solid transparent; background:none; cursor:pointer; color:var(--dim); font:700 .85rem/1 var(--sans); text-align:left; }
+  body.B .tm { border-radius:var(--r2); font-family:var(--mono); font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; }
+  .tm i { width:8px; height:8px; border-radius:50%; background:var(--a); box-shadow:0 0 calc(8px * var(--glow)) var(--a); flex:none; }
+  .tm em { margin-left:auto; font:700 .6rem/1 var(--mono); font-style:normal; opacity:.75; }
+  .tm[aria-pressed="true"] { color:var(--ink); border-color:color-mix(in srgb,var(--a) 50%,transparent); background:color-mix(in srgb,var(--a) 12%,transparent); }
+  .main { padding:14px; min-width:0; }
+  .mh { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+  .mh h3 { margin:0; font:800 1.05rem/1.2 var(--head); }
+  .mh h3 i { display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--a); margin-right:8px; box-shadow:0 0 calc(10px * var(--glow)) var(--a); }
+  .row, .rh { display:grid; grid-template-columns:62px minmax(0,1fr) minmax(0,1.8fr) 78px 116px; gap:12px; align-items:center; }
+  .rh { padding:0 12px 8px; border-bottom:1px solid var(--line); }
+  .row { padding:11px 12px; border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent); border-radius:var(--r2); transition:background .2s; }
+  .row:hover { background:color-mix(in srgb,var(--a) 8%,transparent); }
+  .rid { font:500 .64rem/1 var(--mono); color:var(--dim); letter-spacing:.06em; }
+  .rnm { font-weight:800; font-size:.93rem; }
+  .rbl { color:var(--dim); font-size:.8rem; line-height:1.35; }
+  .act { display:flex; gap:6px; justify-content:flex-end; }
+  .btn { font:700 .58rem/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; padding:9px 10px; border-radius:999px; cursor:pointer; border:1px solid var(--line); background:var(--panel2); color:var(--ink); white-space:nowrap; }
+  body.B .btn { border-radius:var(--r2); }
+  .btn.go { color:var(--bg); background:var(--acc); border-color:var(--acc); }
+  body.A .btn.go { color:#05070f; }
+  body.C .btn.go { color:#fff; }
+  .btn.add[aria-pressed="true"] { color:var(--ok); border-color:var(--ok); }
+  .empty { padding:30px 12px; text-align:center; color:var(--dim); }
+
+  /* ---------- my ai team ---------- */
+  .team { padding:16px; display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:center; }
+  .core { width:64px; height:64px; display:grid; place-items:center; border-radius:50%; background:var(--panel2); border:1px solid var(--line); }
+  .core img { width:44px; height:44px; object-fit:contain; }
+  .slots { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .slot { display:flex; align-items:center; gap:10px; min-height:56px; padding:10px 12px; border-radius:var(--r2); border:1px dashed var(--line); color:var(--dim); font-size:.82rem; }
+  .slot.full { border-style:solid; color:var(--ink); border-color:color-mix(in srgb,var(--a) 55%,transparent); background:color-mix(in srgb,var(--a) 8%,transparent); }
+  .slot.full b { font-size:.85rem; }
+  .slot .ico { width:30px; height:30px; font-size:.75rem; }
+
+  /* ---------- footer ---------- */
+  footer { margin-top:30px; padding-top:18px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; gap:10px 18px; justify-content:space-between; color:var(--dim); font-size:.8rem; }
+  footer nav { display:flex; flex-wrap:wrap; gap:8px 16px; }
+  footer a { color:var(--acc); }
+
+  /* ---------- small screens ---------- */
+  @media (max-width:980px) {
+    .hero { grid-template-columns:1fr; }
+    .start { grid-template-columns:repeat(5,minmax(180px,1fr)); overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:6px; scrollbar-width:none; }
+    .start::-webkit-scrollbar { display:none; }
+    .st { scroll-snap-align:start; }
+  }
+  @media (max-width:760px) {
+    header.top { flex-direction:column; justify-content:center; }
+    .hero-txt { text-align:center; } .lede, .search { margin-left:auto; margin-right:auto; } .eyebrow { justify-content:center; }
+    .powers { grid-template-columns:repeat(5,1fr); gap:4px; padding:16px 8px; }
+    .orb { width:56px; height:56px; } .orb svg { width:22px; height:22px; } .pw small { display:none; } .pw b { font-size:.72rem; }
+    .mc { grid-template-columns:1fr; }
+    .side { display:flex; gap:6px; overflow-x:auto; padding:10px; border-right:0; border-bottom:1px solid var(--line); scrollbar-width:none; }
+    .side::-webkit-scrollbar { display:none; }
+    .side .k { display:none; }
+    .tm { flex:none; width:auto; margin:0; }
+    .rh { display:none; }
+    .row { grid-template-columns:1fr auto; grid-template-areas:"nm act" "bl act" "id st"; gap:4px 10px; }
+    .rid { grid-area:id; } .rnm { grid-area:nm; } .rbl { grid-area:bl; } .row .on { grid-area:st; justify-self:end; } .act { grid-area:act; flex-direction:column; }
+    .team { grid-template-columns:1fr; justify-items:center; text-align:center; }
+    .slots { grid-template-columns:1fr; width:100%; }
+  }
+  @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none !important; } }
+</style>
+</head>
+<body class="A">
+<div class="pick" role="group" aria-label="Pick a style">
+  <button data-s="A" aria-pressed="true">A · Night Ops</button>
+  <button data-s="B" aria-pressed="false">B · Flight Deck</button>
+  <button data-s="C" aria-pressed="false">C · Silver Lab</button>
+</div>
+
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="https://usesuperintelligence.com/"><img src="brand/logo-cube.png?v=2" alt=""><span class="sign"><b>USE</b><span>SUPERINTELLIGENCE</span></span></a>
+    <nav class="crumbs"><a href="https://usesuperintelligence.com/">3D Brain</a><a href="https://usesuperintelligence.com/marketplace.html">Marketplace</a><a class="cur" href="#">Agent Hub</a><a href="https://usesuperintelligence.com/creators.html">For creators</a></nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-txt">
+      <p class="eyebrow"><span class="led"></span>Agent Hub · Control Room</p>
+      <h1>100 free <em>AI agents</em>, one control room.</h1>
+      <p class="lede">Pick a team, launch an agent, and get help with work, money, school and life. No sign-up, always free.</p>
+      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search 100 agents…" autocomplete="off"></label>
+    </div>
+    <div class="panel console">
+      <span class="sweep"></span>
+      <div class="ch"><span class="k">System status</span><span class="on"><span class="led"></span>All online</span></div>
+      <div class="tile"><span class="k">Agents</span><b>100</b><small>ready to launch</small></div>
+      <div class="tile"><span class="k">Teams</span><b>10</b><small>career to fun</small></div>
+      <div class="tile"><span class="k">Free tools</span><b>4</b><small>run on your device</small></div>
+      <div class="tile"><span class="k">Activity</span><div class="bars"><i></i><i style="animation-delay:.2s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.7s"></i></div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sh"><h2><span class="n">01</span>Start here</h2><span class="k">5 favorites</span></div>
+    <div class="start" id="start"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sh"><h2><span class="n">02</span>5 Powers</h2><span class="k">Free tools</span></div>
+    <div class="panel powers" id="powers"><span class="sweep"></span></div>
+  </section>
+
+  <section class="sec">
+    <div class="sh"><h2><span class="n">03</span>Mission Control</h2><span class="k" id="cnt">100 agents</span></div>
+    <div class="panel mc">
+      <aside class="side" id="side"><span class="k">Teams</span></aside>
+      <div class="main">
+        <span class="sweep"></span>
+        <div class="mh"><h3 id="mhT"></h3><span class="on"><span class="led"></span>Ready</span></div>
+        <div class="rh"><span class="k">ID</span><span class="k">Agent</span><span class="k">What it does</span><span class="k">Status</span><span class="k" style="text-align:right">Action</span></div>
+        <div id="list"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sh"><h2><span class="n">04</span>My AI Team</h2><span class="k" id="tc">0 / 3</span></div>
+    <div class="panel team">
+      <span class="sweep"></span>
+      <div class="core"><img src="brand/logo-cube.png?v=2" alt=""></div>
+      <div class="slots" id="slots"></div>
+      <a class="btn go" href="#" id="room">Open Team Room</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© Use Superintelligence · free for everyone</span>
+    <nav><a href="https://usesuperintelligence.com/blog/">News</a><a href="https://usesuperintelligence.com/marketplace.html">Marketplace</a><a href="https://usesuperintelligence.com/privacy.html">Privacy</a><a href="https://usesuperintelligence.com/terms.html">Terms</a></nav>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var D = [["resume","Resume Helper","Career","Turns your experience into a strong, results-focused resume."],["cover-letter","Cover Letter Writer","Career","Writes a tailored cover letter in minutes."],["interview-coach","Interview Coach","Career","Practice interviews with feedback on every answer."],["linkedin","LinkedIn Profile Pro","Career","Writes a headline and About section that get noticed."],["salary-negotiator","Salary Negotiator","Career","Helps you ask for more money with confidence."],["career-switch","Career Switch Guide","Career","Maps a realistic path into a new career."],["job-search","Job Search Planner","Career","Builds a weekly plan to land interviews faster."],["networking","Networking Messages","Career","Writes friendly outreach that people actually answer."],["reference-letter","Recommendation Letter Writer","Career","Drafts recommendation and reference letters."],["resignation","Resignation Letter Writer","Career","Leave your job gracefully, on good terms."],["business","Business Idea Lab","Business","Brainstorms ideas and checks if they can really work."],["business-plan","Business Plan Builder","Business","Creates a clear one-page business plan."],["pitch","Pitch Coach","Business","Sharpens your pitch for investors, partners or customers."],["pricing","Pricing Strategist","Business","Helps you set prices that sell and make a profit."],["customer-persona","Customer Persona Maker","Business","Describes exactly who your ideal customer is."],["competitor","Competitor Analyzer","Business","Finds how to stand out from the competition."],["names","Brand Name Generator","Business","Creates memorable names and taglines."],["side-hustle","Side Hustle Finder","Business","Finds side income ideas that fit your skills and time."],["customer-service","Customer Reply Writer","Business","Writes calm, professional replies to customers."],["sop","Process & SOP Writer","Business","Turns how you work into clear step-by-step guides."],["social","Social Post Writer","Marketing","Writes scroll-stopping posts, captions and hooks."],["video-script","Short Video Scripter","Marketing","Scripts Reels, TikToks and Shorts that keep people watching."],["seo","SEO Helper","Marketing","Helps your website rank higher on Google."],["blog","Blog Post Writer","Marketing","Outlines and writes helpful blog posts."],["ad-copy","Ad Copywriter","Marketing","Writes ads for Facebook, Instagram and Google."],["newsletter","Newsletter Writer","Marketing","Writes engaging email newsletters people open."],["product-description","Product Description Writer","Marketing","Writes product descriptions that sell."],["brand-voice","Brand Voice Builder","Marketing","Defines how your brand sounds everywhere."],["landing-page","Landing Page Copywriter","Marketing","Writes the words for a page that converts visitors."],["slogan","Slogan Generator","Marketing","Creates catchy slogans and taglines."],["email","Email Writer","Writing","Drafts clear, polite emails for any situation."],["proofreader","Proofreader","Writing","Fixes grammar, spelling and clarity, and explains why."],["rewriter","Tone Changer","Writing","Rewrites text to sound more professional, friendly or confident."],["summarizer","Summarizer","Writing","Turns long text into a short, clear summary."],["story","Story Writer","Writing","Writes short stories in any genre, together with you."],["poem","Poem Writer","Writing","Writes original poems for any moment."],["speech","Speech Writer","Writing","Writes speeches and toasts that land."],["essay-outline","Essay Outliner","Writing","Builds a clear thesis and outline for any essay."],["simplifier","Plain English","Writing","Turns confusing text into simple words anyone understands."],["translator","Translator","Writing","Translates naturally between languages."],["tutor","Study Tutor","Learning","Explains any school topic simply, step by step."],["math","Math Tutor","Learning","Solves math step by step so you actually understand it."],["essay-coach","Essay Feedback Coach","Learning","Gives clear feedback to improve your essay."],["flashcards","Flashcard Maker","Learning","Turns notes into flashcards and practice questions."],["language-partner","Language Practice Partner","Learning","Chat in a new language and get gentle corrections."],["science","Science Explainer","Learning","Makes science fascinating and easy to understand."],["history","History Storyteller","Learning","Tells history as gripping, accurate stories."],["study-planner","Study Planner","Learning","Makes a study schedule that fits your life."],["eli5","Explain Like I'm 5","Learning","Explains anything in the simplest possible way."],["test-prep","Test Prep Coach","Learning","Practice questions and strategies for big exams."],["coach","AI Coach","Productivity","Shows you practical ways to use AI in your job."],["prompt-engineer","Prompt Engineer","Productivity","Writes better prompts so AI gives better answers."],["meeting-notes","Meeting Notes Organizer","Productivity","Turns messy notes into clear summaries and action items."],["project-planner","Project Planner","Productivity","Breaks big goals into clear steps and deadlines."],["decision","Decision Helper","Productivity","Helps you think through tough choices clearly."],["daily-planner","Daily Planner","Productivity","Plans your day so the important things get done."],["spreadsheet","Spreadsheet Formula Helper","Productivity","Writes Excel and Google Sheets formulas for you."],["presentation","Presentation Builder","Productivity","Outlines slides and speaker notes for any talk."],["report","Report Writer","Productivity","Turns information into a clear, professional report."],["focus","Focus Coach","Productivity","Beats procrastination with small, doable steps."],["budget","Budget Planner","Money","Builds a simple monthly budget that works."],["debt","Debt Payoff Planner","Money","Makes a plan to get out of debt faster."],["savings","Savings Coach","Money","Helps you save for goals, step by step."],["money-basics","Money Explainer","Money","Explains credit scores, interest and money terms simply."],["investing-basics","Investing Basics","Money","Explains how investing works, without the jargon."],["tax-basics","Tax Basics Explainer","Money","Explains US tax terms and forms in plain English."],["frugal","Frugal Living Tips","Money","Practical ways to spend less and live well."],["big-purchase","Big Purchase Helper","Money","Helps you buy smart: cars, laptops, appliances and more."],["bill-negotiator","Bill Negotiator","Money","Scripts to lower your bills and fees."],["retirement-basics","Retirement Basics","Money","Explains 401(k)s, IRAs and planning for later."],["meal-planner","Meal Planner","Life","Plans a week of meals and a shopping list."],["chef","Recipe Chef","Life","Turns what's in your fridge into a delicious meal."],["fitness","Workout Planner","Life","Creates workouts for your goals and equipment."],["sleep","Sleep Coach","Life","Helps you fall asleep faster and wake up rested."],["habits","Habit Builder","Life","Builds good habits that actually stick."],["mindful","Calm & Mindfulness","Life","Guided breathing and calming exercises for stressful moments."],["travel","Travel Planner","Life","Plans trips with itineraries, budgets and tips."],["gifts","Gift Idea Finder","Life","Finds thoughtful gifts for anyone, any budget."],["home","Home Organizer","Life","Plans cleaning routines and decluttering projects."],["pets","Pet Care Helper","Life","Answers everyday questions about dogs, cats and more."],["code","Code Helper","Tech","Writes and explains code in any language."],["debug","Bug Fixer","Tech","Finds and fixes errors in your code."],["learn-code","Learn to Code Mentor","Tech","Teaches coding from zero, one small step at a time."],["sql","SQL Helper","Tech","Writes database queries from plain English."],["website","Website Builder","Tech","Creates simple web pages with HTML and CSS."],["tech-support","Tech Support","Tech","Fixes everyday phone, computer and Wi-Fi problems."],["scam-check","Scam Checker","Tech","Checks if a message, email or offer looks like a scam."],["privacy","Online Safety Guide","Tech","Protects your accounts, passwords and privacy."],["ai-tools","AI Tools Finder","Tech","Recommends the right AI tool for your task."],["automation","Automation Builder","Tech","Designs workflows to automate repetitive work."],["guide","Brain Guide","Fun","Explains the science behind everything in the 3D brain."],["quiz","Quiz Master","Fun","Runs quizzes on any topic and keeps score."],["adventure","Text Adventure","Fun","An interactive story game where you choose what happens."],["riddles","Riddle Master","Fun","Riddles and brain teasers to test your wits."],["jokes","Joke Writer","Fun","Clean, clever jokes for any topic."],["debate","Debate Partner","Fun","Argues the other side to sharpen your thinking."],["names-fun","Name Generator","Fun","Names for pets, babies, characters, teams and more."],["movies","Movie & Book Recommender","Fun","Finds your next favorite movie, show or book."],["philosopher","Pocket Philosopher","Fun","Explores big questions about life, meaning and ideas."],["would-you-rather","Would You Rather","Fun","Fun and thought-provoking would-you-rather questions."]];
+  var TEAMS = ["Career","Business","Marketing","Writing","Learning","Productivity","Money","Life","Tech","Fun"];
+  var COL = { A:["#7FE0FF","#F0C674","#FF7AB6","#A78BFA","#3DDC97","#5B9BFF","#FFD166","#FF9F6B","#4FD1C5","#F472B6"],
+              B:["#FFB547","#FF6A3D","#FFD86B","#9BE15D","#6FD3FF","#FF8F5E","#E8E36A","#C8A2FF","#5EE6C8","#FF7A9A"],
+              C:["#1F6BFF","#B7791F","#D6336C","#7048E8","#12A765","#0B7285","#C2410C","#9C36B5","#0E7490","#DB2777"] };
+  var STARTS = ["coach","resume","business","tutor","social"];
+  var POWERS = [
+    ["Think","Ask, plan, decide",'<path d="M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3Z"/><path d="M9.5 20h5"/>',[["Ask any agent","#mc",1]]],
+    ["See","Read photos",'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',[["Read Text in Photos","tools/read-text.html",1]]],
+    ["Hear & Speak","Voice and language",'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',[["Voice to Text","tools/voice-to-text.html",1],["Translate","tools/translate.html",1]]],
+    ["Make","Create and edit",'<path d="m4 20 4-1 11-11-3-3L5 16l-1 4Z"/><path d="m14 7 3 3"/>',[["Remove Background","tools/remove-background.html",1],["Caption Writer","tools/caption-writer.html",1]]],
+    ["Learn","Grow every day",'<path d="m2 9 10-5 10 5-10 5L2 9Z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',[["Study Tutor","https://usesuperintelligence.com/agents/tutor",1],["Kids corner","#",0]]]
+  ];
+  var URL = "https://usesuperintelligence.com/agents/";
+  var by = {}; D.forEach(function (a, i) { a.n = i + 1; (by[a[2]] = by[a[2]] || []).push(a); });
+  var style = "A", team = "Career", q = "", picks = [];
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]; }); };
+  function col(t) { return COL[style][TEAMS.indexOf(t)]; }
+  function find(id) { for (var i = 0; i < D.length; i++) if (D[i][0] === id) return D[i]; }
+  function pad(n) { return "AG-" + ("00" + n).slice(-3); }
+
+  function drawStart() {
+    $("start").innerHTML = STARTS.map(function (id) {
+      var a = find(id);
+      return '<a class="st" style="--a:' + col(a[2]) + '" href="' + URL + a[0] + '"><div class="top"><span class="ico">' + esc(a[1][0]) + '</span><span class="on"><span class="led"></span>Online</span></div><h3>' + esc(a[1]) + '</h3><p>' + esc(a[3]) + '</p><span class="go">Launch →</span></a>';
+    }).join("");
+  }
+  function drawPowers() {
+    var pc = COL[style];
+    $("powers").innerHTML = '<span class="sweep"></span>' + POWERS.map(function (p, i) {
+      return '<button class="pw" data-i="' + i + '" style="--a:' + pc[[0,4,2,1,3][i]] + '"><span class="orb" style="animation-delay:' + (i * .4) + 's"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + p[2] + '</svg></span><b>' + p[0] + '</b><small>' + p[1] + '</small></button>';
+    }).join("") + '<div class="pw-tools" id="pwt"></div>';
+  }
+  function drawSide() {
+    $("side").innerHTML = '<span class="k">Teams</span>' + TEAMS.map(function (t) {
+      return '<button class="tm" data-t="' + t + '" style="--a:' + col(t) + '" aria-pressed="' + (t === team && !q) + '"><i></i>' + t + '<em>' + by[t].length + '</em></button>';
+    }).join("");
+  }
+  function drawList() {
+    var list = q ? D.filter(function (a) { return (a[1] + " " + a[2] + " " + a[3]).toLowerCase().indexOf(q) > -1; }) : by[team];
+    var head = q ? "Search results" : team + " team";
+    $("mhT").innerHTML = '<i style="background:' + (q ? "var(--acc)" : col(team)) + '"></i>' + esc(head);
+    $("cnt").textContent = list.length + (list.length === 1 ? " agent" : " agents");
+    $("list").innerHTML = list.length ? list.map(function (a) {
+      var on = picks.indexOf(a[0]) > -1;
+      return '<div class="row" style="--a:' + col(a[2]) + '"><span class="rid">' + pad(a.n) + '</span><span class="rnm">' + esc(a[1]) + '</span><span class="rbl">' + esc(a[3]) + '</span><span class="on"><span class="led"></span>Ready</span><span class="act"><button class="btn add" data-add="' + a[0] + '" aria-pressed="' + on + '">' + (on ? "✓ Team" : "+ Team") + '</button><a class="btn go" href="' + URL + a[0] + '">Launch</a></span></div>';
+    }).join("") : '<div class="empty">No agents match. Try another word.</div>';
+  }
+  function drawTeam() {
+    var h = "";
+    for (var i = 0; i < 3; i++) {
+      var a = picks[i] && find(picks[i]);
+      h += a ? '<div class="slot full" style="--a:' + col(a[2]) + '"><span class="ico">' + esc(a[1][0]) + '</span><b>' + esc(a[1]) + '</b></div>' : '<div class="slot">+ Tap “+ Team” on an agent</div>';
+    }
+    $("slots").innerHTML = h;
+    $("tc").textContent = picks.length + " / 3";
+  }
+  function all() { drawStart(); drawPowers(); drawSide(); drawList(); drawTeam(); }
+
+  function setStyle(s) {
+    style = s; document.body.className = s;
+    document.querySelectorAll(".pick button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.s === s); });
+    try { history.replaceState(null, "", "#" + s.toLowerCase()); } catch (e) {}
+    all();
+  }
+  document.querySelector(".pick").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { setStyle(b.dataset.s); window.scrollTo({ top:0 }); } });
+  $("side").addEventListener("click", function (e) { var b = e.target.closest(".tm"); if (!b) return; team = b.dataset.t; q = ""; $("q").value = ""; drawSide(); drawList(); });
+  $("q").addEventListener("input", function () { q = this.value.trim().toLowerCase(); drawSide(); drawList(); });
+  $("list").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-add]"); if (!b) return;
+    var id = b.dataset.add, k = picks.indexOf(id);
+    if (k > -1) picks.splice(k, 1); else if (picks.length < 3) picks.push(id); else { picks.shift(); picks.push(id); }
+    drawList(); drawTeam();
+  });
+  $("powers").addEventListener("click", function (e) {
+    var b = e.target.closest(".pw"); if (!b) return;
+    var p = POWERS[+b.dataset.i], t = $("pwt");
+    var same = t.dataset.i === b.dataset.i && t.classList.contains("show");
+    t.dataset.i = b.dataset.i; t.classList.toggle("show", !same);
+    t.innerHTML = p[3].map(function (x) { return x[2] ? '<a class="chip live" href="' + x[1] + '">' + esc(x[0]) + '</a>' : '<span class="chip soon">' + esc(x[0]) + ' · soon</span>'; }).join("");
+  });
+  $("room").addEventListener("click", function (e) { e.preventDefault(); alert(picks.length ? "Team Room would open with: " + picks.map(function (id) { return find(id)[1]; }).join(", ") : "Add up to 3 agents with “+ Team” first."); });
+
+  var h = (location.hash || "").replace("#", "").toUpperCase();
+  setStyle(/^[ABC]$/.test(h) ? h : "A");
+})();
+</script>
+</body>
+</html>
