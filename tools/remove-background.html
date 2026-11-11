@@ -70,7 +70,7 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
 <main>
 <div class="k eye">Free tool · USI-SE1</div>
 <h1>Remove Background</h1>
-<p class="lead">Pick a photo and get a clean cut-out with the background removed. It runs on your own device, so your photo is never uploaded.</p>
+<p class="lead">Pick a photo of a person and get a clean cut-out with the background removed. It runs on your own device, so your photo is never uploaded.</p>
 
 <section class="panel">
  <span class="line" aria-hidden="true"></span>
@@ -84,7 +84,6 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
   <span class="ml">Tap to pick or take a photo</span>
  </label>
  <input type="file" id="file" accept="image/*">
- <div class="langs"><select id="q" aria-label="What is in the photo"><option value="any">Any object · best</option><option value="people">People only · fast</option></select></div>
  <div class="st" id="st">The first time, the AI downloads once. Then it's fast.</div>
  <div class="prog" id="pg"><i id="pgi"></i></div>
 </section>
@@ -103,36 +102,17 @@ textarea:focus{outline:none;border-color:color-mix(in srgb,var(--a) 50%,transpar
  </div>
 </section>
 
-<p class="tip"><b>Tip:</b> works best when the person or object stands out clearly. "Clear" saves a see-through PNG.</p>
-<p class="foot">Made by Use Superintelligence · Powered by free open-source AI (BiRefNet, MODNet) · <a href="/privacy.html">Privacy</a></p>
+<p class="tip"><b>Tip:</b> made for photos of people, like selfies and portraits. "Clear" saves a see-through PNG.</p>
+<p class="foot">Made by Use Superintelligence · Powered by free open-source AI (MODNet) · <a href="/privacy.html">Privacy</a></p>
 </main>
 <script type="module">
 const $=id=>document.getElementById(id);
-const st=$('st'),pg=$('pg'),pgi=$('pgi'),file=$('file'),drop=$('drop'),q=$('q'),res=$('res');
+const st=$('st'),pg=$('pg'),pgi=$('pgi'),file=$('file'),drop=$('drop'),res=$('res');
 let T=null,busy=false,last=null,cut=null,bg='';const M={};
-// big AI only on strong devices (enough memory + graphics chip); phones get the small one so the page can't crash
-let strong=false;
-(async()=>{try{const mem=navigator.deviceMemory||4,phone=/Android|iPhone|iPod/i.test(navigator.userAgent);
-  strong=!!(navigator.gpu&&await navigator.gpu.requestAdapter())&&mem>=4&&!phone}catch(_){}
-  if(!strong){q.value='people';q.querySelector('option[value="any"]').textContent='Any object · computers & iPads'}})();
 const say=(t,p)=>{st.textContent=t;if(p==null){pg.style.display='none'}else{pg.style.display='block';pgi.style.width=Math.round(p)+'%'}};
 async function lib(){if(!T){say('Loading the AI…',0);T=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3');T.env.allowLocalModels=false}return T}
 function prog(){const files={};return e=>{if(e.status==='progress'&&e.total){files[e.file]=[e.loaded,e.total];let l=0,t=0;for(const k in files){l+=files[k][0];t+=files[k][1]}
   say('Downloading the AI (only once): '+(l/1048576).toFixed(0)+' MB of '+(t/1048576).toFixed(0)+' MB',l/t*100)}}}
-// "Any object": BiRefNet lite, run the way its model card shows
-async function anyObject(c){
-  const T=await lib(),id='onnx-community/BiRefNet_lite-ONNX';
-  if(!M.bi){
-    let dev='wasm';try{if(navigator.gpu&&await navigator.gpu.requestAdapter())dev='webgpu'}catch(_){}
-    M.bi={model:await T.AutoModel.from_pretrained(id,{dtype:'fp32',device:dev,progress_callback:prog()}),proc:await T.AutoProcessor.from_pretrained(id)};
-  }
-  say('Removing the background…');
-  const img=await T.RawImage.fromCanvas(c);
-  const {pixel_values}=await M.bi.proc(img);
-  const {output_image}=await M.bi.model({input_image:pixel_values});
-  const mask=await T.RawImage.fromTensor(output_image[0].sigmoid().mul(255).to('uint8')).resize(c.width,c.height);
-  return withMask(c,mask);
-}
 function withMask(c,mask){
   const o=document.createElement('canvas');o.width=c.width;o.height=c.height;const x=o.getContext('2d');x.drawImage(c,0,0);
   const d=x.getImageData(0,0,o.width,o.height),ch=mask.channels||1;for(let i=0,n=o.width*o.height;i<n;i++)d.data[4*i+3]=mask.data[i*ch];x.putImageData(d,0,0);
@@ -153,22 +133,17 @@ function shrink(f){return new Promise((ok,no)=>{const im=new Image();im.onload=(
   const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
   URL.revokeObjectURL(im.src);ok(c)};im.onerror=no;im.src=URL.createObjectURL(f)})}
 async function run(f){
-  if(busy)return;busy=true;drop.style.pointerEvents='none';q.disabled=true;
+  if(busy)return;busy=true;drop.style.pointerEvents='none';
   try{
-    const c=await shrink(f);let note='';
-    if(q.value==='any'&&!strong){note=' (used "People only", because this device is too small for "Any object")';cut=await people(c);q.value='people'}
-    else if(q.value==='any'){
-      try{cut=await anyObject(c)}
-      catch(e){console.warn(e);M.bi=null;say('This device could not run "Any object". Trying "People only"…');cut=await people(c);q.value='people';note=' (used "People only", the best this device can run)'}
-    }else cut=await people(c);
+    const c=await shrink(f),note='';
+    cut=await people(c);
     res.innerHTML='';res.appendChild(cut);
     say('Done'+note+'. Pick a background and tap Save picture.');
-  }catch(e){console.error(e);say('Sorry, that did not work. Try another photo, or a newer browser.')}
-  busy=false;drop.style.pointerEvents='';q.disabled=false;
+  }catch(e){console.error(e);say('Sorry, that did not work. Try another photo of a person.')}
+  busy=false;drop.style.pointerEvents='';
 }
 file.addEventListener('change',()=>{const f=file.files[0];file.value='';if(!f)return;last=f;
   drop.classList.add('has');drop.innerHTML='';const im=new Image();im.alt='Your photo';im.src=URL.createObjectURL(f);drop.appendChild(im);run(f)});
-q.addEventListener('change',()=>{if(last&&!busy)run(last)});
 document.querySelectorAll('.bgs .pill').forEach(b=>b.addEventListener('click',()=>{bg=b.dataset.bg;res.className='res'+(bg?' '+bg:'');
   document.querySelectorAll('.bgs .pill').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))}));
 $('save').addEventListener('click',()=>{
