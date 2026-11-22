@@ -92,7 +92,7 @@
     const icing = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4 }), 900);
     const starShape = new T.Shape(); for (let k = 0; k < 10; k++) { const a = k / 10 * 6.283 + 1.571, r = k % 2 ? 0.5 : 1.2; if (k) starShape.lineTo(Math.cos(a) * r, Math.sin(a) * r); else starShape.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
     const starGeo = new T.ExtrudeGeometry(starShape, { depth: 0.45, bevelEnabled: false }); starGeo.center();
-    const ring = new T.InstancedMesh(starGeo, new T.MeshStandardMaterial({ roughness: 0.4, emissive: 0x222222 }), 3000);
+    const ring = new T.InstancedMesh(starGeo, new T.MeshStandardMaterial({ roughness: 0.4, emissive: 0x222222 }), 1500);
     const m4 = new T.Matrix4(), qt = new T.Quaternion(), UPV = new T.Vector3(0, 1, 0), nv = new T.Vector3(), tv = new T.Vector3(), pv = new T.Vector3(), sc1 = new T.Vector3(1, 1, 1), col = new T.Color();
     for (let k = 0, tries = 0; k < 900 && tries < 9000; tries++) {      // sprinkles stuck on the icing
       const u = Math.random() * 6.283, v = Math.random() * 6.283;
@@ -101,7 +101,7 @@
       tv.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).cross(nv).normalize();
       m4.compose(pv, qt.setFromUnitVectors(UPV, tv), sc1); icing.setMatrixAt(k, m4); icing.setColorAt(k, col.set(SPR[k % SPR.length])); k++;
     }
-    for (let k = 0; k < 3000; k++) {                                     // the ring: little colorful stars floating around
+    for (let k = 0; k < 1500; k++) {                                     // the ring: little colorful stars floating around
       const r = Math.sqrt(rnd(55 * 55, 100 * 100)), a = Math.random() * 6.283;
       pv.set(Math.cos(a) * r, rnd(-0.8, 0.8), Math.sin(a) * r);
       tv.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize();
