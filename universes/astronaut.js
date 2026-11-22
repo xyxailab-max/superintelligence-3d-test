@@ -63,12 +63,17 @@
     cam = new T.PerspectiveCamera(55, 1, 0.5, 4000);
     S = new T.Scene();
 
-    // soft baby-blue sky
+    // deep blue sky
     S.add(new T.Mesh(new T.SphereGeometry(2000, 32, 16), new T.ShaderMaterial({ side: T.BackSide, depthWrite: false,
       vertexShader: "varying vec3 p;void main(){p=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
-      fragmentShader: "varying vec3 p;void main(){float h=p.y*.5+.5;gl_FragColor=vec4(mix(vec3(.62,.82,.97),vec3(.80,.92,1.),h),1.);}" })));
+      fragmentShader: "varying vec3 p;void main(){float h=p.y*.5+.5;gl_FragColor=vec4(mix(vec3(.02,.06,.22),vec3(.10,.30,.62),pow(h,1.4)),1.);}" })));
     S.add(new T.AmbientLight(0xffffff, 0.75));
     const dl = new T.DirectionalLight(0xffffff, 0.9); dl.position.set(-0.5, 1, 0.6); S.add(dl);
+
+    // glowing bubbles drifting in the background
+    const bub = new T.Group(); S.add(bub); S.userData.bub = bub;
+    const BC = [0x7fd4ff, 0xff8fc8, 0xb79bff, 0x8ff0e0, 0xfff1a8];
+    for (let i = 0; i < 70; i++) { const g = glow(BC[i % 5], rnd(20, 90), rnd(0.25, 0.6)); g.position.set(rnd(-700, 700), rnd(-400, 400), rnd(-700, 700)); if (g.position.length() < 220) g.position.setLength(260); g.userData.ph = rnd(0, 6.3); bub.add(g); }
 
     // the donut planet with a ring of rainbow sprinkles
     planet = new T.Group(); S.add(planet);
@@ -77,11 +82,11 @@
     { const p = dg.attributes.position, n = dg.attributes.normal, c = new Float32Array(p.count * 3); const ic = new T.Color();
       for (let i = 0; i < p.count; i++) {
         const ny = n.getY(i), a = Math.atan2(p.getZ(i), p.getX(i)), drip = 0.12 * Math.sin(a * 9) + 0.08 * Math.sin(a * 23 + 1);
-        if (ny > -0.15 + drip) { ic.setHSL(((a / 6.283 + 1) % 1 + 0.12 * ny) % 1, 0.95, 0.6); c[i * 3] = ic.r; c[i * 3 + 1] = ic.g; c[i * 3 + 2] = ic.b; }   // rainbow icing
+        if (ny > -0.15 + drip) { ic.setRGB(1, 0.32, 0.62).lerp(new T.Color(1, 0.82, 0.9), Math.max(0, ny) ** 1.5); c[i * 3] = ic.r; c[i * 3 + 1] = ic.g; c[i * 3 + 2] = ic.b; }   // pink glaze: soft pink on top fading to hot pink at the edges
         else { const b = 0.75 + 0.25 * Math.max(0, -ny); c[i * 3] = 0.86 * b; c[i * 3 + 1] = 0.58 * b; c[i * 3 + 2] = 0.3 * b; }   // golden dough
       }
       dg.setAttribute("color", new T.BufferAttribute(c, 3)); }
-    planet.add(new T.Mesh(dg, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 })));
+    planet.add(new T.Mesh(dg, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.05 })));
     const SPR = [0xff4d6d, 0xffd23f, 0x3fa9ff, 0x4be37a, 0xff8c2a, 0xa66bff, 0xffffff, 0x2ee6d6];
     const sprGeo = new T.CylinderGeometry(0.35, 0.35, 2.2, 6);
     const icing = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4 }), 900);
@@ -103,7 +108,7 @@
     sc1.set(1, 1, 1);
     planet.add(icing, ring);
     planet.rotation.set(0.42, 0, 0.18);
-    addBody("Sprinkla", "Donut planet", "A planet shaped like a donut, with rainbow icing and a ring of rainbow sprinkles. Scientists say donut-shaped planets could exist in theory, but no one has found one yet.", planet, 44);
+    addBody("Sprinkla", "Donut planet", "A planet shaped like a donut, with shiny pink glaze and a ring of rainbow sprinkles. Scientists say donut-shaped planets could exist in theory, but no one has found one yet.", planet, 44);
 
   }
 
@@ -148,6 +153,7 @@
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; time += dt;
     // motion
     planet.rotation.y += dt * 0.05;
+    S.userData.bub.rotation.y += dt * 0.01; S.userData.bub.children.forEach((g, i) => { g.material.opacity = 0.3 + 0.25 * Math.sin(time * 0.8 + g.userData.ph); });
     bodies.forEach((b) => b.obj.getWorldPosition(b.hit.position));
     // camera
     if (focus) view.want.copy(focus.hit.position);
