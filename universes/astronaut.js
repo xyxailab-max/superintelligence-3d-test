@@ -20,7 +20,7 @@
   document.head.appendChild(css);
   const wrap = document.createElement("div"); wrap.id = "auWrap";
   wrap.innerHTML = '<div id="auBar"><button id="auBack" type="button">← Back to brain</button><button id="auHome" type="button">Overview</button></div>' +
-    '<div id="auHint">Drag to look around · tap a planet to visit it</div><div id="auCard"><small></small><b></b><p></p></div>' +
+    '<div id="auHint">Drag to look around · tap the donut</div><div id="auCard"><small></small><b></b><p></p></div>' +
     '<div id="auTitle"><span>Universe of the</span><b>Astronaut</b></div>';
   const flash = document.createElement("div"); flash.id = "auFlash";
   document.body.append(wrap, flash);
@@ -55,7 +55,7 @@
   const rnd = (a, b) => a + Math.random() * (b - a);
 
   // ---------- build the universe once ----------
-  let planet, galaxy, comet, tail, tailPos, shoot = [];
+  let planet;
   function build() {
     built = true;
     R = new T.WebGLRenderer({ antialias: true }); R.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -63,47 +63,31 @@
     cam = new T.PerspectiveCamera(55, 1, 0.5, 4000);
     S = new T.Scene();
 
-    // deep sky: violet to midnight blue
+    // soft baby-blue sky
     S.add(new T.Mesh(new T.SphereGeometry(2000, 32, 16), new T.ShaderMaterial({ side: T.BackSide, depthWrite: false,
       vertexShader: "varying vec3 p;void main(){p=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
-      fragmentShader: "varying vec3 p;void main(){float h=p.y*.5+.5;vec3 a=vec3(.01,.01,.05),b=vec3(.07,.02,.10);float band=exp(-pow(p.y*3.+p.x*.8,2.))*.6;gl_FragColor=vec4(mix(b,a,h)+vec3(.05,.03,.09)*band,1.);}" })));
-    // stars: many small, some big and colorful
-    S.add(pts(7000, (i, v, c) => { v.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize().multiplyScalar(rnd(1200, 1800)); c.setHSL(Math.random() < 0.5 ? 0.6 : 0.08, 0.5, rnd(0.6, 1)); }, 7));
-    const big = pts(300, (i, v, c) => { v.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize().multiplyScalar(rnd(1100, 1600)); c.setHSL(Math.random(), 0.8, 0.75); }, 22);
-    S.add(big); big.userData.tw = true;
-
-    // the star that lights everything
-    const sunPos = new T.Vector3(-520, 160, -700);
-    const sun = new T.Group(); sun.position.copy(sunPos);
-    sun.add(glow(0xfff1d6, 260)); sun.add(glow(0xffb45a, 520, 0.45)); sun.add(glow(0xff6a3d, 900, 0.18));
-    S.add(sun);
-    S.add(new T.AmbientLight(0x6070a0, 0.35));
-    const sl = new T.PointLight(0xfff0dd, 2.2, 0, 0); sl.position.copy(sunPos); S.add(sl);
-    addBody("Helios", "Star", "The star that lights this universe. All its planets travel around it, warmed by its light.", sun, 60);
-
-    // space clouds (nebula) behind
-    const neb = new T.Group(); S.add(neb);
-    const nebC = [0xff3d9a, 0x7a4dff, 0x22d3ff, 0xff8a3d];
-    for (let i = 0; i < 46; i++) { const s = glow(nebC[i % 4], rnd(180, 420), rnd(0.08, 0.22)); s.position.set(rnd(-600, 500), rnd(-250, 150) + (i % 4) * 30, rnd(-1100, -800)); neb.add(s); }
+      fragmentShader: "varying vec3 p;void main(){float h=p.y*.5+.5;gl_FragColor=vec4(mix(vec3(.62,.82,.97),vec3(.80,.92,1.),h),1.);}" })));
+    S.add(new T.AmbientLight(0xffffff, 0.75));
+    const dl = new T.DirectionalLight(0xffffff, 0.9); dl.position.set(-0.5, 1, 0.6); S.add(dl);
 
     // the donut planet with a ring of rainbow sprinkles
     planet = new T.Group(); S.add(planet);
     const RR = 30, rr = 14;
     const dg = new T.TorusGeometry(RR, rr, 64, 128); dg.rotateX(-Math.PI / 2);
-    { const p = dg.attributes.position, n = dg.attributes.normal, c = new Float32Array(p.count * 3);
+    { const p = dg.attributes.position, n = dg.attributes.normal, c = new Float32Array(p.count * 3); const ic = new T.Color();
       for (let i = 0; i < p.count; i++) {
         const ny = n.getY(i), a = Math.atan2(p.getZ(i), p.getX(i)), drip = 0.12 * Math.sin(a * 9) + 0.08 * Math.sin(a * 23 + 1);
-        if (ny > -0.15 + drip) { const sh = 0.9 + 0.1 * ny; c[i * 3] = 1 * sh; c[i * 3 + 1] = 0.42 * sh; c[i * 3 + 2] = 0.68 * sh; }   // pink icing
+        if (ny > -0.15 + drip) { ic.setHSL(((a / 6.283 + 1) % 1 + 0.12 * ny) % 1, 0.95, 0.6); c[i * 3] = ic.r; c[i * 3 + 1] = ic.g; c[i * 3 + 2] = ic.b; }   // rainbow icing
         else { const b = 0.75 + 0.25 * Math.max(0, -ny); c[i * 3] = 0.86 * b; c[i * 3 + 1] = 0.58 * b; c[i * 3 + 2] = 0.3 * b; }   // golden dough
       }
       dg.setAttribute("color", new T.BufferAttribute(c, 3)); }
     planet.add(new T.Mesh(dg, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 })));
     const SPR = [0xff4d6d, 0xffd23f, 0x3fa9ff, 0x4be37a, 0xff8c2a, 0xa66bff, 0xffffff, 0x2ee6d6];
     const sprGeo = new T.CylinderGeometry(0.35, 0.35, 2.2, 6);
-    const icing = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4 }), 450);
+    const icing = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4 }), 900);
     const ring = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4, emissive: 0x222222 }), 3000);
     const m4 = new T.Matrix4(), qt = new T.Quaternion(), UPV = new T.Vector3(0, 1, 0), nv = new T.Vector3(), tv = new T.Vector3(), pv = new T.Vector3(), sc1 = new T.Vector3(1, 1, 1), col = new T.Color();
-    for (let k = 0, tries = 0; k < 450 && tries < 5000; tries++) {      // sprinkles stuck on the icing
+    for (let k = 0, tries = 0; k < 900 && tries < 9000; tries++) {      // sprinkles stuck on the icing
       const u = Math.random() * 6.283, v = Math.random() * 6.283;
       nv.set(Math.cos(u) * Math.cos(v), Math.sin(v), Math.sin(u) * Math.cos(v)); if (nv.y < 0.25) continue;
       pv.set(Math.cos(u) * (RR + rr * Math.cos(v)), rr * Math.sin(v), Math.sin(u) * (RR + rr * Math.cos(v))).addScaledVector(nv, 0.3);
@@ -119,43 +103,8 @@
     sc1.set(1, 1, 1);
     planet.add(icing, ring);
     planet.rotation.set(0.42, 0, 0.18);
-    addBody("Sprinkla", "Donut planet", "A planet shaped like a donut, with pink icing and a ring of rainbow sprinkles. Scientists say donut-shaped planets could exist in theory, but no one has found one yet.", planet, 44);
+    addBody("Sprinkla", "Donut planet", "A planet shaped like a donut, with rainbow icing and a ring of rainbow sprinkles. Scientists say donut-shaped planets could exist in theory, but no one has found one yet.", planet, 44);
 
-    // a spiral galaxy made of strawberries
-    galaxy = new T.Group(); galaxy.position.set(120, 170, -430); galaxy.rotation.set(1.05, 0, 0.35); S.add(galaxy);
-    const prof = [[0, -1], [0.35, -0.75], [0.6, -0.35], [0.72, 0.1], [0.68, 0.5], [0.45, 0.8], [0, 0.9]].map((a) => new T.Vector2(a[0], a[1]));
-    const berryGeo = new T.LatheGeometry(prof, 12);
-    const leafGeo = new T.ConeGeometry(0.6, 0.3, 6); leafGeo.translate(0, 0.98, 0);
-    const NB = 2000;
-    const berries = new T.InstancedMesh(berryGeo, new T.MeshStandardMaterial({ color: 0xff2a48, emissive: 0xa0102a, roughness: 0.45 }), NB);
-    const leaves = new T.InstancedMesh(leafGeo, new T.MeshStandardMaterial({ color: 0x45e060, emissive: 0x1a6a26, roughness: 0.6 }), NB);
-    { const m4 = new T.Matrix4(), qt = new T.Quaternion(), e = new T.Euler(), pv = new T.Vector3(), sv = new T.Vector3();
-      for (let i = 0; i < NB; i++) {
-        const arm = i % 3, d = 15 + Math.pow(Math.random(), 0.7) * 190, a = arm / 3 * 6.283 + d * 0.028 + rnd(-0.3, 0.3) * (1 - d / 260);
-        pv.set(Math.cos(a) * d + rnd(-7, 7), rnd(-5, 5) * (1 - d / 220), Math.sin(a) * d + rnd(-7, 7));
-        const k = rnd(7, 12) * (1.15 - d / 400);
-        m4.compose(pv, qt.setFromEuler(e.set(rnd(0, 6.3), rnd(0, 6.3), rnd(0, 6.3))), sv.set(k, k, k));
-        berries.setMatrixAt(i, m4); leaves.setMatrixAt(i, m4);
-      } }
-    galaxy.add(berries, leaves);
-    const gl2 = new T.PointLight(0xffd6e0, 1.4, 0, 0); galaxy.add(gl2);
-    galaxy.add(glow(0xffb3c8, 120, 0.8));
-    addBody("Berryway", "Strawberry galaxy", "A spinning spiral made of thousands of strawberries instead of stars. A real spiral galaxy, like our Milky Way, has billions of stars.", galaxy, 120);
-
-    // a comet crossing the sky
-    comet = new T.Group(); S.add(comet);
-    comet.add(glow(0xcff4ff, 9)); comet.add(new T.Mesh(new T.SphereGeometry(1.2, 16, 12), new T.MeshBasicMaterial({ color: 0xe8fbff })));
-    tail = pts(400, (i, v, c) => { v.set(0, 0, 0); c.setHSL(0.53, 0.8, 0.8 - i / 700); }, 4, { opacity: 0.8 });
-    tailPos = tail.geometry.attributes.position; S.add(tail);
-    addBody("Kito", "Comet", "A big ball of ice and dust. When it gets close to the star, the ice turns to gas and makes a long glowing tail that points away from the star.", comet, 4);
-
-    // shooting stars
-    for (let i = 0; i < 4; i++) {
-      const g = new T.BufferGeometry(); g.setAttribute("position", new T.BufferAttribute(new Float32Array(6), 3));
-      const l = new T.Line(g, new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending }));
-      l.userData = { life: rnd(0, 3), a: new T.Vector3(), d: new T.Vector3() }; S.add(l); shoot.push(l);
-    }
-    S.userData.big = big; S.userData.sunPos = sunPos;
   }
 
   // ---------- camera: drag to turn, pinch to zoom, tap to visit ----------
@@ -199,19 +148,6 @@
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; time += dt;
     // motion
     planet.rotation.y += dt * 0.05;
-    galaxy.rotation.y += dt * 0.02;
-    S.userData.big.material.size = 20 + 4 * Math.sin(time * 2);
-    const ct = (time * 0.018) % 1;
-    comet.position.set(-650 + ct * 1300, 260 - ct * 300, -300 + Math.sin(ct * 3.14) * 380);
-    dir.copy(comet.position).sub(S.userData.sunPos).normalize();
-    for (let i = 0; i < 400; i++) { const k = i / 400 * 70, w = (i % 7 - 3) * 0.25 * (i / 400); tmp.copy(comet.position).addScaledVector(dir, k); tailPos.setXYZ(i, tmp.x + w * 3, tmp.y + w * 2, tmp.z + w); }
-    tailPos.needsUpdate = true;
-    shoot.forEach((l) => {
-      const u = l.userData; u.life -= dt;
-      if (u.life < -0.9) { u.life = rnd(1, 6); u.a.set(rnd(-1, 1), rnd(0, 1), rnd(-1, 1)).normalize().multiplyScalar(600); u.d.set(rnd(-1, 1), rnd(-1, -0.2), rnd(-1, 1)).normalize(); }
-      if (u.life < 0) { const k = -u.life / 0.9, a = tmp.copy(u.a).addScaledVector(u.d, k * 300), p = l.geometry.attributes.position; p.setXYZ(0, a.x, a.y, a.z); p.setXYZ(1, a.x - u.d.x * 40, a.y - u.d.y * 40, a.z - u.d.z * 40); p.needsUpdate = true; l.material.opacity = Math.sin(k * 3.14); }
-      else l.material.opacity = 0;
-    });
     bodies.forEach((b) => b.obj.getWorldPosition(b.hit.position));
     // camera
     if (focus) view.want.copy(focus.hit.position);
