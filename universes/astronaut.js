@@ -156,15 +156,26 @@
     maw.add(halo); maw.userData.halo = halo;
     addBody("The Maw", "Black hole", "Its pull is so strong that nothing can escape, not even light. The glowing ring is hot gas spinning around it, faster than anything on Earth.", maw, 12);
 
-    // a spiral galaxy far away
+    // a spiral galaxy made of strawberries
     galaxy = new T.Group(); galaxy.position.set(140, 230, -650); galaxy.rotation.set(1.05, 0, 0.35); S.add(galaxy);
-    galaxy.add(pts(14000, (i, v, c) => {
-      const arm = i % 3, d = Math.pow(Math.random(), 0.55) * 200, a = arm / 3 * 6.283 + d * 0.028 + rnd(-0.35, 0.35) * (1 - d / 260);
-      v.set(Math.cos(a) * d + rnd(-6, 6), rnd(-5, 5) * (1 - d / 200), Math.sin(a) * d + rnd(-6, 6));
-      c.setHSL(d < 40 ? 0.1 : 0.62 - d / 900 + (Math.random() < 0.15 ? 0.3 : 0), 0.8, d < 40 ? 0.85 : 0.65);
-    }, 5, { opacity: 0.85 }));
-    galaxy.add(glow(0xffe2b0, 120, 0.8));
-    addBody("Andros", "Spiral galaxy", "A spinning spiral of billions of stars. One turn takes it hundreds of millions of years.", galaxy, 120);
+    const prof = [[0, -1], [0.35, -0.75], [0.6, -0.35], [0.72, 0.1], [0.68, 0.5], [0.45, 0.8], [0, 0.9]].map((a) => new T.Vector2(a[0], a[1]));
+    const berryGeo = new T.LatheGeometry(prof, 12);
+    const leafGeo = new T.ConeGeometry(0.6, 0.3, 6); leafGeo.translate(0, 0.98, 0);
+    const NB = 2600;
+    const berries = new T.InstancedMesh(berryGeo, new T.MeshStandardMaterial({ color: 0xe8203a, emissive: 0x5a0614, roughness: 0.45 }), NB);
+    const leaves = new T.InstancedMesh(leafGeo, new T.MeshStandardMaterial({ color: 0x35c24e, emissive: 0x0c3a14, roughness: 0.6 }), NB);
+    { const m4 = new T.Matrix4(), qt = new T.Quaternion(), e = new T.Euler(), pv = new T.Vector3(), sv = new T.Vector3();
+      for (let i = 0; i < NB; i++) {
+        const arm = i % 3, d = 15 + Math.pow(Math.random(), 0.7) * 190, a = arm / 3 * 6.283 + d * 0.028 + rnd(-0.3, 0.3) * (1 - d / 260);
+        pv.set(Math.cos(a) * d + rnd(-7, 7), rnd(-5, 5) * (1 - d / 220), Math.sin(a) * d + rnd(-7, 7));
+        const k = rnd(2.6, 5.2) * (1.15 - d / 400);
+        m4.compose(pv, qt.setFromEuler(e.set(rnd(0, 6.3), rnd(0, 6.3), rnd(0, 6.3))), sv.set(k, k, k));
+        berries.setMatrixAt(i, m4); leaves.setMatrixAt(i, m4);
+      } }
+    galaxy.add(berries, leaves);
+    const gl2 = new T.PointLight(0xffd6e0, 1.4, 0, 0); galaxy.add(gl2);
+    galaxy.add(glow(0xffb3c8, 120, 0.8));
+    addBody("Berryway", "Strawberry galaxy", "A spinning spiral made of thousands of strawberries instead of stars. A real spiral galaxy, like our Milky Way, has billions of stars.", galaxy, 120);
 
     // a comet crossing the sky
     comet = new T.Group(); S.add(comet);
