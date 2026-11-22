@@ -82,7 +82,7 @@
     { const p = dg.attributes.position, n = dg.attributes.normal, c = new Float32Array(p.count * 3); const ic = new T.Color();
       for (let i = 0; i < p.count; i++) {
         const ny = n.getY(i), a = Math.atan2(p.getZ(i), p.getX(i)), drip = 0.12 * Math.sin(a * 9) + 0.08 * Math.sin(a * 23 + 1);
-        if (ny > -0.15 + drip) { ic.setRGB(1, 0.32, 0.62).lerp(new T.Color(1, 0.82, 0.9), Math.max(0, ny) ** 1.5); c[i * 3] = ic.r; c[i * 3 + 1] = ic.g; c[i * 3 + 2] = ic.b; }   // pink glaze: soft pink on top fading to hot pink at the edges
+        if (ny > -0.15 + drip) { ic.setRGB(1, 0.36, 0.66); c[i * 3] = ic.r; c[i * 3 + 1] = ic.g; c[i * 3 + 2] = ic.b; }   // pink glaze, all one pink
         else { const b = 0.75 + 0.25 * Math.max(0, -ny); c[i * 3] = 0.86 * b; c[i * 3 + 1] = 0.58 * b; c[i * 3 + 2] = 0.3 * b; }   // golden dough
       }
       dg.setAttribute("color", new T.BufferAttribute(c, 3)); }
@@ -101,12 +101,16 @@
       tv.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).cross(nv).normalize();
       m4.compose(pv, qt.setFromUnitVectors(UPV, tv), sc1); icing.setMatrixAt(k, m4); icing.setColorAt(k, col.set(SPR[k % SPR.length])); k++;
     }
-    for (let k = 0; k < 1500; k++) {                                     // the ring: little colorful stars floating around
-      const r = Math.sqrt(rnd(55 * 55, 100 * 100)), a = Math.random() * 6.283;
-      pv.set(Math.cos(a) * r, rnd(-0.8, 0.8), Math.sin(a) * r);
-      tv.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize();
-      m4.compose(pv, qt.setFromUnitVectors(UPV, tv), sc1.set(1.3, 1.3, 1.3)); ring.setMatrixAt(k, m4); ring.setColorAt(k, col.set(SPR[k % SPR.length]));
-    }
+    { let k = 0; const e = new T.Euler();                                  // the ring: 1,500 little stars in 10 even circles, all on one level, facing out
+      for (let ri = 0; ri < 10 && k < 1500; ri++) {
+        const r = 55 + ri * 5, n = Math.round(2 * Math.PI * r / 3.25);
+        for (let q2 = 0; q2 < n && k < 1500; q2++, k++) {
+          const a = (q2 + (ri % 2) * 0.5) / n * 6.283;
+          pv.set(Math.cos(a) * r, 0, Math.sin(a) * r);
+          m4.compose(pv, qt.setFromEuler(e.set(0, Math.PI / 2 - a, 0)), sc1.set(1.3, 1.3, 1.3)); ring.setMatrixAt(k, m4); ring.setColorAt(k, col.set(SPR[k % SPR.length]));
+        }
+      }
+      ring.count = k; }
     sc1.set(1, 1, 1);
     planet.add(icing, ring);
     planet.rotation.set(0.42, 0, 0.18);
