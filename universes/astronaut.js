@@ -75,19 +75,6 @@
     const BC = [0x7fd4ff, 0xff8fc8, 0xb79bff, 0x8ff0e0, 0xfff1a8];
     for (let i = 0; i < 70; i++) { const g = glow(BC[i % 5], rnd(20, 90), rnd(0.25, 0.6)); g.position.set(rnd(-700, 700), rnd(-400, 400), rnd(-700, 700)); if (g.position.length() < 220) g.position.setLength(260); g.userData.ph = rnd(0, 6.3); bub.add(g); }
 
-    // twinkling star sparkles flying around the donut
-    const sc2 = document.createElement("canvas"); sc2.width = sc2.height = 128; const sx = sc2.getContext("2d");
-    const sg2 = sx.createRadialGradient(64, 64, 0, 64, 64, 22); sg2.addColorStop(0, "rgba(255,255,255,1)"); sg2.addColorStop(1, "rgba(255,255,255,0)");
-    sx.fillStyle = sg2; sx.fillRect(0, 0, 128, 128); sx.fillStyle = "#fff";
-    sx.beginPath(); for (let k = 0; k < 8; k++) { const a = k / 8 * 6.283 - 1.571, r = k % 2 ? 7 : 62; sx.lineTo(64 + Math.cos(a) * r, 64 + Math.sin(a) * r); } sx.closePath(); sx.fill();
-    const STAR = new T.CanvasTexture(sc2), SC = [0xffffff, 0xfff3a0, 0xffc2e6, 0xb8ecff, 0xd9c8ff];
-    const spk = new T.Group(); S.add(spk); S.userData.spk = spk;
-    for (let i = 0; i < 160; i++) {
-      const m = new T.Sprite(new T.SpriteMaterial({ map: STAR, color: SC[i % 5], transparent: true, blending: T.AdditiveBlending, depthWrite: false }));
-      m.userData = { r: rnd(50, 140), a: rnd(0, 6.3), sp: rnd(0.08, 0.3) * (i % 2 ? 1 : -1), y: rnd(-45, 45), bob: rnd(0, 6.3), s: rnd(3, 8), tw: rnd(1.5, 4) };
-      spk.add(m);
-    }
-
     // the donut planet with a ring of rainbow sprinkles
     planet = new T.Group(); S.add(planet);
     const RR = 30, rr = 14;
@@ -103,7 +90,9 @@
     const SPR = [0xff4d6d, 0xffd23f, 0x3fa9ff, 0x4be37a, 0xff8c2a, 0xa66bff, 0xffffff, 0x2ee6d6];
     const sprGeo = new T.CylinderGeometry(0.35, 0.35, 2.2, 6);
     const icing = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4 }), 900);
-    const ring = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4, emissive: 0x222222 }), 3000);
+    const starShape = new T.Shape(); for (let k = 0; k < 10; k++) { const a = k / 10 * 6.283 + 1.571, r = k % 2 ? 0.5 : 1.2; if (k) starShape.lineTo(Math.cos(a) * r, Math.sin(a) * r); else starShape.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+    const starGeo = new T.ExtrudeGeometry(starShape, { depth: 0.45, bevelEnabled: false }); starGeo.center();
+    const ring = new T.InstancedMesh(starGeo, new T.MeshStandardMaterial({ roughness: 0.4, emissive: 0x222222 }), 3000);
     const m4 = new T.Matrix4(), qt = new T.Quaternion(), UPV = new T.Vector3(0, 1, 0), nv = new T.Vector3(), tv = new T.Vector3(), pv = new T.Vector3(), sc1 = new T.Vector3(1, 1, 1), col = new T.Color();
     for (let k = 0, tries = 0; k < 900 && tries < 9000; tries++) {      // sprinkles stuck on the icing
       const u = Math.random() * 6.283, v = Math.random() * 6.283;
@@ -112,7 +101,7 @@
       tv.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).cross(nv).normalize();
       m4.compose(pv, qt.setFromUnitVectors(UPV, tv), sc1); icing.setMatrixAt(k, m4); icing.setColorAt(k, col.set(SPR[k % SPR.length])); k++;
     }
-    for (let k = 0; k < 3000; k++) {                                     // the ring: rainbow sprinkles floating around
+    for (let k = 0; k < 3000; k++) {                                     // the ring: little colorful stars floating around
       const r = Math.sqrt(rnd(55 * 55, 100 * 100)), a = Math.random() * 6.283;
       pv.set(Math.cos(a) * r, rnd(-0.8, 0.8), Math.sin(a) * r);
       tv.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize();
@@ -121,7 +110,7 @@
     sc1.set(1, 1, 1);
     planet.add(icing, ring);
     planet.rotation.set(0.42, 0, 0.18);
-    addBody("Sprinkla", "Donut planet", "A planet shaped like a donut, with shiny pink glaze and a ring of rainbow sprinkles. Scientists say donut-shaped planets could exist in theory, but no one has found one yet.", planet, 44);
+    addBody("Sprinkla", "Donut planet", "A planet shaped like a donut, with shiny pink glaze and a ring of little colorful stars. Scientists say donut-shaped planets could exist in theory, but no one has found one yet.", planet, 44);
 
   }
 
@@ -166,7 +155,6 @@
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; time += dt;
     // motion
     planet.rotation.y += dt * 0.05;
-    S.userData.spk.children.forEach((m) => { const u = m.userData; u.a += dt * u.sp; m.position.set(Math.cos(u.a) * u.r, u.y + Math.sin(time * 0.7 + u.bob) * 6, Math.sin(u.a) * u.r); const tw = 0.5 + 0.5 * Math.sin(time * u.tw + u.bob); m.scale.setScalar(u.s * (0.4 + 0.8 * tw)); m.material.opacity = 0.35 + 0.65 * tw; m.material.rotation = time * 0.5 + u.bob; });
     S.userData.bub.rotation.y += dt * 0.01; S.userData.bub.children.forEach((g, i) => { g.material.opacity = 0.3 + 0.25 * Math.sin(time * 0.8 + g.userData.ph); });
     bodies.forEach((b) => b.obj.getWorldPosition(b.hit.position));
     // camera
