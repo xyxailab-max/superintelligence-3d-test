@@ -86,20 +86,40 @@
     const nebC = [0xff3d9a, 0x7a4dff, 0x22d3ff, 0xff8a3d];
     for (let i = 0; i < 46; i++) { const s = glow(nebC[i % 4], rnd(180, 420), rnd(0.08, 0.22)); s.position.set(rnd(-600, 500), rnd(-250, 150) + (i % 4) * 30, rnd(-1100, -800)); neb.add(s); }
 
-    // the giant ringed planet
+    // the donut planet with a ring of rainbow sprinkles
     planet = new T.Group(); S.add(planet);
-    const pg = paint(new T.SphereGeometry(40, 96, 64), (v, c) => {
-      const b = v.y * 9 + Math.sin(v.x * 6 + v.z * 4) * 0.6 + Math.sin(v.z * 17) * 0.12;
-      const k = 0.5 + 0.5 * Math.sin(b), k2 = 0.5 + 0.5 * Math.sin(b * 2.7 + 1);
-      c.setRGB(0.95 - 0.25 * k, 0.72 - 0.3 * k + 0.08 * k2, 0.48 - 0.25 * k);
-      const spot = Math.exp(-((v.y + 0.35) ** 2 * 60 + (Math.atan2(v.z, v.x) - 0.8) ** 2 * 8)); c.lerp(new T.Color(0.85, 0.3, 0.15), spot * 0.8);
-    });
-    const pm = new T.Mesh(pg, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 })); planet.add(pm);
-    planet.add(atmos(44, 0xffc27a, 2.5));
-    const rings = pts(16000, (i, v, c) => { const r = Math.sqrt(rnd(55 * 55, 100 * 100)), a = Math.random() * 6.283, gap = r > 74 && r < 78; v.set(Math.cos(a) * r, rnd(-0.4, 0.4), Math.sin(a) * r); c.setHSL(0.09, 0.35, gap ? 0.08 : 0.45 + 0.35 * Math.sin(r * 0.9) ** 2); }, 1.6, { opacity: 0.9 });
-    planet.add(rings);
+    const RR = 30, rr = 14;
+    const dg = new T.TorusGeometry(RR, rr, 64, 128); dg.rotateX(-Math.PI / 2);
+    { const p = dg.attributes.position, n = dg.attributes.normal, c = new Float32Array(p.count * 3);
+      for (let i = 0; i < p.count; i++) {
+        const ny = n.getY(i), a = Math.atan2(p.getZ(i), p.getX(i)), drip = 0.12 * Math.sin(a * 9) + 0.08 * Math.sin(a * 23 + 1);
+        if (ny > -0.15 + drip) { const sh = 0.9 + 0.1 * ny; c[i * 3] = 1 * sh; c[i * 3 + 1] = 0.42 * sh; c[i * 3 + 2] = 0.68 * sh; }   // pink icing
+        else { const b = 0.75 + 0.25 * Math.max(0, -ny); c[i * 3] = 0.86 * b; c[i * 3 + 1] = 0.58 * b; c[i * 3 + 2] = 0.3 * b; }   // golden dough
+      }
+      dg.setAttribute("color", new T.BufferAttribute(c, 3)); }
+    planet.add(new T.Mesh(dg, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 })));
+    const SPR = [0xff4d6d, 0xffd23f, 0x3fa9ff, 0x4be37a, 0xff8c2a, 0xa66bff, 0xffffff, 0x2ee6d6];
+    const sprGeo = new T.CylinderGeometry(0.35, 0.35, 2.2, 6);
+    const icing = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4 }), 450);
+    const ring = new T.InstancedMesh(sprGeo, new T.MeshStandardMaterial({ roughness: 0.4, emissive: 0x222222 }), 3000);
+    const m4 = new T.Matrix4(), qt = new T.Quaternion(), UPV = new T.Vector3(0, 1, 0), nv = new T.Vector3(), tv = new T.Vector3(), pv = new T.Vector3(), sc1 = new T.Vector3(1, 1, 1), col = new T.Color();
+    for (let k = 0, tries = 0; k < 450 && tries < 5000; tries++) {      // sprinkles stuck on the icing
+      const u = Math.random() * 6.283, v = Math.random() * 6.283;
+      nv.set(Math.cos(u) * Math.cos(v), Math.sin(v), Math.sin(u) * Math.cos(v)); if (nv.y < 0.25) continue;
+      pv.set(Math.cos(u) * (RR + rr * Math.cos(v)), rr * Math.sin(v), Math.sin(u) * (RR + rr * Math.cos(v))).addScaledVector(nv, 0.3);
+      tv.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).cross(nv).normalize();
+      m4.compose(pv, qt.setFromUnitVectors(UPV, tv), sc1); icing.setMatrixAt(k, m4); icing.setColorAt(k, col.set(SPR[k % SPR.length])); k++;
+    }
+    for (let k = 0; k < 3000; k++) {                                     // the ring: rainbow sprinkles floating around
+      const r = Math.sqrt(rnd(55 * 55, 100 * 100)), a = Math.random() * 6.283;
+      pv.set(Math.cos(a) * r, rnd(-0.8, 0.8), Math.sin(a) * r);
+      tv.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize();
+      m4.compose(pv, qt.setFromUnitVectors(UPV, tv), sc1.set(1.3, 1.3, 1.3)); ring.setMatrixAt(k, m4); ring.setColorAt(k, col.set(SPR[k % SPR.length]));
+    }
+    sc1.set(1, 1, 1);
+    planet.add(icing, ring);
     planet.rotation.set(0.42, 0, 0.18);
-    addBody("Aurelia", "Giant gas planet", "A giant made of gas, like Saturn but bigger. Its rings are billions of pieces of ice and rock. The red spot is a storm bigger than Earth.", planet, 40);
+    addBody("Sprinkla", "Donut planet", "A planet shaped like a donut, with pink icing and a ring of rainbow sprinkles. Scientists say donut-shaped planets could exist in theory, but no one has found one yet.", planet, 44);
 
     // its moon
     moon = new T.Mesh(paint(new T.SphereGeometry(7, 48, 32), (v, c) => {
