@@ -55,7 +55,7 @@
   const rnd = (a, b) => a + Math.random() * (b - a);
 
   // ---------- build the universe once ----------
-  let planet, moon, ocean, maw, disk, galaxy, comet, tail, tailPos, shoot = [];
+  let planet, galaxy, comet, tail, tailPos, shoot = [];
   function build() {
     built = true;
     R = new T.WebGLRenderer({ antialias: true }); R.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -121,54 +121,19 @@
     planet.rotation.set(0.42, 0, 0.18);
     addBody("Sprinkla", "Donut planet", "A planet shaped like a donut, with pink icing and a ring of rainbow sprinkles. Scientists say donut-shaped planets could exist in theory, but no one has found one yet.", planet, 44);
 
-    // its moon
-    moon = new T.Mesh(paint(new T.SphereGeometry(7, 48, 32), (v, c) => {
-      let g = 0.55 + 0.1 * Math.sin(v.x * 13) * Math.sin(v.y * 11 + v.z * 7);
-      for (const d of [[0.5, 0.6, 0.6], [-0.7, 0.1, 0.7], [0.1, -0.8, 0.5], [0.8, -0.3, -0.5]]) { const dd = (v.x - d[0]) ** 2 + (v.y - d[1]) ** 2 + (v.z - d[2]) ** 2; if (dd < 0.06) g -= 0.18 * (1 - dd / 0.06); }
-      c.setRGB(g, g, g * 1.03);
-    }), new T.MeshStandardMaterial({ vertexColors: true, roughness: 1 }));
-    S.add(moon);
-    addBody("Selene", "Moon", "Aurelia's moon. Its craters were made by space rocks crashing into it billions of years ago.", moon, 7);
-
-    // the ocean world
-    ocean = new T.Group(); ocean.position.set(185, -35, 95); S.add(ocean);
-    const og = paint(new T.SphereGeometry(13, 72, 48), (v, c) => {
-      const n = Math.sin(v.x * 4 + Math.sin(v.y * 5)) * Math.sin(v.z * 4 + Math.cos(v.x * 3)) + 0.35 * Math.sin(v.y * 9 + v.x * 7);
-      if (Math.abs(v.y) > 0.86) c.setRGB(0.95, 0.97, 1);
-      else if (n > 0.3) c.setRGB(0.25 + 0.2 * n, 0.55 - 0.1 * n, 0.25);
-      else c.setRGB(0.05, 0.25 + 0.15 * n, 0.6 + 0.2 * n);
-    });
-    ocean.add(new T.Mesh(og, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, metalness: 0.1 })));
-    const clouds = new T.Mesh(paint(new T.SphereGeometry(13.4, 48, 32), (v, c) => { const k = Math.max(0, Math.sin(v.x * 7 + v.y * 3) * Math.sin(v.z * 6 - v.y * 4)); c.setRGB(k, k, k); }),
-      new T.MeshStandardMaterial({ vertexColors: true, transparent: true, opacity: 0.55, depthWrite: false })); ocean.add(clouds); ocean.userData.clouds = clouds;
-    ocean.add(atmos(14.6, 0x5ab8ff, 2.2));
-    addBody("Nerida", "Ocean world", "A blue planet almost fully covered by water, with white ice at the top and bottom. It looks a lot like Earth.", ocean, 13);
-
-    // the black hole
-    maw = new T.Group(); maw.position.set(-190, 45, 70); S.add(maw);
-    maw.add(glow(0xff9a4a, 70, 0.55));
-    maw.add(new T.Mesh(new T.SphereGeometry(9, 48, 32), new T.MeshBasicMaterial({ color: 0x000000 })));
-    disk = new T.Mesh(new T.RingGeometry(12, 48, 160, 6), new T.ShaderMaterial({ transparent: true, depthWrite: false, side: T.DoubleSide, blending: T.AdditiveBlending, uniforms: { t: { value: 0 } },
-      vertexShader: "varying vec2 p;void main(){p=position.xy;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
-      fragmentShader: "uniform float t;varying vec2 p;void main(){float r=length(p),a=atan(p.y,p.x),k=(r-12.)/36.;float sw=sin(a*3.+log(r)*14.-t*2.5)*.5+.5;vec3 c=mix(vec3(1.,.97,.85),vec3(1.,.35,.08),k);c=mix(c,vec3(.6,.1,.4),k*k);gl_FragColor=vec4(c*(.7+.6*sw),(1.-k)*(1.-k)*smoothstep(0.,.06,k)*(.55+.45*sw));}" }));
-    disk.rotation.x = Math.PI / 2 - 0.25; maw.add(disk);
-    const halo = new T.Mesh(new T.RingGeometry(9.2, 11, 96), new T.MeshBasicMaterial({ color: 0xffd9a0, transparent: true, opacity: 0.85, blending: T.AdditiveBlending, side: T.DoubleSide, depthWrite: false }));
-    maw.add(halo); maw.userData.halo = halo;
-    addBody("The Maw", "Black hole", "Its pull is so strong that nothing can escape, not even light. The glowing ring is hot gas spinning around it, faster than anything on Earth.", maw, 12);
-
     // a spiral galaxy made of strawberries
-    galaxy = new T.Group(); galaxy.position.set(140, 230, -650); galaxy.rotation.set(1.05, 0, 0.35); S.add(galaxy);
+    galaxy = new T.Group(); galaxy.position.set(120, 170, -430); galaxy.rotation.set(1.05, 0, 0.35); S.add(galaxy);
     const prof = [[0, -1], [0.35, -0.75], [0.6, -0.35], [0.72, 0.1], [0.68, 0.5], [0.45, 0.8], [0, 0.9]].map((a) => new T.Vector2(a[0], a[1]));
     const berryGeo = new T.LatheGeometry(prof, 12);
     const leafGeo = new T.ConeGeometry(0.6, 0.3, 6); leafGeo.translate(0, 0.98, 0);
-    const NB = 2600;
-    const berries = new T.InstancedMesh(berryGeo, new T.MeshStandardMaterial({ color: 0xe8203a, emissive: 0x5a0614, roughness: 0.45 }), NB);
-    const leaves = new T.InstancedMesh(leafGeo, new T.MeshStandardMaterial({ color: 0x35c24e, emissive: 0x0c3a14, roughness: 0.6 }), NB);
+    const NB = 2000;
+    const berries = new T.InstancedMesh(berryGeo, new T.MeshStandardMaterial({ color: 0xff2a48, emissive: 0xa0102a, roughness: 0.45 }), NB);
+    const leaves = new T.InstancedMesh(leafGeo, new T.MeshStandardMaterial({ color: 0x45e060, emissive: 0x1a6a26, roughness: 0.6 }), NB);
     { const m4 = new T.Matrix4(), qt = new T.Quaternion(), e = new T.Euler(), pv = new T.Vector3(), sv = new T.Vector3();
       for (let i = 0; i < NB; i++) {
         const arm = i % 3, d = 15 + Math.pow(Math.random(), 0.7) * 190, a = arm / 3 * 6.283 + d * 0.028 + rnd(-0.3, 0.3) * (1 - d / 260);
         pv.set(Math.cos(a) * d + rnd(-7, 7), rnd(-5, 5) * (1 - d / 220), Math.sin(a) * d + rnd(-7, 7));
-        const k = rnd(2.6, 5.2) * (1.15 - d / 400);
+        const k = rnd(7, 12) * (1.15 - d / 400);
         m4.compose(pv, qt.setFromEuler(e.set(rnd(0, 6.3), rnd(0, 6.3), rnd(0, 6.3))), sv.set(k, k, k));
         berries.setMatrixAt(i, m4); leaves.setMatrixAt(i, m4);
       } }
@@ -234,9 +199,6 @@
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; time += dt;
     // motion
     planet.rotation.y += dt * 0.05;
-    const ma = time * 0.12; moon.position.set(Math.cos(ma) * 125, Math.sin(ma) * 22, Math.sin(ma) * 125); moon.rotation.y += dt * 0.1;
-    ocean.rotation.y += dt * 0.08; ocean.userData.clouds.rotation.y += dt * 0.03;
-    disk.material.uniforms.t.value = time; maw.userData.halo.lookAt(cam.position);
     galaxy.rotation.y += dt * 0.02;
     S.userData.big.material.size = 20 + 4 * Math.sin(time * 2);
     const ct = (time * 0.018) % 1;
